@@ -18,6 +18,9 @@ public class Filtr_Pukntkow implements PlugInFilter {
 	private int width;
 	private int height;
 	private int radius;
+	private int method;
+	private float pixelMin;
+	private float pixelMax;
 	int[][] indexUp;
 	int[][] indexDown;
 	float[][] weightUp;
@@ -35,10 +38,10 @@ public class Filtr_Pukntkow implements PlugInFilter {
 		width = fp.getWidth();
 		height = fp.getHeight();
 		fp.findMinAndMax();
-		double min = fp.getMin();
-		double max = fp.getMax();
-		IJ.log("Min: " + min);
-		IJ.log("Max: " + max);
+		pixelMin = (float)fp.getMin();
+		pixelMax = (float)fp.getMax();
+		IJ.log("Min: " + pixelMin);
+		IJ.log("Max: " + pixelMax);
 
 		if (showDialog()) {
 			makeWindow();
@@ -50,7 +53,8 @@ public class Filtr_Pukntkow implements PlugInFilter {
 	private boolean showDialog() {
 		GenericDialog gd = new GenericDialog("Process pixels");
 
-		gd.addNumericField("radius", 10, 0);
+		gd.addNumericField("radius", 20, 0);
+		gd.addNumericField("method", 1, 0);
 
 		gd.showDialog();
 		if (gd.wasCanceled())
@@ -58,6 +62,7 @@ public class Filtr_Pukntkow implements PlugInFilter {
 
 		// get entered values
 		radius = (int)gd.getNextNumber();
+		method = (int)gd.getNextNumber();
 
 		return true;
 	}
@@ -126,7 +131,7 @@ public class Filtr_Pukntkow implements PlugInFilter {
 	private float[] calcHist(float[] pixels, int centerX, int centerY) {
 		int startX = centerX - radius;
 		int startY = centerY - radius;
-		IJ.log(startX + ", " + startY);
+		//IJ.log(startX + ", " + startY);
 		float[] hist = new float[radius + 1];
 		for (int x = 0; x < 2 * radius + 1; x++) {
 			for (int y = 0; y < 2 * radius + 1; y++) {
@@ -136,22 +141,83 @@ public class Filtr_Pukntkow implements PlugInFilter {
 		}
 		return hist;
 	}
-
+	
 	public void process(float[] pixels) {
-        Plot plot = new Plot("Example Plot","X Axis","Y Axis");
+		if (method == 1) {
+			process1(pixels);
+		} else {
+			process2(pixels);
+		}
+	}
+	
+	public void process2(float[] pixels) {
+		float x1 = 7767f;
+		float y1 = 8050f;
+		float x2 = 8679f;
+		float y2 = 9009f;
+		int quater = (radius + 3) / 4;
+		int half = (radius + 1) / 2;
+		float[][] output = new float[width][height];
+		for (int x = radius + 1; x < width - radius - 1; x++) {
+			IJ.log("x = " + x);
+			for (int y = radius + 1; y < height - radius - 1; y++) {
+				float[] hist = calcHist(pixels, x, y);
+				float firstValue = 0;
+				for (int k = 0; k < quater; k++) {
+					firstValue += hist[k];
+				}
+				firstValue /= (float)quater;
+				float lastValue = 0;
+				for (int k = half; k < radius + 1; k++) {
+					lastValue += hist[k];
+				}
+				lastValue /= (float)(radius + 1 - half);
+				output[x][y] = (firstValue-y1)*(x2-x1) < (y2-y1)*(lastValue-x1) ? pixelMin : pixelMax;
+			}
+		}
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				pixels[x + y * width] = output[x][y];
+			}
+		}
+	}
+
+	public void process1(float[] pixels) {
+        Plot plot = new Plot("Points","Otoczenie","Środek");
+        Plot plot2 = new Plot("Histograms","Promień","Jasność");
 		float[] xx = new float[radius + 1];
 		for (int i = 0; i < radius + 1; i++) {
 			xx[i] = i;
 		}
 		PointRoi roi = (PointRoi)image.getRoi();
 		java.awt.Point[] points = roi.getContainedPoints();
-		int mid = points.length / 2;
+		int quater = (radius + 3) / 4;
+		int half = (radius + 1) / 2;
+		float px[][] = new float[2][points.length / 2];
+		float py[][] = new float[2][points.length / 2];
 		for (int i = 0; i < points.length; i++) {
-			float[] hist = calcHist(pixels, points[i].x, points[i].y);	
-	        plot.setColor(i < mid ? Color.red : Color.blue);
-	        plot.addPoints(xx,hist,PlotWindow.LINE);
+			float[] hist = calcHist(pixels, points[i].x, points[i].y);
+			float firstValue = 0;
+			for (int k = 0; k < quater; k++) {
+				firstValue += hist[k];
+			}
+			firstValue /= (float)quater;
+			float lastValue = 0;
+			for (int k = half; k < radius + 1; k++) {
+				lastValue += hist[k];
+			}
+			lastValue /= (float)(radius + 1 - half);
+			py[i % 2][i / 2] = firstValue;
+			px[i % 2][i / 2] = lastValue;
+	        plot2.setColor((i % 2) == 0 ? Color.red : Color.blue);
+	        plot2.addPoints(xx,hist,PlotWindow.LINE);
 		}
+        plot.setColor(Color.red);
+        plot.addPoints(px[0], py[0], PlotWindow.CIRCLE);
+        plot.setColor(Color.blue);
+        plot.addPoints(px[1], py[1], PlotWindow.CIRCLE);
         plot.show();
+        plot2.show();
 		IJ.log("DONE");
 	}
 }
