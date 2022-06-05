@@ -1,0 +1,6 @@
+{
+	"java.project.referencedLibraries": [
+		"lib/**/*.jar",
+		"/home/doki/my/Fiji.app/jars/imagej-2.1.0.jar"
+	]
+}
