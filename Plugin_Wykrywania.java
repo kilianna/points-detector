@@ -16,8 +16,6 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 
 	// Plot
 	Plot plot;
-	ArrayList<Double> plotValidX;
-	ArrayList<Double> plotValidY;
 
 	// Parameters
 	int windowRadius;
@@ -78,9 +76,9 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 
 		// Create plot
 		plot = new Plot("Wykres", "Otoczenie", "Srodek");
-		plot.setColor(Color.RED);
-		plot.add("circle", new double[0], new double[0]);
 		plot.setColor(Color.BLUE);
+		plot.add("circle", new double[0], new double[0]);
+		plot.setColor(Color.RED);
 		plot.add("circle", new double[0], new double[0]);
 		plot.show();
 
@@ -139,7 +137,6 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 		for (int centerY = 0; centerY < height; centerY++) {
 			if (centerY % 10 == 9) {
 				IJ.showProgress(centerY, height);
-				IJ.log("Image line " + (1 + centerY) + " of " + height);
 			}
 			for (int centerX = 0; centerX < width; centerX++) {
 				int startX = centerX - windowRadius;
@@ -159,7 +156,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 				}
 			}
 		}
-		IJ.log("All image histograms done.");
+		IJ.showProgress(height, height);
 	}
 
 	private void makeWindow() {
@@ -307,8 +304,8 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 		}
-		plot.setColor(Color.RED);
-		plot.replace(1, "circle", xx, yy);
+		plot.setColor(Color.BLUE);
+		plot.replace(0, "circle", xx, yy);
 		plot.setLimitsToFit(true);
 	}
 
@@ -337,8 +334,8 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 		}
-		plot.setColor(Color.BLUE);
-		plot.replace(0, "circle", xx, yy);
+		plot.setColor(Color.RED);
+		plot.replace(1, "circle", xx, yy);
 		plot.setLimitsToFit(true);
 	}
 
