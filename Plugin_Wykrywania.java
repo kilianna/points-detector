@@ -46,6 +46,15 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 		limitLineA = 1;
 		limitLineB = 0;
 	
+		GenericDialog gd = new GenericDialog("Window parameters");
+		gd.addNumericField("Window radius", 20, 0);
+		gd.addNumericField("Point radius", 5, 0);
+		gd.showDialog();
+		if (gd.wasCanceled())
+			return;
+		windowRadius = (int)gd.getNextNumber();
+		pointRadius = (int)gd.getNextNumber();
+
 		// Read image
 		ImagePlus imp = IJ.getImage();
 		if (imp == null) {
