@@ -5,9 +5,13 @@ import ij.process.*;
 import java.awt.*;
 import java.util.*;
 
-public class Plugin_Wykrywania implements PlugIn, RoiListener {
+
+public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
+
+	static String lastParams;
 
 	// GUI
+	String[] params;
 	ImagePlus previewImage;
 	ImagePlus pointsImage;
 	ImagePlus noiseImage;
@@ -41,19 +45,24 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 
 	@Override
 	public void run(String arg) {
-		windowRadius = 20;
-		pointRadius = 5;
-		limitLineA = 1;
-		limitLineB = 0;
-	
-		GenericDialog gd = new GenericDialog("Window parameters");
-		gd.addNumericField("Window radius", 20, 0);
-		gd.addNumericField("Point radius", 5, 0);
-		gd.showDialog();
-		if (gd.wasCanceled())
-			return;
-		windowRadius = (int)gd.getNextNumber();
-		pointRadius = (int)gd.getNextNumber();
+		if (lastParams == null) {
+			lastParams = "20; 5; 1; 0";
+		}
+		showDialog();
+		if (((Checkbox) dialog.getCheckboxes().get(1)).getState() && !dialog.wasCanceled()) {
+			manualProcess();
+		}
+		if (!dialog.wasCanceled()) {
+			imageProcess(((Checkbox) dialog.getCheckboxes().get(0)).getState());
+			lastParams = params[0];
+		}
+		closed();
+	}
+
+	private void imageProcess(boolean allLayers) {
+	}
+
+	private void manualProcess() {
 
 		// Read image
 		ImagePlus imp = IJ.getImage();
@@ -77,7 +86,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 
 		// Create preview image
 		ImageStack is = new ImageStack(width, height);
-		previewProcessor = (ByteProcessor)fp.convertToByte(true);
+		previewProcessor = (ByteProcessor) fp.convertToByte(true);
 		is.addSlice(previewProcessor);
 		is.addSlice(previewProcessor.duplicate());
 		previewImage = new ImagePlus("Podglad", is);
@@ -91,39 +100,66 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 		plot.add("circle", new double[0], new double[0]);
 		plot.show();
 
-		// Create main dialog window
-		dialog = new NonBlockingGenericDialog("Parametry");
-		dialog.addNumericField("R", 5, 0);
-		dialog.addNumericField("A", 1);
-		dialog.addNumericField("B", 0);
-		// dialog.addButton("Podglad", new ActionListener() {
-		// @Override
-		// public void actionPerformed(ActionEvent evt) {
-		// previewButtonPressed();
-		// }
-		// });*/
-
-		makeWindow();
-		makeHist();
-
+		// Listen for ROI changes
 		Roi.addRoiListener(this);
 
-		dialog.showDialog();
-
-		closed();
+		do {
+			double[] p = parseParams();
+			windowRadius = (int) (p[0] + 0.5);
+			pointRadius = (int) (p[1] + 0.5);
+			limitLineA = (float) p[2];
+			limitLineB = (float) p[3];
+			makeWindow();
+			makeHist();
+			updatePoints();
+			updateNoise();
+			updatePreview();
+			showDialog();
+		} while (((Checkbox) dialog.getCheckboxes().get(1)).getState() && !dialog.wasCanceled());
 	}
 
-	public void previewButtonPressed() {
-
+	private void showDialog() {
+		if (lastParams == null) {
+			lastParams = "20; 5; 1; 0";
+		}
+		boolean[] initCheckBox = new boolean[] { false, false };
+		if (dialog != null) {
+			initCheckBox[0] = ((Checkbox) dialog.getCheckboxes().get(0)).getState();
+			initCheckBox[1] = ((Checkbox) dialog.getCheckboxes().get(1)).getState();
+			dialog.dispose();
+		}
+		dialog = new NonBlockingGenericDialog("Parametry");
+		String initialValue;
+		if (params == null) {
+			params = new String[] { "[!]", "", "", "", "" };
+			initialValue = lastParams;
+		} else {
+			initialValue = params[0];
+		}
+		dialog.addStringField("Parametry (W, R, A, B)", initialValue, 30);
+		dialog.addStringField("Promień okna (W)", params[1], 10);
+		dialog.addStringField("Promień punktu (R)", params[2], 10);
+		dialog.addStringField("Wsp. kierunkowy (A)", params[3], 10);
+		dialog.addStringField("Wyr. wolny (B)", params[4], 10);
+		dialog.addCheckbox("Wszystkie warstwy", initCheckBox[0]);
+		dialog.addCheckbox("Tryb ręczny", initCheckBox[1]);
+		updateDialog();
+		dialog.addDialogListener(this);
+		dialog.showDialog();
 	}
 
 	public void closed() {
 		Roi.removeRoiListener(this);
-		previewImage.getWindow().dispose();
-		pointsImage.getWindow().dispose();
-		noiseImage.getWindow().dispose();
-		plot.getImagePlus().getWindow().dispose();
-		dialog.dispose();
+		if (previewImage != null)
+			previewImage.getWindow().dispose();
+		if (pointsImage != null)
+			pointsImage.getWindow().dispose();
+		if (noiseImage != null)
+			noiseImage.getWindow().dispose();
+		if (plot != null)
+			plot.getImagePlus().getWindow().dispose();
+		if (dialog != null)
+			dialog.dispose();
 		previewImage = null;
 		pointsImage = null;
 		noiseImage = null;
@@ -135,12 +171,13 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 		weightUp = null;
 		weightDown = null;
 		hist = null;
+		params = null;
 		System.gc();
 	}
 
 	private void makeHist() {
 		histSize = windowRadius + 1;
-		if (hist == null) {
+		if (hist == null || hist.length != width * height * histSize) {
 			hist = new float[width * height * histSize];
 		}
 		for (int centerY = 0; centerY < height; centerY++) {
@@ -152,14 +189,17 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 				int startY = centerY - windowRadius;
 				int offset = (centerX + centerY * width) * histSize;
 				Arrays.fill(hist, offset, offset + histSize, 0.0f);
-				if (startX < 0 || startY < 0 || startX + windowSize > width || startY + windowSize > height) {
+				if (startX < 0 || startY < 0 || startX + windowSize > width
+						|| startY + windowSize > height) {
 					continue;
 				}
 				for (int x = 0; x < windowSize; x++) {
 					for (int y = 0; y < windowSize; y++) {
-						hist[offset + indexUp[x + y * windowSize]] += weightUp[x + y * windowSize]
+						hist[offset + indexUp[x + y * windowSize]] += weightUp[x
+								+ y * windowSize]
 								* pixels[startX + x + (startY + y) * width];
-						hist[offset + indexDown[x + y * windowSize]] += weightDown[x + y * windowSize]
+						hist[offset + indexDown[x + y * windowSize]] += weightDown[x
+								+ y * windowSize]
 								* pixels[startX + x + (startY + y) * width];
 					}
 				}
@@ -183,7 +223,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 				float d = (float) Math.sqrt((float) (dx * dx + dy * dy)) - 1.0f;
 				if (d < 0.0f)
 					d = 0.0f;
-				if (d >= (float)windowRadius - 0.05f)
+				if (d >= (float) windowRadius - 0.05f)
 					continue;
 				int up = (int) Math.ceil(d);
 				int down = (int) d;
@@ -206,35 +246,12 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 				weightDown[x + y * windowSize] /= radiusWeight[indexDown[x + y * windowSize]];
 			}
 		}
-		/*
-		 * previewImage(weightUp, windowSize, windowSize);
-		 * previewImage(weightDown, windowSize, windowSize);
-		 * float[] sum = new float[windowSize * windowSize];
-		 * for (int x = 0; x < windowSize; x++) {
-		 * for (int y = 0; y < windowSize; y++) {
-		 * sum[x + y * windowSize] = weightUp[x + y * windowSize] + weightDown[x + y *
-		 * windowSize];
-		 * }
-		 * }
-		 * previewImage(sum, windowSize, windowSize);
-		 */
-	}
-
-	private void previewImage(float[] arr, int width, int height) {
-		float[] img = new float[arr.length];
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < width; y++) {
-				img[x + width * y] = arr[x + y * width];
-			}
-		}
-		FloatProcessor fp2 = new FloatProcessor(width, height, img, null);
-		ImagePlus image = new ImagePlus("Preview", fp2);
-		image.show();
 	}
 
 	@Override
 	public void roiModified(ImagePlus imp, int id) {
-		if (imp == null) return;
+		if (imp == null)
+			return;
 		if (imp == pointsImage) {
 			updatePoints();
 		} else if (imp == noiseImage) {
@@ -252,21 +269,40 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 		if (roi == null || !(roi instanceof Line)) {
 			return;
 		}
-		Line line = (Line)roi;
+		Line line = (Line) roi;
 		Polygon poly = line.getPoints();
 		assert poly.npoints == 2;
-		float xa = (float)plot.descaleX(poly.xpoints[0]);
-		float ya = (float)plot.descaleY(poly.ypoints[0]);
-		float xb = (float)plot.descaleX(poly.xpoints[1]);
-		float yb = (float)plot.descaleY(poly.ypoints[1]);
+		float xa = (float) plot.descaleX(poly.xpoints[0]);
+		float ya = (float) plot.descaleY(poly.ypoints[0]);
+		float xb = (float) plot.descaleX(poly.xpoints[1]);
+		float yb = (float) plot.descaleY(poly.ypoints[1]);
 		limitLineA = (ya - yb) / (xa - xb);
 		limitLineB = ya - (ya - yb) / (xa - xb) * xa;
-		IJ.log("x = " + limitLineA + " * x + " + limitLineB);
+		Vector<TextField> vect = dialog.getStringFields();
+		vect.get(3).setText(toShortNumber(limitLineA));
+		vect.get(4).setText(toShortNumber(limitLineB));
 		updatePreview();
 	}
 
+	private static String toShortNumber(double number) {
+		int num = (int) Math.ceil(Math.log10(Math.abs(number * 1.000001)));
+		if (num > 4)
+			num = 4;
+		if (num < -10)
+			return String.format("%e", number);
+		num = 4 - num;
+		String res = String.format("%.0" + num + "f", number);
+		if (res.contains(".")) {
+			while (res.endsWith("0"))
+				res = res.substring(0, res.length() - 1);
+			if (res.endsWith("."))
+				res = res.substring(0, res.length() - 1);
+		}
+		return res;
+	}
+
 	private void updatePreview() {
-		byte[] pixels = (byte[])previewProcessor.getPixels();
+		byte[] pixels = (byte[]) previewProcessor.getPixels();
 		int half = (histSize + 1) / 2;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
@@ -275,15 +311,15 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 				for (int k = 0; k < pointRadius; k++) {
 					firstValue += hist[histOffset + k];
 				}
-				firstValue /= (float)pointRadius;
+				firstValue /= (float) pointRadius;
 				float lastValue = 0;
 				for (int k = half; k < histSize; k++) {
 					lastValue += hist[histOffset + k];
 				}
-				lastValue /= (float)(histSize - half);
+				lastValue /= (float) (histSize - half);
 				float yy = firstValue;
 				float xx = lastValue;
-				pixels[x + y * width] =  yy < limitLineA * xx + limitLineB ? (byte)255 : (byte)0;
+				pixels[x + y * width] = yy < limitLineA * xx + limitLineB ? (byte) 255 : (byte) 0;
 			}
 		}
 		previewImage.updateAndDraw();
@@ -304,12 +340,12 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 			for (int k = 0; k < pointRadius; k++) {
 				firstValue += hist[histOffset + k];
 			}
-			firstValue /= (float)pointRadius;
+			firstValue /= (float) pointRadius;
 			float lastValue = 0;
 			for (int k = half; k < histSize; k++) {
 				lastValue += hist[histOffset + k];
 			}
-			lastValue /= (float)(histSize - half);
+			lastValue /= (float) (histSize - half);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 		}
@@ -323,7 +359,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 		if (roi == null || !(roi instanceof PointRoi)) {
 			return;
 		}
-		PointRoi pr = (PointRoi)roi;
+		PointRoi pr = (PointRoi) roi;
 		Point[] points = pr.getContainedPoints();
 		int half = (histSize + 1) / 2;
 		double[] xx = new double[points.length];
@@ -334,18 +370,87 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener {
 			for (int k = 0; k < pointRadius; k++) {
 				firstValue += hist[histOffset + k];
 			}
-			firstValue /= (float)pointRadius;
+			firstValue /= (float) pointRadius;
 			float lastValue = 0;
 			for (int k = half; k < histSize; k++) {
 				lastValue += hist[histOffset + k];
 			}
-			lastValue /= (float)(histSize - half);
+			lastValue /= (float) (histSize - half);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 		}
 		plot.setColor(Color.RED);
 		plot.replace(1, "circle", xx, yy);
 		plot.setLimitsToFit(true);
+	}
+
+	@Override
+	public boolean dialogItemChanged(GenericDialog arg0, AWTEvent arg1) {
+		return updateDialog();
+	}
+
+	private boolean updateDialog() {
+		Vector<TextField> vect = dialog.getStringFields();
+		String p = vect.get(0).getText();
+		String w = vect.get(1).getText();
+		String r = vect.get(2).getText();
+		String a = vect.get(3).getText();
+		String b = vect.get(4).getText();
+		if (!p.equals(params[0])) {
+			params[0] = p;
+			String[] parts = splitParams(p);
+			if (parts == null) {
+				return false;
+			}
+			params[1] = parts[0];
+			params[2] = parts[1];
+			params[3] = parts[2];
+			params[4] = parts[3];
+			vect.get(1).setText(params[1]);
+			vect.get(2).setText(params[2]);
+			vect.get(3).setText(params[3]);
+			vect.get(4).setText(params[4]);
+		} else if (!(w.equals(params[1]) && r.equals(params[2]) && a.equals(params[3])
+				&& b.equals(params[4]))) {
+			params[0] = w + "; " + r + "; " + a + "; " + b;
+			params[1] = w;
+			params[2] = r;
+			params[3] = a;
+			params[4] = b;
+			vect.get(0).setText(params[0]);
+		}
+		double[] parsed = parseParams();
+		return parsed != null;
+	}
+
+	private double[] parseParams() {
+		try {
+			double[] res = new double[4];
+			res[0] = Integer.parseInt(params[1].replace(",", ".").trim());
+			res[1] = Integer.parseInt(params[2].replace(",", ".").trim());
+			res[2] = Double.parseDouble(params[3].replace(",", ".").trim());
+			res[3] = Double.parseDouble(params[4].replace(",", ".").trim());
+			if (res[0] < 4.5 || res[0] > 150 || res[1] < 1.5 || res[1] > res[0] * 0.75) {
+				return null;
+			}
+			return res;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+
+	private String[] splitParams(String p) {
+		String[] arr = p.split(";");
+		if (arr.length == 1) {
+			arr = p.split(",");
+		}
+		if (arr.length != 4) {
+			return null;
+		}
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = arr[i].replace(",", ".").trim();
+		}
+		return arr;
 	}
 
 }
