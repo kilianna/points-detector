@@ -12,7 +12,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '8'
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: Download JI jar
+        run: wget https://repo1.maven.org/maven2/net/imagej/ij/1.53c/ij-1.53c.jar
+      - name: Build the plugin
+        run: javac -cp ./ij-1.*.jar Plugin_Wykrywania.java
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: IJ Plugin
+          path: ./Plugin_Wykrywania*.class
+          retention-days: 32
