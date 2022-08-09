@@ -2,76 +2,174 @@ import ij.*;
 import ij.gui.*;
 import ij.plugin.*;
 import ij.process.*;
+
 import java.awt.*;
 import java.util.*;
+
+import javax.swing.SwingUtilities;
 
 public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 
 	// GUI
-	String[] params;
-	static String lastParams;
-	ImagePlus previewImage;
-	ImagePlus pointsImage;
-	ImagePlus noiseImage;
-	NonBlockingGenericDialog dialog;
-	ByteProcessor previewProcessor;
+	private String[] params;
+	private static String lastParams;
+	private ImagePlus sourceImage;
+	private ImagePlus previewImage;
+	private ImagePlus pointsImage;
+	private ImagePlus noiseImage;
+	private NonBlockingGenericDialog dialog;
+	private ByteProcessor previewProcessor;
+	private Timer timer;
+	private TimerTask updateNoiseTask;
+	private TimerTask updatePointsTask;
 
 	// Plot
-	Plot plot;
-	Line ignoreRoi;
+	private Plot plot;
+	private Roi ignoreRoi;
+	private double[] oldPointsX;
+	private double[] oldPointsY;
 
 	// Parameters
-	int windowRadius;
-	int pointRadius;
-	float limitLineA;
-	float limitLineB;
+	private int windowRadius;
+	private int pointRadius;
+	private float limitLineA;
+	private float limitLineB;
 
 	// Image
-	int width;
-	int height;
-	float[] pixels;
+	private int width;
+	private int height;
+	private float[] pixels;
 
 	// Window
-	int windowSize;
-	int[] indexUp;
-	int[] indexDown;
-	float[] weightUp;
-	float[] weightDown;
+	private int windowSize;
+	private int[] indexUp;
+	private int[] indexDown;
+	private float[] weightUp;
+	private float[] weightDown;
 
 	// Histograms
-	int histSize;
-	float[] hist;
+	private int histSize;
+	private float[] hist;
 
 	@Override
 	public void run(String arg) {
 		logMethod();
+		sourceImage = IJ.getImage();
+		if (sourceImage == null) {
+			IJ.error("Wybierz obrazek");
+		}
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
-		showDialog();
-		if (((Checkbox) dialog.getCheckboxes().get(1)).getState() && !dialog.wasCanceled()) {
+		showDialog(false);
+		if (getCheckbox(MANUAL_MODE_CHECK_BOX) && !dialog.wasCanceled()) {
 			manualProcess();
 		}
 		if (!dialog.wasCanceled()) {
-			imageProcess(((Checkbox) dialog.getCheckboxes().get(0)).getState());
+			imageProcess();
 			lastParams = params[0];
 		}
 		closed();
 	}
 
-	private void imageProcess(boolean allLayers) {
+	private void imageProcess() {
 		logMethod();
+		double[] p = parseParams();
+		windowRadius = (int) (p[0] + 0.5);
+		pointRadius = (int) (p[1] + 0.5);
+		limitLineA = (float) p[2];
+		limitLineB = (float) p[3];
+		makeWindow();
+		boolean allSlices = getCheckbox(ALL_SLICES_CHECK_BOX);
+		boolean cutLower = getCheckbox(CUT_LOWER_CHECK_BOX);
+		boolean cutHigher = getCheckbox(CUT_HIGHER_CHECK_BOX);
+		ImageStack stack = sourceImage.getStack();
+		if (allSlices && stack != null && stack.size() > 1) {
+			ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
+			for (int i = 1; i <= stack.size(); i++) {
+				ImageProcessor ip = stack.getProcessor(i);
+				ImageProcessor r = processSingleImage(ip, cutLower, cutHigher, i - 1, stack.size());
+				is.addSlice(r);
+			}
+			ImagePlus outputImage = new ImagePlus("Wykryte Punkty", is);
+			outputImage.show();
+		} else {
+			ImageProcessor r = processSingleImage(sourceImage.getProcessor(), cutLower, cutHigher, 0, 1);
+			ImagePlus outputImage = new ImagePlus("Wykryte Punkty", r);
+			outputImage.show();
+		}
+	}
+
+	private ImageProcessor processSingleImage(ImageProcessor ip, boolean cutLower, boolean cutHigher, int index,
+			int total) {
+		ImageProcessor src = ip.convertToFloat();
+		ImageProcessor dst = ip.convertToByte(true);
+		if (ip == dst)
+			dst = dst.duplicate();
+		pixels = (float[]) src.getPixels();
+		width = src.getWidth();
+		height = src.getHeight();
+		makeHist(index, total);
+		byte[] outputPixels = (byte[]) dst.getPixels();
+		float[] results = new float[outputPixels.length];
+		float minResult = Float.POSITIVE_INFINITY;
+		float maxResult = Float.NEGATIVE_INFINITY;
+		int half = (histSize + 1) / 2;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int histOffset = histSize * (x + y * width);
+				float firstValue = 0;
+				for (int k = 0; k < pointRadius; k++) {
+					firstValue += hist[histOffset + k];
+				}
+				firstValue /= (float) pointRadius;
+				float lastValue = 0;
+				for (int k = half; k < histSize; k++) {
+					lastValue += hist[histOffset + k];
+				}
+				lastValue /= (float) (histSize - half);
+				float yy = firstValue;
+				float xx = lastValue;
+				float res = yy - (limitLineA * xx + limitLineB);
+				if (res > maxResult)
+					maxResult = res;
+				if (res < minResult)
+					minResult = res;
+				results[x + y * width] = res;
+			}
+		}
+		if (cutLower && cutHigher) {
+			for (int y = 0; y < height; y++)
+				for (int x = 0; x < width; x++)
+					outputPixels[x + y * width] = results[x + y * width] < 0 ? (byte) 0
+							: (byte) 255;
+		} else if (cutLower && !cutHigher) {
+			for (int y = 0; y < height; y++)
+				for (int x = 0; x < width; x++)
+					outputPixels[x + y * width] = results[x + y * width] < 0 ? (byte) 0
+							: (byte) (255.0f * (results[x + y * width] / maxResult));
+		} else if (!cutLower && cutHigher) {
+			for (int y = 0; y < height; y++)
+				for (int x = 0; x < width; x++)
+					outputPixels[x + y * width] = results[x + y * width] < 0
+							? (byte) (255.0f * (1.0f - results[x + y * width] / minResult))
+							: (byte) 255;
+		} else {
+			for (int y = 0; y < height; y++)
+				for (int x = 0; x < width; x++)
+					outputPixels[x + y * width] = results[x + y * width] < 0
+							? (byte) (127.0f * (1.0f - results[x + y * width] / minResult))
+							: (byte) (128.0f + 127.0f
+									* (results[x + y * width] / maxResult));
+		}
+		return dst;
 	}
 
 	private void manualProcess() {
 		logMethod();
 
 		// Read image
-		ImagePlus imp = IJ.getImage();
-		if (imp == null) {
-			IJ.error("Otwórz obrazek");
-		}
-		ImageProcessor ip = imp.getProcessor();
+		ImageProcessor ip = sourceImage.getProcessor();
 		ImageProcessor fp = ip.convertToFloat();
 		if (ip == fp) {
 			fp = fp.duplicate();
@@ -112,23 +210,34 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			limitLineA = (float) p[2];
 			limitLineB = (float) p[3];
 			makeWindow();
-			makeHist();
-			updatePoints();
+			makeHist(0, 1);
+			updatePoints(true);
 			updateNoise();
 			updatePreview();
-			showDialog();
-		} while (((Checkbox) dialog.getCheckboxes().get(1)).getState() && !dialog.wasCanceled());
+			showDialog(true);
+		} while (getCheckbox(MANUAL_MODE_CHECK_BOX) && !dialog.wasCanceled());
 	}
 
-	private void showDialog() {
+	static final int ALL_SLICES_CHECK_BOX = 0;
+	static final int CUT_LOWER_CHECK_BOX = 1;
+	static final int CUT_HIGHER_CHECK_BOX = 2;
+	static final int MANUAL_MODE_CHECK_BOX = 3;
+
+	private boolean getCheckbox(int id) {
+		return ((Checkbox) dialog.getCheckboxes().get(id)).getState();
+	}
+
+	private void showDialog(boolean manual) {
 		logMethod();
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
-		boolean[] initCheckBox = new boolean[] { false, false };
+		boolean[] initCheckBox = new boolean[] { false, true, true, false };
 		if (dialog != null) {
 			initCheckBox[0] = ((Checkbox) dialog.getCheckboxes().get(0)).getState();
 			initCheckBox[1] = ((Checkbox) dialog.getCheckboxes().get(1)).getState();
+			initCheckBox[2] = ((Checkbox) dialog.getCheckboxes().get(2)).getState();
+			initCheckBox[3] = ((Checkbox) dialog.getCheckboxes().get(3)).getState();
 			dialog.dispose();
 		}
 		dialog = new NonBlockingGenericDialog("Parametry");
@@ -140,20 +249,31 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			initialValue = params[0];
 		}
 		dialog.addStringField("Parametry (W, R, A, B)", initialValue, 30);
-		dialog.addStringField("Promień okna (W) *", params[1], 10);
+		dialog.addStringField("Promień okna (W)" + (manual ? " *" : ""), params[1], 10);
 		dialog.addStringField("Promień punktu (R)", params[2], 10);
 		dialog.addStringField("Wsp. kierunkowy (A)", params[3], 10);
 		dialog.addStringField("Wyr. wolny (B)", params[4], 10);
 		dialog.addCheckbox("Wszystkie warstwy", initCheckBox[0]);
-		dialog.addCheckbox("Tryb ręczny", initCheckBox[1]);
-		dialog.addMessage("* - w trybie ręcznym, zmiana wymaga wciśnięcia 'OK'.");
-		dialog.addHelp("https://github.com/kildom/filtry-ani/blob/master/README.md");
+		dialog.addCheckbox("Przytnij wartości tła", initCheckBox[1]);
+		dialog.addCheckbox("Przytnij wartości punktów", initCheckBox[2]);
+		dialog.addCheckbox("Tryb ręczny" + (manual ? " - odznacz, aby zakończyć tryb ręczny" : ""),
+				initCheckBox[3]);
+		if (manual) {
+			dialog.addMessage("* - zmiana wymaga wciśnięcia 'OK'.");
+		}
+		dialog.addHelp(helpText);
 		updateDialog();
 		dialog.addDialogListener(this);
 		dialog.showDialog();
+		Vector<TextField> vect = dialog.getStringFields();
+		params[0] = vect.get(0).getText();
+		params[1] = vect.get(1).getText();
+		params[2] = vect.get(2).getText();
+		params[3] = vect.get(3).getText();
+		params[4] = vect.get(4).getText();
 	}
 
-	public void closed() {
+	private void closed() {
 		logMethod();
 		Roi.removeRoiListener(this);
 		if (previewImage != null)
@@ -166,11 +286,14 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			plot.getImagePlus().getWindow().dispose();
 		if (dialog != null)
 			dialog.dispose();
+		if (timer != null)
+			timer.cancel();
 		previewImage = null;
 		pointsImage = null;
 		noiseImage = null;
 		plot = null;
 		dialog = null;
+		timer = null;
 		pixels = null;
 		indexUp = null;
 		indexDown = null;
@@ -181,7 +304,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		System.gc();
 	}
 
-	private void makeHist() {
+	private void makeHist(int index, int total) {
 		logMethod();
 		histSize = windowRadius + 1;
 		if (hist == null || hist.length != width * height * histSize) {
@@ -189,7 +312,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		}
 		for (int centerY = 0; centerY < height; centerY++) {
 			if (centerY % 10 == 9) {
-				IJ.showProgress(centerY, height);
+				IJ.showProgress(index * height + centerY, total * height);
 			}
 			for (int centerX = 0; centerX < width; centerX++) {
 				int startX = centerX - windowRadius;
@@ -212,7 +335,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 				}
 			}
 		}
-		IJ.showProgress(height, height);
+		IJ.showProgress(index * height, total * height);
 	}
 
 	private void makeWindow() {
@@ -262,15 +385,44 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			return;
 		logMethod();
 		if (imp == pointsImage) {
-			updatePoints();
+			if (updatePointsTask != null)
+				updatePointsTask.cancel();
+			updatePointsTask = invokeLater(new Runnable() {
+				public void run() {
+					updatePoints(false);
+				}
+			}, 500, 500);
+			updatePoints(true);
 		} else if (imp == noiseImage) {
-			updateNoise();
+			if (updateNoiseTask != null)
+				updateNoiseTask.cancel();
+			updateNoiseTask = invokeLater(new Runnable() {
+				public void run() {
+					updateNoise();
+				}
+			}, 100, -1);
 		} else {
 			ImagePlus plotImage = plot.getImagePlus();
 			if (imp == plotImage && id != RoiListener.DELETED) {
 				updateLimit();
 			}
 		}
+	}
+
+	private TimerTask invokeLater(Runnable doRun, int ms, int period) {
+		TimerTask tt = new TimerTask() {
+			public void run() {
+				SwingUtilities.invokeLater(doRun);
+			}
+		};
+		if (timer == null)
+			timer = new Timer();
+		if (period < 0) {
+			timer.schedule(tt, ms);
+		} else {
+			timer.schedule(tt, ms, period);
+		}
+		return tt;
 	}
 
 	private void updateLimit() {
@@ -294,6 +446,8 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		Vector<TextField> vect = dialog.getStringFields();
 		params[3] = toShortNumber(limitLineA);
 		params[4] = toShortNumber(limitLineB);
+		params[0] = joinParams();
+		vect.get(0).setText(params[0]);
 		vect.get(3).setText(params[3]);
 		vect.get(4).setText(params[4]);
 		updatePreview();
@@ -333,19 +487,19 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			double px2 = plot.scaleXtoPxl(x2);
 			double py2 = plot.scaleYtoPxl(y2);
 			ignoreRoi = Line.create(px1, py1, px2, py2);
-			plotImage.setRoi(ignoreRoi);
 		} else {
-			plotImage.killRoi();
+			ignoreRoi = new Roi(0, 0, 0, 0);
 		}
+		plotImage.setRoi(ignoreRoi);
 	}
 
 	private static String toShortNumber(double number) {
 		int num = (int) Math.ceil(Math.log10(Math.abs(number * 1.000001)));
-		if (num > 4)
-			num = 4;
+		if (num > 5)
+			num = 5;
 		if (num < -10)
 			return String.format("%e", number);
-		num = 4 - num;
+		num = 5 - num;
 		String res = String.format("%.0" + num + "f", number);
 		if (res.contains(".")) {
 			while (res.endsWith("0"))
@@ -412,7 +566,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		updateLimitLine();
 	}
 
-	private void updatePoints() {
+	private void updatePoints(boolean force) {
 		Roi roi = pointsImage.getRoi();
 		if (roi == null || !(roi instanceof PointRoi)) {
 			return;
@@ -438,10 +592,24 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 		}
-		plot.setColor(Color.RED);
-		plot.replace(1, "circle", xx, yy);
-		plot.setLimitsToFit(true);
-		updateLimitLine();
+		boolean update = true;
+		if (oldPointsX != null && !force && oldPointsX.length == xx.length) {
+			update = false;
+			for (int i = 0; i < xx.length; i++) {
+				if (xx[i] != oldPointsX[i] || yy[i] != oldPointsY[i]) {
+					update = true;
+					break;
+				}
+			}
+		}
+		oldPointsX = xx;
+		oldPointsY = yy;
+		if (update) {
+			plot.setColor(Color.RED);
+			plot.replace(1, "circle", xx, yy);
+			plot.setLimitsToFit(true);
+			updateLimitLine();
+		}
 	}
 
 	@Override
@@ -480,11 +648,11 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 				&& b.equals(params[4]))) {
 			updatePointRadius = !params[2].equals(r);
 			updatePlotRoi = !params[3].equals(a) || !params[4].equals(b);
-			params[0] = w + "; " + r + "; " + a + "; " + b;
 			params[1] = w;
 			params[2] = r;
 			params[3] = a;
 			params[4] = b;
+			params[0] = joinParams();
 			vect.get(0).setText(params[0]);
 		}
 		double[] parsed = parseParams();
@@ -497,12 +665,16 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			}
 			if (updatePointRadius) {
 				pointRadius = (int) (parsed[1] + 0.5);
-				updatePoints();
+				updatePoints(true);
 				updateNoise();
 				updatePreview();
 			}
 		}
 		return parsed != null;
+	}
+
+	private String joinParams() {
+		return params[1] + "; " + params[2] + "; " + params[3] + "; " + params[4];
 	}
 
 	private double[] parseParams() {
@@ -551,4 +723,8 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			IJ.log("    " + s[i].toString());
 		}
 	}
+
+	static private String helpText = "<html>" +
+			"<h1>Wykrywanie punktów</h1>" +
+			"<p>TODO: Pomoc</p>";
 }
