@@ -5,13 +5,11 @@ import ij.process.*;
 import java.awt.*;
 import java.util.*;
 
-
 public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
-
-	static String lastParams;
 
 	// GUI
 	String[] params;
+	static String lastParams;
 	ImagePlus previewImage;
 	ImagePlus pointsImage;
 	ImagePlus noiseImage;
@@ -20,6 +18,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 
 	// Plot
 	Plot plot;
+	Line ignoreRoi;
 
 	// Parameters
 	int windowRadius;
@@ -45,6 +44,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 
 	@Override
 	public void run(String arg) {
+		logMethod();
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
@@ -60,9 +60,11 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void imageProcess(boolean allLayers) {
+		logMethod();
 	}
 
 	private void manualProcess() {
+		logMethod();
 
 		// Read image
 		ImagePlus imp = IJ.getImage();
@@ -119,6 +121,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void showDialog() {
+		logMethod();
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
@@ -137,18 +140,21 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			initialValue = params[0];
 		}
 		dialog.addStringField("Parametry (W, R, A, B)", initialValue, 30);
-		dialog.addStringField("Promień okna (W)", params[1], 10);
+		dialog.addStringField("Promień okna (W) *", params[1], 10);
 		dialog.addStringField("Promień punktu (R)", params[2], 10);
 		dialog.addStringField("Wsp. kierunkowy (A)", params[3], 10);
 		dialog.addStringField("Wyr. wolny (B)", params[4], 10);
 		dialog.addCheckbox("Wszystkie warstwy", initCheckBox[0]);
 		dialog.addCheckbox("Tryb ręczny", initCheckBox[1]);
+		dialog.addMessage("* - w trybie ręcznym, zmiana wymaga wciśnięcia 'OK'.");
+		dialog.addHelp("https://github.com/kildom/filtry-ani/blob/master/README.md");
 		updateDialog();
 		dialog.addDialogListener(this);
 		dialog.showDialog();
 	}
 
 	public void closed() {
+		logMethod();
 		Roi.removeRoiListener(this);
 		if (previewImage != null)
 			previewImage.getWindow().dispose();
@@ -176,6 +182,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void makeHist() {
+		logMethod();
 		histSize = windowRadius + 1;
 		if (hist == null || hist.length != width * height * histSize) {
 			hist = new float[width * height * histSize];
@@ -209,6 +216,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void makeWindow() {
+		logMethod();
 		windowSize = 2 * windowRadius + 1;
 		indexUp = new int[windowSize * windowSize];
 		indexDown = new int[windowSize * windowSize];
@@ -252,23 +260,28 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 	public void roiModified(ImagePlus imp, int id) {
 		if (imp == null)
 			return;
+		logMethod();
 		if (imp == pointsImage) {
 			updatePoints();
 		} else if (imp == noiseImage) {
 			updateNoise();
 		} else {
 			ImagePlus plotImage = plot.getImagePlus();
-			if (imp == plotImage) {
-				updateLimit(plotImage);
+			if (imp == plotImage && id != RoiListener.DELETED) {
+				updateLimit();
 			}
 		}
 	}
 
-	private void updateLimit(ImagePlus plotImage) {
+	private void updateLimit() {
+		ImagePlus plotImage = plot.getImagePlus();
 		Roi roi = plotImage.getRoi();
-		if (roi == null || !(roi instanceof Line)) {
+		if (roi == null || !(roi instanceof Line) || roi == ignoreRoi) {
+			ignoreRoi = null;
 			return;
 		}
+		logMethod();
+		ignoreRoi = null;
 		Line line = (Line) roi;
 		Polygon poly = line.getPoints();
 		assert poly.npoints == 2;
@@ -279,9 +292,51 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		limitLineA = (ya - yb) / (xa - xb);
 		limitLineB = ya - (ya - yb) / (xa - xb) * xa;
 		Vector<TextField> vect = dialog.getStringFields();
-		vect.get(3).setText(toShortNumber(limitLineA));
-		vect.get(4).setText(toShortNumber(limitLineB));
+		params[3] = toShortNumber(limitLineA);
+		params[4] = toShortNumber(limitLineB);
+		vect.get(3).setText(params[3]);
+		vect.get(4).setText(params[4]);
 		updatePreview();
+	}
+
+	private void updateLimitLine() {
+		if (plot == null)
+			return;
+		logMethod();
+		ImagePlus plotImage = plot.getImagePlus();
+		Rectangle rect = plot.getDrawingFrame();
+		float rx1 = (float) plot.descaleX(rect.x + 4);
+		float ry1 = (float) plot.descaleY(rect.y + 4);
+		float rx2 = (float) plot.descaleX(rect.x + rect.width - 3);
+		float ry2 = (float) plot.descaleY(rect.y + rect.height - 3);
+		float x1 = rx1;
+		float y1 = limitLineA * x1 + limitLineB;
+		float x2 = rx2;
+		float y2 = limitLineA * x2 + limitLineB;
+		if (y1 > ry1) {
+			y1 = ry1;
+			x1 = (y1 - limitLineB) / limitLineA;
+		} else if (y1 < ry2) {
+			y1 = ry2;
+			x1 = (y1 - limitLineB) / limitLineA;
+		}
+		if (y2 > ry1) {
+			y2 = ry1;
+			x2 = (y2 - limitLineB) / limitLineA;
+		} else if (y2 < ry2) {
+			y2 = ry2;
+			x2 = (y2 - limitLineB) / limitLineA;
+		}
+		if (x1 < x2) {
+			double px1 = plot.scaleXtoPxl(x1);
+			double py1 = plot.scaleYtoPxl(y1);
+			double px2 = plot.scaleXtoPxl(x2);
+			double py2 = plot.scaleYtoPxl(y2);
+			ignoreRoi = Line.create(px1, py1, px2, py2);
+			plotImage.setRoi(ignoreRoi);
+		} else {
+			plotImage.killRoi();
+		}
 	}
 
 	private static String toShortNumber(double number) {
@@ -302,6 +357,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void updatePreview() {
+		logMethod();
 		byte[] pixels = (byte[]) previewProcessor.getPixels();
 		int half = (histSize + 1) / 2;
 		for (int y = 0; y < height; y++) {
@@ -330,6 +386,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		if (roi == null) {
 			return;
 		}
+		logMethod();
 		Point[] points = roi.getContainedPoints();
 		int half = (histSize + 1) / 2;
 		double[] xx = new double[points.length];
@@ -352,6 +409,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		plot.setColor(Color.BLUE);
 		plot.replace(0, "circle", xx, yy);
 		plot.setLimitsToFit(true);
+		updateLimitLine();
 	}
 
 	private void updatePoints() {
@@ -359,6 +417,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		if (roi == null || !(roi instanceof PointRoi)) {
 			return;
 		}
+		logMethod();
 		PointRoi pr = (PointRoi) roi;
 		Point[] points = pr.getContainedPoints();
 		int half = (histSize + 1) / 2;
@@ -382,26 +441,33 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		plot.setColor(Color.RED);
 		plot.replace(1, "circle", xx, yy);
 		plot.setLimitsToFit(true);
+		updateLimitLine();
 	}
 
 	@Override
 	public boolean dialogItemChanged(GenericDialog arg0, AWTEvent arg1) {
+		logMethod();
 		return updateDialog();
 	}
 
 	private boolean updateDialog() {
+		logMethod();
 		Vector<TextField> vect = dialog.getStringFields();
 		String p = vect.get(0).getText();
 		String w = vect.get(1).getText();
 		String r = vect.get(2).getText();
 		String a = vect.get(3).getText();
 		String b = vect.get(4).getText();
+		boolean updatePointRadius = false;
+		boolean updatePlotRoi = false;
 		if (!p.equals(params[0])) {
 			params[0] = p;
 			String[] parts = splitParams(p);
 			if (parts == null) {
 				return false;
 			}
+			updatePointRadius = !params[2].equals(parts[1]);
+			updatePlotRoi = !params[3].equals(parts[2]) || !params[4].equals(parts[3]);
 			params[1] = parts[0];
 			params[2] = parts[1];
 			params[3] = parts[2];
@@ -412,6 +478,8 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			vect.get(4).setText(params[4]);
 		} else if (!(w.equals(params[1]) && r.equals(params[2]) && a.equals(params[3])
 				&& b.equals(params[4]))) {
+			updatePointRadius = !params[2].equals(r);
+			updatePlotRoi = !params[3].equals(a) || !params[4].equals(b);
 			params[0] = w + "; " + r + "; " + a + "; " + b;
 			params[1] = w;
 			params[2] = r;
@@ -420,6 +488,20 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			vect.get(0).setText(params[0]);
 		}
 		double[] parsed = parseParams();
+		if (parsed != null && plot != null) {
+			if (updatePlotRoi) {
+				limitLineA = (float) parsed[2];
+				limitLineB = (float) parsed[3];
+				updateLimitLine();
+				updatePreview();
+			}
+			if (updatePointRadius) {
+				pointRadius = (int) (parsed[1] + 0.5);
+				updatePoints();
+				updateNoise();
+				updatePreview();
+			}
+		}
 		return parsed != null;
 	}
 
@@ -453,4 +535,20 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		return arr;
 	}
 
+	private void logMethod() {
+		if (true)
+			return;
+		StackTraceElement[] s = Thread.currentThread().getStackTrace();
+		IJ.log("METHOD: " + s[2].getMethodName());
+	}
+
+	private void logStack() {
+		if (true)
+			return;
+		StackTraceElement[] s = Thread.currentThread().getStackTrace();
+		IJ.log("STACK TRACE:");
+		for (int i = 0; i < s.length; i++) {
+			IJ.log("    " + s[i].toString());
+		}
+	}
 }
