@@ -13,12 +13,15 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
       - name: Download JI jar
-        run: wget https://repo1.maven.org/maven2/net/imagej/ij/1.53c/ij-1.53c.jar
+        run: |
+          mkdir -p jars
+          wget -O jars/ij-1.53c.jar https://repo1.maven.org/maven2/net/imagej/ij/1.53c/ij-1.53c.jar
       - name: Build the plugin
-        run: javac -cp ./ij-1.*.jar Plugin_Wykrywania.java
+        run: |
+          ./buduj.sh ./
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: IJ Plugin
-          path: ./Plugin_Wykrywania*.class
+          path: ./dist/*
           retention-days: 32
