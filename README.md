@@ -1,7 +1,5 @@
-[![Build](https://github.com/kildom/filtry-ani/actions/workflows/main.yml/badge.svg)](https://github.com/kildom/filtry-ani/actions/workflows/main.yml)
+<a href="https://github.com/kildom/filtry-ani/actions/workflows/main.yml"><img src="https://github.com/kildom/filtry-ani/actions/workflows/main.yml/badge.svg" alt="Build" align="right"/></a>
 
-# README
+# Plugin Wykrywania
 
-## Download
-
-Just click this link: [`Plugin_Wykrywania.jar`](https://github.com/kildom/filtry-ani/releases/latest/download/Plugin_Wykrywania.jar)
+Download link: [`Plugin_Wykrywania.jar`](https://github.com/kildom/filtry-ani/releases/latest/download/Plugin_Wykrywania.jar)
