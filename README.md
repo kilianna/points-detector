@@ -4,4 +4,4 @@
 
 ## Download
 
-Just click this link: https://github.com/kildom/filtry-ani/releases/latest/download/Plugin_Wykrywania.jar
+Just click this link: [`Plugin_Wykrywania.jar`](https://github.com/kildom/filtry-ani/releases/latest/download/Plugin_Wykrywania.jar)
