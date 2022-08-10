@@ -1,3 +1,5 @@
+[![Build](https://github.com/kildom/filtry-ani/actions/workflows/main.yml/badge.svg)](https://github.com/kildom/filtry-ani/actions/workflows/main.yml)
+
 # README
 
 ## Download
