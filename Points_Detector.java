@@ -724,5 +724,5 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 	}
 
-	static private String helpText = "https://kildom.github.io/filtry-ani/help/";
+	static private String helpText = "https://kildot.github.io/points-detector/help/";
 }
