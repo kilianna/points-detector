@@ -56,7 +56,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		logMethod();
 		sourceImage = IJ.getImage();
 		if (sourceImage == null) {
-			IJ.error("Wybierz obrazek");
+			IJ.error("Select image");
 		}
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
@@ -91,11 +91,11 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 				ImageProcessor r = processSingleImage(ip, cutLower, cutHigher, i - 1, stack.size());
 				is.addSlice(r);
 			}
-			ImagePlus outputImage = new ImagePlus("Wykryte Punkty", is);
+			ImagePlus outputImage = new ImagePlus("Output", is);
 			outputImage.show();
 		} else {
 			ImageProcessor r = processSingleImage(sourceImage.getProcessor(), cutLower, cutHigher, 0, 1);
-			ImagePlus outputImage = new ImagePlus("Wykryte Punkty", r);
+			ImagePlus outputImage = new ImagePlus("Output", r);
 			outputImage.show();
 		}
 	}
@@ -179,9 +179,9 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		height = fp.getHeight();
 
 		// Create helper image windows
-		pointsImage = new ImagePlus("Punkty", fp.duplicate());
+		pointsImage = new ImagePlus("Points selection", fp.duplicate());
 		pointsImage.show();
-		noiseImage = new ImagePlus("Szum", fp.duplicate());
+		noiseImage = new ImagePlus("Noise selection", fp.duplicate());
 		noiseImage.show();
 
 		// Create preview image
@@ -189,11 +189,11 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		previewProcessor = (ByteProcessor) fp.convertToByte(true);
 		is.addSlice(previewProcessor);
 		is.addSlice(previewProcessor.duplicate());
-		previewImage = new ImagePlus("Podglad", is);
+		previewImage = new ImagePlus("Preview", is);
 		previewImage.show();
 
 		// Create plot
-		plot = new Plot("Wykres", "Otoczenie", "Srodek");
+		plot = new Plot("Plot", "Surrounding", "Center");
 		plot.setColor(Color.BLUE);
 		plot.add("circle", new double[0], new double[0]);
 		plot.setColor(Color.RED);
@@ -240,7 +240,7 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 			initCheckBox[3] = ((Checkbox) dialog.getCheckboxes().get(3)).getState();
 			dialog.dispose();
 		}
-		dialog = new NonBlockingGenericDialog("Parametry");
+		dialog = new NonBlockingGenericDialog("Parameters");
 		String initialValue;
 		if (params == null) {
 			params = new String[] { "[!]", "", "", "", "" };
@@ -248,18 +248,18 @@ public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
 		} else {
 			initialValue = params[0];
 		}
-		dialog.addStringField("Parametry (W, R, A, B)", initialValue, 30);
-		dialog.addStringField("Promień okna (W)" + (manual ? " *" : ""), params[1], 10);
-		dialog.addStringField("Promień punktu (R)", params[2], 10);
-		dialog.addStringField("Wsp. kierunkowy (A)", params[3], 10);
-		dialog.addStringField("Wyr. wolny (B)", params[4], 10);
-		dialog.addCheckbox("Wszystkie warstwy", initCheckBox[0]);
-		dialog.addCheckbox("Przytnij wartości tła", initCheckBox[1]);
-		dialog.addCheckbox("Przytnij wartości punktów", initCheckBox[2]);
-		dialog.addCheckbox("Tryb ręczny" + (manual ? " - odznacz, aby zakończyć tryb ręczny" : ""),
+		dialog.addStringField("Parameters (W, R, A, B)", initialValue, 30);
+		dialog.addStringField("Scaning window size [pixels](W)" + (manual ? " *" : ""), params[1], 10);
+		dialog.addStringField("Point size [pixels] (R)", params[2], 10);
+		dialog.addStringField("Slope (A)", params[3], 10);
+		dialog.addStringField("Y-intercept (B)", params[4], 10);
+		dialog.addCheckbox("All slices", initCheckBox[0]);
+		dialog.addCheckbox("Cut background", initCheckBox[1]);
+		dialog.addCheckbox("Highlight points", initCheckBox[2]);
+		dialog.addCheckbox("Manual mode" + (manual ? " - uncheck to exit manual mode" : ""),
 				initCheckBox[3]);
 		if (manual) {
-			dialog.addMessage("* - zmiana wymaga wciśnięcia 'OK'.");
+			dialog.addMessage("* - changing window size requires pressing 'OK'");
 		}
 		dialog.addHelp(helpText);
 		updateDialog();
