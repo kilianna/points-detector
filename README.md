@@ -3,3 +3,5 @@
 # Points Detector
 
 Download link: [`Points_Detector.jar`](https://github.com/kildom/filtry-ani/releases/latest/download/Points_Detector.jar)
+
+Help link: [`Points Detector Help`](help/README.md)
