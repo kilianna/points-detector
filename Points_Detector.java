@@ -8,7 +8,7 @@ import java.util.*;
 
 import javax.swing.SwingUtilities;
 
-public class Plugin_Wykrywania implements PlugIn, RoiListener, DialogListener {
+public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	// GUI
 	private String[] params;
