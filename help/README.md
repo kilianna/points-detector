@@ -1,7 +1,5 @@
 # Points Detector Help - PL
 
-![ICON](img/icon.png)
-
 ## Instalacja
 
 Aby móc używać pluginu Points detector należy pobrać plik Points_Detector.jar i umieścić go w katalogu Plugins. Po ponownym uruchomieniu programu powinien być on widoczny w menu rozwijanym w Imagej -> Plugins.
