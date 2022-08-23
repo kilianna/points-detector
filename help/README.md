@@ -44,9 +44,16 @@ TIP: Ważne jest oznaczenie szczególnie tych punktów, które w najmniejszym st
 
 ![NOISE](img/Points_selection2.jpg)
 
-Po zaznaczeniu obszarów szumu i punktów możemy dopasować ręcznie prostą odcinającą szum od punktów. (Można albo po prostu przesunąć istniejącą już na wykresie prostą, albo narysować właśną za pomocą narzędzia rysowania prostej z ImageJ.) Parametry prostej pokazują się na bieżąco w oknie Menu, natomiast obraz wynikowy można podejrzeć w oknie Preview.
+Po zaznaczeniu obszarów szumu i punktów możemy dopasować ręcznie prostą odcinającą szum od punktów. (Można albo po prostu przesunąć istniejącą już na wykresie prostą, albo narysować właśną za pomocą narzędzia rysowania prostej z ImageJ.) Parametry prostej pokazują się na bieżąco w oknie Menu, natomiast obraz wynikowy można podejrzeć w oknie Preview. Przesuwając pasek na dole okna można podejrzeć porównanie obrazu wejściowego i wynikowego.
 
 ![NOISE](img/Preview.jpg)
 
 ## Opcje
 
+All slices - zaznaczenie tej opcji powoduje wykrywanie punktów osobno na każdym jednym obrazie w stacku.
+
+Cut background - powoduje oznaczenie po przeskanowaniu obrazu wszystkich punktów określonych jako tło na czarno.
+
+Cut background - powoduje oznaczenie po przeskanowaniu obrazu wszystkich zidentyfikowanych punktów na biało.
+
+Surowy wynik jest w odcieniach szarości. Użycie powyższych opcji działa analogicznie jak funkcja Treshold.
