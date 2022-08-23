@@ -16,7 +16,13 @@ Program może działać w dwóch trybach: automatycznym i manualnym. W trybie au
 
 ## Tryb manualny
 
-Po wybraniu opcji Manual mode i kliknięciu OK przechodzimy do trybu manualnego ustalania parametrów. W tym celu otwiera się seria okien.
+Po wybraniu opcji Manual mode i kliknięciu OK przechodzimy do trybu manualnego ustalania parametrów. Otwiera się seria okien. W pierwszej kolejności w Menu ustalamy wielkość okna skanującego (Scaning window size). 
+
+TIP: Im gęściej rozmieszczone punkty tym rozmiar okna powinien być mniejszy.
+
+Następnie podajemy przewidywany rozmiar punktów.
+
+TIP: Można przybliżyć obraz, aby orientacyjnie ocenić wielkość punktów.
 
 ![MANUAL](img/Manual_mode_windows.jpg)
 
@@ -27,3 +33,20 @@ TIP: Ważne jest aby zaznaczyć obszary tła o jak najbardziej zróżnicowanej j
 Wybrane obszary zostają zaznaczone na wykresie w oknie Plot. Na poniższym wykresie poszczególne grupy punktów odpowiadają obszarom oznaczonym na zdjęciu. Warto zwrócić uwagę na różne poziomy jasności zaznaczonych obszarów
 
 ![NOISE](img/Noise selection.jpg)
+
+W kolejnym etapie w oknie Points za pomoca narzędzia wyboru punktów z ImageJ zaznaczamy punkty. Oznaczone punkty pojawiają się na wykresie w oknie Plot.
+
+![NOISE](img/Points_selection.jpg)
+
+Aby zaznaczać kolejne punkty należy trzymać wciśnięty przycisk SHIFT. 
+
+TIP: Ważne jest oznaczenie szczególnie tych punktów, które w najmniejszym stopniu odróżniają się od otaczającego je tła. W tym celu warto powiększyć sobie wybrane obszary obrazu.
+
+![NOISE](img/Points_selection2.jpg)
+
+Po zaznaczeniu obszarów szumu i punktów możemy dopasować ręcznie prostą odcinającą szum od punktów. (Można albo po prostu przesunąć istniejącą już na wykresie prostą, albo narysować właśną za pomocą narzędzia rysowania prostej z ImageJ.) Parametry prostej pokazują się na bieżąco w oknie Menu, natomiast obraz wynikowy można podejrzeć w oknie Preview.
+
+![NOISE](img/Preview.jpg)
+
+## Opcje
+
