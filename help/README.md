@@ -32,7 +32,7 @@ TIP: Ważne jest aby zaznaczyć obszary tła o jak najbardziej zróżnicowanej j
 
 Wybrane obszary zostają zaznaczone na wykresie w oknie Plot. Na poniższym wykresie poszczególne grupy punktów odpowiadają obszarom oznaczonym na zdjęciu. Warto zwrócić uwagę na różne poziomy jasności zaznaczonych obszarów
 
-![NOISE](img/Noise selection.jpg)
+![NOISE](img/Noise_selection.jpg)
 
 W kolejnym etapie w oknie Points za pomoca narzędzia wyboru punktów z ImageJ zaznaczamy punkty. Oznaczone punkty pojawiają się na wykresie w oknie Plot.
 
