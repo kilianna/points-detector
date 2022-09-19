@@ -83,29 +83,54 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		boolean allSlices = getCheckbox(ALL_SLICES_CHECK_BOX);
 		boolean cutLower = getCheckbox(CUT_LOWER_CHECK_BOX);
 		boolean cutHigher = getCheckbox(CUT_HIGHER_CHECK_BOX);
+		boolean keepOriginalSlices = getCheckbox(KEEP_ORIGINAL_SLICES);
 		ImageStack stack = sourceImage.getStack();
 		if (allSlices && stack != null && stack.size() > 1) {
 			ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
 			for (int i = 1; i <= stack.size(); i++) {
 				ImageProcessor ip = stack.getProcessor(i);
-				ImageProcessor r = processSingleImage(ip, cutLower, cutHigher, i - 1, stack.size());
-				is.addSlice(r);
+				ProcessingResults r = processSingleImage(ip, cutLower, cutHigher,
+					keepOriginalSlices, i - 1, stack.size());
+				is.addSlice(r.result);
+				if (keepOriginalSlices)
+					is.addSlice(r.original);
 			}
 			ImagePlus outputImage = new ImagePlus("Output", is);
 			outputImage.show();
+		} else if (keepOriginalSlices) {
+			ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
+			ProcessingResults r = processSingleImage(sourceImage.getProcessor(), cutLower, cutHigher,
+				keepOriginalSlices, 0, 1);
+			is.addSlice(r.result);
+			is.addSlice(r.original);
+			ImagePlus outputImage = new ImagePlus("Output", is);
+			outputImage.show();
 		} else {
-			ImageProcessor r = processSingleImage(sourceImage.getProcessor(), cutLower, cutHigher, 0, 1);
+			ImageProcessor r = processSingleImage(sourceImage.getProcessor(), cutLower, cutHigher,
+				keepOriginalSlices, 0, 1).result;
 			ImagePlus outputImage = new ImagePlus("Output", r);
 			outputImage.show();
 		}
 	}
 
-	private ImageProcessor processSingleImage(ImageProcessor ip, boolean cutLower, boolean cutHigher, int index,
-			int total) {
+	private class ProcessingResults {
+		public ImageProcessor result;
+		public ImageProcessor original;
+		public ProcessingResults(ImageProcessor r, ImageProcessor o) {
+			result = r;
+			original = o;
+		}
+	}
+
+	private ProcessingResults processSingleImage(ImageProcessor ip, boolean cutLower, boolean cutHigher,
+			boolean keepOriginalSlices, int index, int total) {
 		ImageProcessor src = ip.convertToFloat();
 		ImageProcessor dst = ip.convertToByte(true);
+		ImageProcessor original = null;
 		if (ip == dst)
 			dst = dst.duplicate();
+		if (keepOriginalSlices)
+			original = dst.duplicate();
 		pixels = (float[]) src.getPixels();
 		width = src.getWidth();
 		height = src.getHeight();
@@ -162,7 +187,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 							: (byte) (128.0f + 127.0f
 									* (results[x + y * width] / maxResult));
 		}
-		return dst;
+		return new ProcessingResults(dst, original);
 	}
 
 	private void manualProcess() {
@@ -221,7 +246,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	static final int ALL_SLICES_CHECK_BOX = 0;
 	static final int CUT_LOWER_CHECK_BOX = 1;
 	static final int CUT_HIGHER_CHECK_BOX = 2;
-	static final int MANUAL_MODE_CHECK_BOX = 3;
+	static final int KEEP_ORIGINAL_SLICES = 3;
+	static final int MANUAL_MODE_CHECK_BOX = 4;
 
 	private boolean getCheckbox(int id) {
 		return ((Checkbox) dialog.getCheckboxes().get(id)).getState();
@@ -232,12 +258,13 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
-		boolean[] initCheckBox = new boolean[] { false, true, true, false };
+		boolean[] initCheckBox = new boolean[] { false, true, true, false, false };
 		if (dialog != null) {
 			initCheckBox[0] = ((Checkbox) dialog.getCheckboxes().get(0)).getState();
 			initCheckBox[1] = ((Checkbox) dialog.getCheckboxes().get(1)).getState();
 			initCheckBox[2] = ((Checkbox) dialog.getCheckboxes().get(2)).getState();
 			initCheckBox[3] = ((Checkbox) dialog.getCheckboxes().get(3)).getState();
+			initCheckBox[4] = ((Checkbox) dialog.getCheckboxes().get(4)).getState();
 			dialog.dispose();
 		}
 		dialog = new NonBlockingGenericDialog("Parameters");
@@ -256,8 +283,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		dialog.addCheckbox("All slices", initCheckBox[0]);
 		dialog.addCheckbox("Cut background", initCheckBox[1]);
 		dialog.addCheckbox("Highlight points", initCheckBox[2]);
+		dialog.addCheckbox("Keep original slices", initCheckBox[3]);
 		dialog.addCheckbox("Manual mode" + (manual ? " - uncheck to exit manual mode" : ""),
-				initCheckBox[3]);
+				initCheckBox[4]);
 		if (manual) {
 			dialog.addMessage("* - changing window size requires pressing 'OK'");
 		}
