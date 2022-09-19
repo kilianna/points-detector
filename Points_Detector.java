@@ -275,9 +275,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		} else {
 			initialValue = params[0];
 		}
-		dialog.addStringField("Parameters (W, R, A, B)", initialValue, 30);
-		dialog.addStringField("Scaning window size [pixels](W)" + (manual ? " *" : ""), params[1], 10);
-		dialog.addStringField("Point size [pixels] (R)", params[2], 10);
+		dialog.addStringField("Parameters (W; R; A; B)", initialValue, 30);
+		dialog.addStringField("Scanning window radius [pixels](W)" + (manual ? " *" : ""), params[1], 10);
+		dialog.addStringField("Point radius [pixels] (R)", params[2], 10);
 		dialog.addStringField("Slope (A)", params[3], 10);
 		dialog.addStringField("Y-intercept (B)", params[4], 10);
 		dialog.addCheckbox("All slices", initCheckBox[0]);
@@ -287,7 +287,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		dialog.addCheckbox("Manual mode" + (manual ? " - uncheck to exit manual mode" : ""),
 				initCheckBox[4]);
 		if (manual) {
-			dialog.addMessage("* - changing window size requires pressing 'OK'");
+			dialog.addMessage("* - changing window radius requires pressing 'OK'");
 		}
 		dialog.addHelp(helpText);
 		updateDialog();
