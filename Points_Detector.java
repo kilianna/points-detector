@@ -4,11 +4,17 @@ import ij.plugin.*;
 import ij.process.*;
 
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import javax.swing.SwingUtilities;
 
 public class Points_Detector implements PlugIn, RoiListener, DialogListener {
+
+	static final int PIXEL_OUTPUT_WHITE = 0;
+	static final int PIXEL_OUTPUT_BLACK = 1;
+	static final int PIXEL_OUTPUT_ORIGINAL = 2;
+	static final int PIXEL_OUTPUT_RESULT = 3;
 
 	// GUI
 	private String[] params;
@@ -18,7 +24,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	private ImagePlus pointsImage;
 	private ImagePlus noiseImage;
 	private NonBlockingGenericDialog dialog;
-	private ByteProcessor previewProcessor;
+	private ImageProcessor previewProcessor;
 	private Timer timer;
 	private TimerTask updateNoiseTask;
 	private TimerTask updatePointsTask;
@@ -58,6 +64,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (sourceImage == null) {
 			IJ.error("Select image");
 		}
+		//test1();
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
@@ -72,6 +79,21 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		closed();
 	}
 
+	private void test1() {
+		ImageProcessor src = sourceImage.getProcessor();
+		ImageProcessor r = src.duplicate();
+		short[] x = (short[])r.getPixels();
+		IJ.log("min " + r.getMin());
+		IJ.log("max " + r.getMax());
+		// r.resetMinAndMax();
+		// IJ.log("min " + r.getMin());
+		// IJ.log("max " + r.getMax());
+		x[0] = (short)(r.getMin() + 0.5);
+		x[1] = (short)(r.getMax() + 0.5);
+		ImagePlus outputImage = new ImagePlus("Output", r);
+		outputImage.show();
+	}
+
 	private void imageProcess() {
 		logMethod();
 		double[] p = parseParams();
@@ -81,15 +103,15 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		limitLineB = (float) p[3];
 		makeWindow();
 		boolean allSlices = getCheckbox(ALL_SLICES_CHECK_BOX);
-		boolean cutLower = getCheckbox(CUT_LOWER_CHECK_BOX);
-		boolean cutHigher = getCheckbox(CUT_HIGHER_CHECK_BOX);
+		int pointPixelOutput = getChoice(POINT_COLOR_CHOICE);
+		int backgroundPixelOutput = getChoice(BACKGROUND_COLOR_CHOICE);
 		boolean keepOriginalSlices = getCheckbox(KEEP_ORIGINAL_SLICES);
 		ImageStack stack = sourceImage.getStack();
 		if (allSlices && stack != null && stack.size() > 1) {
 			ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
 			for (int i = 1; i <= stack.size(); i++) {
 				ImageProcessor ip = stack.getProcessor(i);
-				ProcessingResults r = processSingleImage(ip, cutLower, cutHigher,
+				ProcessingResults r = processSingleImage(ip, pointPixelOutput, backgroundPixelOutput,
 					keepOriginalSlices, i - 1, stack.size());
 				is.addSlice(r.result);
 				if (keepOriginalSlices)
@@ -99,14 +121,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			outputImage.show();
 		} else if (keepOriginalSlices) {
 			ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
-			ProcessingResults r = processSingleImage(sourceImage.getProcessor(), cutLower, cutHigher,
+			ProcessingResults r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput,
 				keepOriginalSlices, 0, 1);
 			is.addSlice(r.result);
 			is.addSlice(r.original);
 			ImagePlus outputImage = new ImagePlus("Output", is);
 			outputImage.show();
 		} else {
-			ImageProcessor r = processSingleImage(sourceImage.getProcessor(), cutLower, cutHigher,
+			ImageProcessor r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput,
 				keepOriginalSlices, 0, 1).result;
 			ImagePlus outputImage = new ImagePlus("Output", r);
 			outputImage.show();
@@ -122,21 +144,23 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 	}
 
-	private ProcessingResults processSingleImage(ImageProcessor ip, boolean cutLower, boolean cutHigher,
+	private ProcessingResults processSingleImage(ImageProcessor ip, int pointPixelOutput, int backgroundPixelOutput,
 			boolean keepOriginalSlices, int index, int total) {
 		ImageProcessor src = ip.convertToFloat();
-		ImageProcessor dst = ip.convertToByte(true);
+		ImageProcessor dst = ip.duplicate();
 		ImageProcessor original = null;
-		if (ip == dst)
-			dst = dst.duplicate();
 		if (keepOriginalSlices)
 			original = dst.duplicate();
 		pixels = (float[]) src.getPixels();
 		width = src.getWidth();
 		height = src.getHeight();
 		makeHist(index, total);
-		byte[] outputPixels = (byte[]) dst.getPixels();
-		float[] results = new float[outputPixels.length];
+		outputToProcessor(dst, ip, pointPixelOutput, backgroundPixelOutput);
+		return new ProcessingResults(dst, original);
+	}
+
+	private void outputToProcessor(ImageProcessor dst, ImageProcessor src, int pointPixelOutput, int backgroundPixelOutput) {
+		float[] results = new float[Array.getLength(dst.getPixels())];
 		float minResult = Float.POSITIVE_INFINITY;
 		float maxResult = Float.NEGATIVE_INFINITY;
 		int half = (histSize + 1) / 2;
@@ -163,31 +187,95 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				results[x + y * width] = res;
 			}
 		}
-		if (cutLower && cutHigher) {
-			for (int y = 0; y < height; y++)
-				for (int x = 0; x < width; x++)
-					outputPixels[x + y * width] = results[x + y * width] < 0 ? (byte) 0
-							: (byte) 255;
-		} else if (cutLower && !cutHigher) {
-			for (int y = 0; y < height; y++)
-				for (int x = 0; x < width; x++)
-					outputPixels[x + y * width] = results[x + y * width] < 0 ? (byte) 0
-							: (byte) (255.0f * (results[x + y * width] / maxResult));
-		} else if (!cutLower && cutHigher) {
-			for (int y = 0; y < height; y++)
-				for (int x = 0; x < width; x++)
-					outputPixels[x + y * width] = results[x + y * width] < 0
-							? (byte) (255.0f * (1.0f - results[x + y * width] / minResult))
-							: (byte) 255;
+		if (dst instanceof ShortProcessor) {
+			outputToShortProcessor((ShortProcessor)dst, (ShortProcessor)src, results, pointPixelOutput, backgroundPixelOutput, minResult, maxResult);
+		} else if (dst instanceof ByteProcessor) {
+			outputToByteProcessor((ByteProcessor)dst, (ByteProcessor)src, results, pointPixelOutput, backgroundPixelOutput, minResult, maxResult);
 		} else {
-			for (int y = 0; y < height; y++)
-				for (int x = 0; x < width; x++)
-					outputPixels[x + y * width] = results[x + y * width] < 0
-							? (byte) (127.0f * (1.0f - results[x + y * width] / minResult))
-							: (byte) (128.0f + 127.0f
-									* (results[x + y * width] / maxResult));
+			IJ.error("Only 16-bit and 8-bit image format is supported.");
 		}
-		return new ProcessingResults(dst, original);
+	}
+
+	private void outputToShortProcessor(ShortProcessor dst, ShortProcessor src, float[] results, int pointPixelOutput, int backgroundPixelOutput,
+			float minResult, float maxResult) {
+		short[] outputPixels = (short[])dst.getPixels();
+		short[] inputPixels = (short[])src.getPixels();
+		short black = (short)(int)(dst.getMin() + 0.5);
+		short white = (short)(int)(dst.getMax() + 0.5);
+		float blackF = (float)dst.getMin();
+		float whiteF = (float)dst.getMax();
+		float rangeF = whiteF - blackF;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (results[x + y * width] < 0) { // background
+					if (backgroundPixelOutput == PIXEL_OUTPUT_WHITE) {
+						outputPixels[x + y * width] = white;
+					} else if (backgroundPixelOutput == PIXEL_OUTPUT_BLACK) {
+						outputPixels[x + y * width] = black;
+					} else if (backgroundPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
+						outputPixels[x + y * width] = inputPixels[x + y * width];
+					} else if (pointPixelOutput == PIXEL_OUTPUT_RESULT) {
+						outputPixels[x + y * width] = (short) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
+					} else {
+						outputPixels[x + y * width] = (short) (blackF + rangeF * (1.0f - results[x + y * width] / minResult));
+					}
+				} else { // point
+					if (pointPixelOutput == PIXEL_OUTPUT_WHITE) {
+						outputPixels[x + y * width] = white;
+					} else if (pointPixelOutput == PIXEL_OUTPUT_BLACK) {
+						outputPixels[x + y * width] = black;
+					} else if (pointPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
+						outputPixels[x + y * width] = inputPixels[x + y * width];
+					} else if (backgroundPixelOutput == PIXEL_OUTPUT_RESULT) {
+						outputPixels[x + y * width] = (short) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
+					} else {
+						outputPixels[x + y * width] = (short) (blackF + rangeF * results[x + y * width] / maxResult);
+					}
+
+				}
+			}
+		}
+	}
+
+	private void outputToByteProcessor(ByteProcessor dst, ByteProcessor src, float[] results, int pointPixelOutput, int backgroundPixelOutput,
+			float minResult, float maxResult) {
+		byte[] outputPixels = (byte[])dst.getPixels();
+		byte[] inputPixels = (byte[])src.getPixels();
+		byte black = (byte)(int)(dst.getMin() + 0.5);
+		byte white = (byte)(int)(dst.getMax() + 0.5);
+		float blackF = (float)dst.getMin();
+		float whiteF = (float)dst.getMax();
+		float rangeF = whiteF - blackF;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (results[x + y * width] < 0) { // background
+					if (backgroundPixelOutput == PIXEL_OUTPUT_WHITE) {
+						outputPixels[x + y * width] = white;
+					} else if (backgroundPixelOutput == PIXEL_OUTPUT_BLACK) {
+						outputPixels[x + y * width] = black;
+					} else if (backgroundPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
+						outputPixels[x + y * width] = inputPixels[x + y * width];
+					} else if (pointPixelOutput == PIXEL_OUTPUT_RESULT) {
+						outputPixels[x + y * width] = (byte) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
+					} else {
+						outputPixels[x + y * width] = (byte) (blackF + rangeF * (1.0f - results[x + y * width] / minResult));
+					}
+				} else { // point
+					if (pointPixelOutput == PIXEL_OUTPUT_WHITE) {
+						outputPixels[x + y * width] = white;
+					} else if (pointPixelOutput == PIXEL_OUTPUT_BLACK) {
+						outputPixels[x + y * width] = black;
+					} else if (pointPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
+						outputPixels[x + y * width] = inputPixels[x + y * width];
+					} else if (backgroundPixelOutput == PIXEL_OUTPUT_RESULT) {
+						outputPixels[x + y * width] = (byte) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
+					} else {
+						outputPixels[x + y * width] = (byte) (blackF + rangeF * results[x + y * width] / maxResult);
+					}
+
+				}
+			}
+		}
 	}
 
 	private void manualProcess() {
@@ -204,14 +292,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		height = fp.getHeight();
 
 		// Create helper image windows
-		pointsImage = new ImagePlus("Points selection", fp.duplicate());
+		pointsImage = new ImagePlus("Points selection", ip.duplicate());
 		pointsImage.show();
-		noiseImage = new ImagePlus("Noise selection", fp.duplicate());
+		noiseImage = new ImagePlus("Noise selection", ip.duplicate());
 		noiseImage.show();
 
 		// Create preview image
 		ImageStack is = new ImageStack(width, height);
-		previewProcessor = (ByteProcessor) fp.convertToByte(true);
+		previewProcessor = ip.duplicate();
 		is.addSlice(previewProcessor);
 		is.addSlice(previewProcessor.duplicate());
 		previewImage = new ImagePlus("Preview", is);
@@ -244,13 +332,17 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	static final int ALL_SLICES_CHECK_BOX = 0;
-	static final int CUT_LOWER_CHECK_BOX = 1;
-	static final int CUT_HIGHER_CHECK_BOX = 2;
-	static final int KEEP_ORIGINAL_SLICES = 3;
-	static final int MANUAL_MODE_CHECK_BOX = 4;
+	static final int KEEP_ORIGINAL_SLICES = 1;
+	static final int MANUAL_MODE_CHECK_BOX = 2;
+	static final int POINT_COLOR_CHOICE = 0;
+	static final int BACKGROUND_COLOR_CHOICE = 1;
 
 	private boolean getCheckbox(int id) {
 		return ((Checkbox) dialog.getCheckboxes().get(id)).getState();
+	}
+
+	private int getChoice(int id) {
+		return ((Choice) dialog.getChoices().get(id)).getSelectedIndex();
 	}
 
 	private void showDialog(boolean manual) {
@@ -258,13 +350,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
-		boolean[] initCheckBox = new boolean[] { false, true, true, false, false };
+		boolean[] initCheckBox = new boolean[] { false, false, false };
+		int[] initChoice = new int[] { PIXEL_OUTPUT_WHITE, PIXEL_OUTPUT_BLACK };
 		if (dialog != null) {
 			initCheckBox[0] = ((Checkbox) dialog.getCheckboxes().get(0)).getState();
 			initCheckBox[1] = ((Checkbox) dialog.getCheckboxes().get(1)).getState();
 			initCheckBox[2] = ((Checkbox) dialog.getCheckboxes().get(2)).getState();
-			initCheckBox[3] = ((Checkbox) dialog.getCheckboxes().get(3)).getState();
-			initCheckBox[4] = ((Checkbox) dialog.getCheckboxes().get(4)).getState();
+			initChoice[0] = ((Choice) dialog.getChoices().get(0)).getSelectedIndex();
+			initChoice[1] = ((Choice) dialog.getChoices().get(1)).getSelectedIndex();
 			dialog.dispose();
 		}
 		dialog = new NonBlockingGenericDialog("Parameters");
@@ -275,17 +368,22 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		} else {
 			initialValue = params[0];
 		}
+		String[] choiceTexts = new String[4];
+		choiceTexts[PIXEL_OUTPUT_WHITE] = "White";
+		choiceTexts[PIXEL_OUTPUT_BLACK] = "Black";
+		choiceTexts[PIXEL_OUTPUT_ORIGINAL] = "Original";
+		choiceTexts[PIXEL_OUTPUT_RESULT] = "Degree of matching";
 		dialog.addStringField("Parameters (W; R; A; B)", initialValue, 30);
 		dialog.addStringField("Scanning window radius [pixels](W)" + (manual ? " *" : ""), params[1], 10);
 		dialog.addStringField("Point radius [pixels] (R)", params[2], 10);
 		dialog.addStringField("Slope (A)", params[3], 10);
 		dialog.addStringField("Y-intercept (B)", params[4], 10);
+		dialog.addChoice("Points color", choiceTexts, choiceTexts[initChoice[0]]);
+		dialog.addChoice("Background color", choiceTexts, choiceTexts[initChoice[1]]);
 		dialog.addCheckbox("All slices", initCheckBox[0]);
-		dialog.addCheckbox("Cut background", initCheckBox[1]);
-		dialog.addCheckbox("Highlight points", initCheckBox[2]);
-		dialog.addCheckbox("Keep original slices", initCheckBox[3]);
+		dialog.addCheckbox("Keep original slices", initCheckBox[1]);
 		dialog.addCheckbox("Manual mode" + (manual ? " - uncheck to exit manual mode" : ""),
-				initCheckBox[4]);
+				initCheckBox[2]);
 		if (manual) {
 			dialog.addMessage("* - changing window radius requires pressing 'OK'");
 		}
@@ -540,26 +638,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	private void updatePreview() {
 		logMethod();
-		byte[] pixels = (byte[]) previewProcessor.getPixels();
-		int half = (histSize + 1) / 2;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				int histOffset = histSize * (x + y * width);
-				float firstValue = 0;
-				for (int k = 0; k < pointRadius; k++) {
-					firstValue += hist[histOffset + k];
-				}
-				firstValue /= (float) pointRadius;
-				float lastValue = 0;
-				for (int k = half; k < histSize; k++) {
-					lastValue += hist[histOffset + k];
-				}
-				lastValue /= (float) (histSize - half);
-				float yy = firstValue;
-				float xx = lastValue;
-				pixels[x + y * width] = yy < limitLineA * xx + limitLineB ? (byte) 255 : (byte) 0;
-			}
-		}
+		int pointPixelOutput = getChoice(POINT_COLOR_CHOICE);
+		int backgroundPixelOutput = getChoice(BACKGROUND_COLOR_CHOICE);
+		this.outputToProcessor(previewProcessor, sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput);
 		previewImage.updateAndDraw();
 	}
 
@@ -689,14 +770,13 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				limitLineA = (float) parsed[2];
 				limitLineB = (float) parsed[3];
 				updateLimitLine();
-				updatePreview();
 			}
 			if (updatePointRadius) {
 				pointRadius = (int) (parsed[1] + 0.5);
 				updatePoints(true);
 				updateNoise();
-				updatePreview();
 			}
+			updatePreview();
 		}
 		return parsed != null;
 	}
