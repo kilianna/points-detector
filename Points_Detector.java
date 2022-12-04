@@ -11,6 +11,8 @@ import javax.swing.SwingUtilities;
 
 public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
+	static final int MAX_HIST_PLOTS = 25;
+
 	static final int PIXEL_OUTPUT_WHITE = 0;
 	static final int PIXEL_OUTPUT_BLACK = 1;
 	static final int PIXEL_OUTPUT_ORIGINAL = 2;
@@ -34,6 +36,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	private Roi ignoreRoi;
 	private double[] oldPointsX;
 	private double[] oldPointsY;
+
+	// Histogram plot
+	private Plot histPlot;
+	private PlotWindow histPlotWindow;
 
 	// Parameters
 	private int windowRadius;
@@ -64,7 +70,6 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (sourceImage == null) {
 			IJ.error("Select image");
 		}
-		//test1();
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
@@ -77,21 +82,6 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			lastParams = params[0];
 		}
 		closed();
-	}
-
-	private void test1() {
-		ImageProcessor src = sourceImage.getProcessor();
-		ImageProcessor r = src.duplicate();
-		short[] x = (short[])r.getPixels();
-		IJ.log("min " + r.getMin());
-		IJ.log("max " + r.getMax());
-		// r.resetMinAndMax();
-		// IJ.log("min " + r.getMin());
-		// IJ.log("max " + r.getMax());
-		x[0] = (short)(r.getMin() + 0.5);
-		x[1] = (short)(r.getMax() + 0.5);
-		ImagePlus outputImage = new ImagePlus("Output", r);
-		outputImage.show();
 	}
 
 	private void imageProcess() {
@@ -313,6 +303,17 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		plot.add("circle", new double[0], new double[0]);
 		plot.show();
 
+		// Create Histogram plot
+		histPlot = new Plot("Histogram", "Distance from pixel", "Average value");
+		histPlot.add("line", new double[0], new double[0]);
+		histPlot.add("line", new double[0], new double[0]);
+		for (int i = 0; i < 2 * MAX_HIST_PLOTS; i++) {
+			histPlot.add("connected circle", new double[0], new double[0]);
+		}
+		if (getCheckbox(HIST_WINDOW_CHECK_BOX)) {
+			histPlotWindow = histPlot.show();
+		}
+
 		// Listen for ROI changes
 		Roi.addRoiListener(this);
 
@@ -334,11 +335,16 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	static final int ALL_SLICES_CHECK_BOX = 0;
 	static final int KEEP_ORIGINAL_SLICES = 1;
 	static final int MANUAL_MODE_CHECK_BOX = 2;
+	static final int HIST_WINDOW_CHECK_BOX = 3;
 	static final int POINT_COLOR_CHOICE = 0;
 	static final int BACKGROUND_COLOR_CHOICE = 1;
 
 	private boolean getCheckbox(int id) {
-		return ((Checkbox) dialog.getCheckboxes().get(id)).getState();
+		Vector all = dialog.getCheckboxes();
+		if (id >= all.size()) {
+			return false;
+		}
+		return ((Checkbox)all.get(id)).getState();
 	}
 
 	private int getChoice(int id) {
@@ -350,12 +356,13 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (lastParams == null) {
 			lastParams = "20; 5; 1; 0";
 		}
-		boolean[] initCheckBox = new boolean[] { false, false, false };
+		boolean[] initCheckBox = new boolean[] { false, false, false, false };
 		int[] initChoice = new int[] { PIXEL_OUTPUT_WHITE, PIXEL_OUTPUT_BLACK };
 		if (dialog != null) {
-			initCheckBox[0] = ((Checkbox) dialog.getCheckboxes().get(0)).getState();
-			initCheckBox[1] = ((Checkbox) dialog.getCheckboxes().get(1)).getState();
-			initCheckBox[2] = ((Checkbox) dialog.getCheckboxes().get(2)).getState();
+			initCheckBox[0] = getCheckbox(0);
+			initCheckBox[1] = getCheckbox(1);
+			initCheckBox[2] = getCheckbox(2);
+			initCheckBox[3] = getCheckbox(3);
 			initChoice[0] = ((Choice) dialog.getChoices().get(0)).getSelectedIndex();
 			initChoice[1] = ((Choice) dialog.getChoices().get(1)).getSelectedIndex();
 			dialog.dispose();
@@ -382,8 +389,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		dialog.addChoice("Background color", choiceTexts, choiceTexts[initChoice[1]]);
 		dialog.addCheckbox("All slices", initCheckBox[0]);
 		dialog.addCheckbox("Keep original slices", initCheckBox[1]);
-		dialog.addCheckbox("Manual mode" + (manual ? " - uncheck to exit manual mode" : ""),
-				initCheckBox[2]);
+		if (manual) {
+			dialog.addCheckbox("Manual mode - uncheck to exit manual mode", initCheckBox[2]);
+			dialog.addCheckbox("Show histograms plot", initCheckBox[3]);
+		} else {
+			dialog.addCheckbox("Manual mode", initCheckBox[2]);
+		}
 		if (manual) {
 			dialog.addMessage("* - changing window radius requires pressing 'OK'");
 		}
@@ -410,6 +421,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			noiseImage.getWindow().dispose();
 		if (plot != null)
 			plot.getImagePlus().getWindow().dispose();
+		if (histPlot != null)
+			histPlot.getImagePlus().getWindow().dispose();
 		if (dialog != null)
 			dialog.dispose();
 		if (timer != null)
@@ -418,6 +431,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		pointsImage = null;
 		noiseImage = null;
 		plot = null;
+		histPlot = null;
 		dialog = null;
 		timer = null;
 		pixels = null;
@@ -654,6 +668,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		int half = (histSize + 1) / 2;
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
+		double[][] histY = new double[MAX_HIST_PLOTS][histSize];
 		for (int i = 0; i < points.length; i++) {
 			int histOffset = histSize * (points[i].x + points[i].y * width);
 			float firstValue = 0;
@@ -668,24 +683,30 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			lastValue /= (float) (histSize - half);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
+			if (i < MAX_HIST_PLOTS) {
+				for (int k = 0; k < histSize; k++) {
+					histY[i][k] = hist[histOffset + k];
+				}
+			}
 		}
 		plot.setColor(Color.BLUE);
 		plot.replace(0, "circle", xx, yy);
 		plot.setLimitsToFit(true);
 		updateLimitLine();
+		updateHistPlot(histY, points.length, false);
 	}
 
 	private void updatePoints(boolean force) {
 		Roi roi = pointsImage.getRoi();
-		if (roi == null || !(roi instanceof PointRoi)) {
+		if (roi == null) {
 			return;
 		}
 		logMethod();
-		PointRoi pr = (PointRoi) roi;
-		Point[] points = pr.getContainedPoints();
+		Point[] points = roi.getContainedPoints();
 		int half = (histSize + 1) / 2;
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
+		double[][] histY = new double[MAX_HIST_PLOTS][histSize];
 		for (int i = 0; i < points.length; i++) {
 			int histOffset = histSize * (points[i].x + points[i].y * width);
 			float firstValue = 0;
@@ -700,6 +721,11 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			lastValue /= (float) (histSize - half);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
+			if (i < MAX_HIST_PLOTS) {
+				for (int k = 0; k < histSize; k++) {
+					histY[i][k] = hist[histOffset + k];
+				}
+			}
 		}
 		boolean update = true;
 		if (oldPointsX != null && !force && oldPointsX.length == xx.length) {
@@ -718,7 +744,36 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			plot.replace(1, "circle", xx, yy);
 			plot.setLimitsToFit(true);
 			updateLimitLine();
+			updateHistPlot(histY, points.length, true);
 		}
+	}
+
+	private void updateHistPlot(double[][] histY, int usedCount, boolean isPoint) {
+		if (histPlotWindow == null) {
+			return;
+		}
+		usedCount = Math.min(MAX_HIST_PLOTS, usedCount);
+		double[] x = new double[histSize];
+		for (int i = 0; i < histSize; i++) {
+			x[i] = i;
+		}
+		int indexOffset = isPoint ? 2 + MAX_HIST_PLOTS : 2;
+		Color color = isPoint ? Color.RED : Color.BLUE;
+		histPlot.setColor(color, color);
+		for (int i = 0; i < usedCount; i++) {
+			histPlot.replace(indexOffset + i, "connected circle", x, histY[i]);
+		}
+		for (int i = usedCount; i < MAX_HIST_PLOTS; i++) {
+			histPlot.replace(indexOffset + i, "connected circle", new double[0], new double[0]);
+		}
+		histPlot.setLimitsToFit(true);
+		int half = (histSize + 1) / 2;
+		double[] limits = histPlot.getLimits();
+		double margin = (limits[3] - limits[2]) * 0.05;
+		histPlot.setColor(Color.MAGENTA);
+		histPlot.replace(0, "line", new double[] { half - 0.5, half - 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
+		histPlot.setColor(Color.ORANGE);
+		histPlot.replace(1, "line", new double[] { pointRadius - 0.5, pointRadius - 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
 	}
 
 	@Override
@@ -763,6 +818,17 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			params[4] = b;
 			params[0] = joinParams();
 			vect.get(0).setText(params[0]);
+		}
+		if (dialog != null && plot != null) {
+			boolean histWindowVisible = getCheckbox(HIST_WINDOW_CHECK_BOX);
+			if (histWindowVisible && histPlotWindow == null) {
+				histPlotWindow = histPlot.show();
+				updatePoints(true);
+				updateNoise();
+			} else if (!histWindowVisible && histPlotWindow != null) {
+				histPlotWindow.setVisible(false);
+				histPlotWindow = null;
+			}
 		}
 		double[] parsed = parseParams();
 		if (parsed != null && plot != null) {
