@@ -153,20 +153,19 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		float[] results = new float[Array.getLength(dst.getPixels())];
 		float minResult = Float.POSITIVE_INFINITY;
 		float maxResult = Float.NEGATIVE_INFINITY;
-		int half = (histSize + 1) / 2;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int histOffset = histSize * (x + y * width);
 				float firstValue = 0;
-				for (int k = 0; k < pointRadius; k++) {
+				for (int k = 0; k <= pointRadius; k++) {
 					firstValue += hist[histOffset + k];
 				}
-				firstValue /= (float) pointRadius;
+				firstValue /= (float) (pointRadius + 1);
 				float lastValue = 0;
-				for (int k = half; k < histSize; k++) {
+				for (int k = pointRadius + 1; k < histSize; k++) {
 					lastValue += hist[histOffset + k];
 				}
-				lastValue /= (float) (histSize - half);
+				lastValue /= (float) (histSize - pointRadius - 1);
 				float yy = firstValue;
 				float xx = lastValue;
 				float res = yy - (limitLineA * xx + limitLineB);
@@ -665,22 +664,21 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 		logMethod();
 		Point[] points = roi.getContainedPoints();
-		int half = (histSize + 1) / 2;
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
 		double[][] histY = new double[MAX_HIST_PLOTS][histSize];
 		for (int i = 0; i < points.length; i++) {
 			int histOffset = histSize * (points[i].x + points[i].y * width);
 			float firstValue = 0;
-			for (int k = 0; k < pointRadius; k++) {
+			for (int k = 0; k <= pointRadius; k++) {
 				firstValue += hist[histOffset + k];
 			}
-			firstValue /= (float) pointRadius;
+			firstValue /= (float) (pointRadius + 1);
 			float lastValue = 0;
-			for (int k = half; k < histSize; k++) {
+			for (int k = pointRadius + 1; k < histSize; k++) {
 				lastValue += hist[histOffset + k];
 			}
-			lastValue /= (float) (histSize - half);
+			lastValue /= (float) (histSize - pointRadius - 1);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 			if (i < MAX_HIST_PLOTS) {
@@ -703,22 +701,21 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 		logMethod();
 		Point[] points = roi.getContainedPoints();
-		int half = (histSize + 1) / 2;
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
 		double[][] histY = new double[MAX_HIST_PLOTS][histSize];
 		for (int i = 0; i < points.length; i++) {
 			int histOffset = histSize * (points[i].x + points[i].y * width);
 			float firstValue = 0;
-			for (int k = 0; k < pointRadius; k++) {
+			for (int k = 0; k <= pointRadius; k++) {
 				firstValue += hist[histOffset + k];
 			}
-			firstValue /= (float) pointRadius;
+			firstValue /= (float) (pointRadius + 1);
 			float lastValue = 0;
-			for (int k = half; k < histSize; k++) {
+			for (int k = pointRadius + 1; k < histSize; k++) {
 				lastValue += hist[histOffset + k];
 			}
-			lastValue /= (float) (histSize - half);
+			lastValue /= (float) (histSize - pointRadius - 1);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 			if (i < MAX_HIST_PLOTS) {
@@ -766,14 +763,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		for (int i = usedCount; i < MAX_HIST_PLOTS; i++) {
 			histPlot.replace(indexOffset + i, "connected circle", new double[0], new double[0]);
 		}
+		histPlot.replace(1, "line", new double[0], new double[0] );
 		histPlot.setLimitsToFit(true);
-		int half = (histSize + 1) / 2;
 		double[] limits = histPlot.getLimits();
 		double margin = (limits[3] - limits[2]) * 0.05;
-		histPlot.setColor(Color.MAGENTA);
-		histPlot.replace(0, "line", new double[] { half - 0.5, half - 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
 		histPlot.setColor(Color.ORANGE);
-		histPlot.replace(1, "line", new double[] { pointRadius - 0.5, pointRadius - 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
+		histPlot.replace(1, "line", new double[] { pointRadius + 0.5, pointRadius + 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
 	}
 
 	@Override
