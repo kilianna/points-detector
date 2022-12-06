@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 
 public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
-	static final int MAX_HIST_PLOTS = 25;
+	static final int MAX_PROFILE_PLOTS = 25;
 
 	static final int PIXEL_OUTPUT_WHITE = 0;
 	static final int PIXEL_OUTPUT_BLACK = 1;
@@ -37,9 +37,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	private double[] oldPointsX;
 	private double[] oldPointsY;
 
-	// Histogram plot
-	private Plot histPlot;
-	private PlotWindow histPlotWindow;
+	// Profile plot
+	private Plot profilePlot;
+	private PlotWindow profilePlotWindow;
 
 	// Parameters
 	private int windowRadius;
@@ -302,15 +302,15 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		plot.add("circle", new double[0], new double[0]);
 		plot.show();
 
-		// Create Histogram plot
-		histPlot = new Plot("Histogram", "Distance from pixel", "Average value");
-		histPlot.add("line", new double[0], new double[0]);
-		histPlot.add("line", new double[0], new double[0]);
-		for (int i = 0; i < 2 * MAX_HIST_PLOTS; i++) {
-			histPlot.add("connected circle", new double[0], new double[0]);
+		// Create Profile plot
+		profilePlot = new Plot("Profile", "Distance from pixel", "Average value");
+		profilePlot.add("line", new double[0], new double[0]);
+		profilePlot.add("line", new double[0], new double[0]);
+		for (int i = 0; i < 2 * MAX_PROFILE_PLOTS; i++) {
+			profilePlot.add("connected circle", new double[0], new double[0]);
 		}
-		if (getCheckbox(HIST_WINDOW_CHECK_BOX)) {
-			histPlotWindow = histPlot.show();
+		if (getCheckbox(PROFILE_WINDOW_CHECK_BOX)) {
+			profilePlotWindow = profilePlot.show();
 		}
 
 		// Listen for ROI changes
@@ -334,7 +334,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	static final int ALL_SLICES_CHECK_BOX = 0;
 	static final int KEEP_ORIGINAL_SLICES = 1;
 	static final int MANUAL_MODE_CHECK_BOX = 2;
-	static final int HIST_WINDOW_CHECK_BOX = 3;
+	static final int PROFILE_WINDOW_CHECK_BOX = 3;
 	static final int POINT_COLOR_CHOICE = 0;
 	static final int BACKGROUND_COLOR_CHOICE = 1;
 
@@ -390,7 +390,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		dialog.addCheckbox("Keep original slices", initCheckBox[1]);
 		if (manual) {
 			dialog.addCheckbox("Manual mode - uncheck to exit manual mode", initCheckBox[2]);
-			dialog.addCheckbox("Show histograms plot", initCheckBox[3]);
+			dialog.addCheckbox("Show profile plot", initCheckBox[3]);
 		} else {
 			dialog.addCheckbox("Manual mode", initCheckBox[2]);
 		}
@@ -420,8 +420,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			noiseImage.getWindow().dispose();
 		if (plot != null)
 			plot.getImagePlus().getWindow().dispose();
-		if (histPlot != null)
-			histPlot.getImagePlus().getWindow().dispose();
+		if (profilePlot != null)
+			profilePlot.getImagePlus().getWindow().dispose();
 		if (dialog != null)
 			dialog.dispose();
 		if (timer != null)
@@ -430,7 +430,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		pointsImage = null;
 		noiseImage = null;
 		plot = null;
-		histPlot = null;
+		profilePlot = null;
 		dialog = null;
 		timer = null;
 		pixels = null;
@@ -666,7 +666,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		Point[] points = roi.getContainedPoints();
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
-		double[][] histY = new double[MAX_HIST_PLOTS][histSize];
+		double[][] profileY = new double[MAX_PROFILE_PLOTS][histSize];
 		for (int i = 0; i < points.length; i++) {
 			int histOffset = histSize * (points[i].x + points[i].y * width);
 			float firstValue = 0;
@@ -681,9 +681,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			lastValue /= (float) (histSize - pointRadius - 1);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
-			if (i < MAX_HIST_PLOTS) {
+			if (i < MAX_PROFILE_PLOTS) {
 				for (int k = 0; k < histSize; k++) {
-					histY[i][k] = hist[histOffset + k];
+					profileY[i][k] = hist[histOffset + k];
 				}
 			}
 		}
@@ -691,7 +691,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		plot.replace(0, "circle", xx, yy);
 		plot.setLimitsToFit(true);
 		updateLimitLine();
-		updateHistPlot(histY, points.length, false);
+		updateProfilePlot(profileY, points.length, false);
 	}
 
 	private void updatePoints(boolean force) {
@@ -703,7 +703,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		Point[] points = roi.getContainedPoints();
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
-		double[][] histY = new double[MAX_HIST_PLOTS][histSize];
+		double[][] profileY = new double[MAX_PROFILE_PLOTS][histSize];
 		for (int i = 0; i < points.length; i++) {
 			int histOffset = histSize * (points[i].x + points[i].y * width);
 			float firstValue = 0;
@@ -718,9 +718,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			lastValue /= (float) (histSize - pointRadius - 1);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
-			if (i < MAX_HIST_PLOTS) {
+			if (i < MAX_PROFILE_PLOTS) {
 				for (int k = 0; k < histSize; k++) {
-					histY[i][k] = hist[histOffset + k];
+					profileY[i][k] = hist[histOffset + k];
 				}
 			}
 		}
@@ -741,34 +741,34 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			plot.replace(1, "circle", xx, yy);
 			plot.setLimitsToFit(true);
 			updateLimitLine();
-			updateHistPlot(histY, points.length, true);
+			updateProfilePlot(profileY, points.length, true);
 		}
 	}
 
-	private void updateHistPlot(double[][] histY, int usedCount, boolean isPoint) {
-		if (histPlotWindow == null) {
+	private void updateProfilePlot(double[][] profileY, int usedCount, boolean isPoint) {
+		if (profilePlotWindow == null) {
 			return;
 		}
-		usedCount = Math.min(MAX_HIST_PLOTS, usedCount);
+		usedCount = Math.min(MAX_PROFILE_PLOTS, usedCount);
 		double[] x = new double[histSize];
 		for (int i = 0; i < histSize; i++) {
 			x[i] = i;
 		}
-		int indexOffset = isPoint ? 2 + MAX_HIST_PLOTS : 2;
+		int indexOffset = isPoint ? 2 + MAX_PROFILE_PLOTS : 2;
 		Color color = isPoint ? Color.RED : Color.BLUE;
-		histPlot.setColor(color, color);
+		profilePlot.setColor(color, color);
 		for (int i = 0; i < usedCount; i++) {
-			histPlot.replace(indexOffset + i, "connected circle", x, histY[i]);
+			profilePlot.replace(indexOffset + i, "connected circle", x, profileY[i]);
 		}
-		for (int i = usedCount; i < MAX_HIST_PLOTS; i++) {
-			histPlot.replace(indexOffset + i, "connected circle", new double[0], new double[0]);
+		for (int i = usedCount; i < MAX_PROFILE_PLOTS; i++) {
+			profilePlot.replace(indexOffset + i, "connected circle", new double[0], new double[0]);
 		}
-		histPlot.replace(1, "line", new double[0], new double[0] );
-		histPlot.setLimitsToFit(true);
-		double[] limits = histPlot.getLimits();
+		profilePlot.replace(1, "line", new double[0], new double[0] );
+		profilePlot.setLimitsToFit(true);
+		double[] limits = profilePlot.getLimits();
 		double margin = (limits[3] - limits[2]) * 0.05;
-		histPlot.setColor(Color.ORANGE);
-		histPlot.replace(1, "line", new double[] { pointRadius + 0.5, pointRadius + 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
+		profilePlot.setColor(Color.ORANGE);
+		profilePlot.replace(1, "line", new double[] { pointRadius + 0.5, pointRadius + 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
 	}
 
 	@Override
@@ -815,14 +815,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			vect.get(0).setText(params[0]);
 		}
 		if (dialog != null && plot != null) {
-			boolean histWindowVisible = getCheckbox(HIST_WINDOW_CHECK_BOX);
-			if (histWindowVisible && histPlotWindow == null) {
-				histPlotWindow = histPlot.show();
+			boolean profileWindowVisible = getCheckbox(PROFILE_WINDOW_CHECK_BOX);
+			if (profileWindowVisible && profilePlotWindow == null) {
+				profilePlotWindow = profilePlot.show();
 				updatePoints(true);
 				updateNoise();
-			} else if (!histWindowVisible && histPlotWindow != null) {
-				histPlotWindow.setVisible(false);
-				histPlotWindow = null;
+			} else if (!profileWindowVisible && profilePlotWindow != null) {
+				profilePlotWindow.setVisible(false);
+				profilePlotWindow = null;
 			}
 		}
 		double[] parsed = parseParams();
