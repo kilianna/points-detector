@@ -295,7 +295,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		previewImage.show();
 
 		// Create plot
-		plot = new Plot("Plot", "Surrounding", "Center");
+		plot = new Plot("Plot", "Neighbourhood", "Point");
 		plot.setColor(Color.BLUE);
 		plot.add("circle", new double[0], new double[0]);
 		plot.setColor(Color.RED);
