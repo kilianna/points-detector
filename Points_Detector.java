@@ -17,6 +17,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	static final int PIXEL_OUTPUT_BLACK = 1;
 	static final int PIXEL_OUTPUT_ORIGINAL = 2;
 	static final int PIXEL_OUTPUT_RESULT = 3;
+	static final int PIXEL_OUTPUT_NET = 4;
+	static final int PIXEL_OUTPUT_NET_SCALED = 5;
 
 	// GUI
 	private String[] params;
@@ -71,7 +73,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			IJ.error("Select image");
 		}
 		if (lastParams == null) {
-			lastParams = "20; 5; 1; 0";
+			lastParams = "20; 5; 1; 0; 2; 3";
 		}
 		showDialog(false);
 		if (getCheckbox(MANUAL_MODE_CHECK_BOX) && !dialog.wasCanceled()) {
@@ -185,6 +187,231 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 	}
 
+	private class CalculateNetData {
+		public float[] results;
+		public float[] diff;
+		public float diffMax;
+		public short[] inputPixels;
+		public int skipPixels;
+		public int maxMark;
+		public byte[] map;
+		public short[] queueX;
+		public short[] queueY;
+		public int queueMask;
+		public short[] listCurrX;
+		public short[] listCurrY;
+		public short[] listNextX;
+		public short[] listNextY;
+	}
+
+	private void calculateNetPointMarks(int startX, int startY, CalculateNetData d) {
+		d.queueX[0] = (short)startX;
+		d.queueY[0] = (short)startY;
+		int queueFirst = 0;
+		int queueLast = 1;
+		while (queueFirst != queueLast) {
+			int empty = (queueFirst - queueLast) & d.queueMask;
+			int x = d.queueX[queueFirst];
+			int y = d.queueY[queueFirst];
+			queueFirst = (queueFirst + 1) & d.queueMask;
+			byte n = (byte)(d.map[x + y * width] + 1);
+			if (d.results[x + y * width] >= 0) {
+				d.map[x + y * width] = 0;
+				n = 1;
+			}
+			if (empty < 7 || n > d.maxMark) {
+				continue;
+			}
+			if (x < width - 1 && d.map[(x + 1) + y * width] > n) {
+				d.map[(x + 1) + y * width] = n;
+				d.queueX[queueLast] = (short)(x + 1);
+				d.queueY[queueLast] = (short)y;
+				queueLast = (queueLast + 1) & d.queueMask;
+			}
+			if (x > 0 && d.map[(x - 1) + y * width] > n) {
+				d.map[(x - 1) + y * width] = n;
+				d.queueX[queueLast] = (short)(x - 1);
+				d.queueY[queueLast] = (short)y;
+				queueLast = (queueLast + 1) & d.queueMask;
+			}
+			if (y < height - 1 && d.map[x + (y + 1) * width] > n) {
+				d.map[x + (y + 1) * width] = n;
+				d.queueX[queueLast] = (short)x;
+				d.queueY[queueLast] = (short)(y + 1);
+				queueLast = (queueLast + 1) & d.queueMask;
+			}
+			if (y > 0 && d.map[x + (y - 1) * width] > n) {
+				d.map[x + (y - 1) * width] = n;
+				d.queueX[queueLast] = (short)x;
+				d.queueY[queueLast] = (short)(y - 1);
+				queueLast = (queueLast + 1) & d.queueMask;
+			}
+		}
+	}
+
+	private void calculateNetPointValue(int startX, int startY, CalculateNetData d) {
+		d.queueX[0] = (short)startX;
+		d.queueY[0] = (short)startY;
+		int queueSize = 1;
+		int queueIndex = 0;
+		int listCurrSize = 0;
+		int listCurrIndex = 0;
+		int listNextSize = 0;
+		while (queueIndex < queueSize) {
+			int x = d.queueX[queueIndex];
+			int y = d.queueY[queueIndex++];
+			d.map[x + y * width] = 126;
+			if (queueSize + 4 >= d.queueX.length || listNextSize + 4 >= d.listNextX.length) {
+				continue;
+			}
+			if (x < width - 1 && d.map[(x + 1) + y * width] <= 1) {
+				if (d.map[(x + 1) + y * width] == 0) {
+					d.queueX[queueSize] = (short)(x + 1);
+					d.queueY[queueSize++] = (short)y;
+				} else {
+					d.listNextX[listNextSize] = (short)(x + 1);
+					d.listNextY[listNextSize++] = (short)y;
+				}
+			}
+			if (x > 0 && d.map[(x - 1) + y * width] <= 1) {
+				if (d.map[(x - 1) + y * width] == 0) {
+					d.queueX[queueSize] = (short)(x - 1);
+					d.queueY[queueSize++] = (short)y;
+				} else {
+					d.listNextX[listNextSize] = (short)(x - 1);
+					d.listNextY[listNextSize++] = (short)y;
+				}
+			}
+			if (y < height - 1 && d.map[x + (y + 1) * width] <= 1) {
+				if (d.map[x + (y + 1) * width] == 0) {
+					d.queueX[queueSize] = (short)x;
+					d.queueY[queueSize++] = (short)(y + 1);
+				} else {
+					d.listNextX[listNextSize] = (short)x;
+					d.listNextY[listNextSize++] = (short)(y + 1);
+				}
+			}
+			if (y > 0 && d.map[x + (y - 1) * width] <= 1) {
+				if (d.map[x + (y - 1) * width] == 0) {
+					d.queueX[queueSize] = (short)x;
+					d.queueY[queueSize++] = (short)(y - 1);
+				} else {
+					d.listNextX[listNextSize] = (short)x;
+					d.listNextY[listNextSize++] = (short)(y - 1);
+				}
+			}
+		}
+
+		long sum = 0;
+		int count = 0;
+		long sumAlt = 0;
+		int countAlt = 0;
+	
+		for (int i = 1; i <= d.maxMark; i++) {
+			listCurrSize = listNextSize;
+			listCurrIndex = 0;
+			listNextSize = 0;
+			short[] tmp;
+			tmp = d.listCurrX;
+			d.listCurrX = d.listNextX;
+			d.listNextX = tmp;
+			tmp = d.listCurrY;
+			d.listCurrY = d.listNextY;
+			d.listNextY = tmp;
+			while (listCurrIndex < listCurrSize) {
+				int x = d.listCurrX[listCurrIndex];
+				int y = d.listCurrY[listCurrIndex++];
+				if (i > d.skipPixels) {
+					sum += (long)d.inputPixels[x + y * width];
+					count++;
+				} else {
+					sumAlt += (long)d.inputPixels[x + y * width];
+					countAlt++;
+				}
+				if (listNextSize + 4 >= d.listCurrX.length) {
+					continue;
+				}
+				if (x < width - 1 && d.map[(x + 1) + y * width] == i + 1) {
+					d.listNextX[listNextSize] = (short)(x + 1);
+					d.listNextY[listNextSize++] = (short)y;
+				}
+				if (x > 0 && d.map[(x - 1) + y * width] == i + 1) {
+					d.listNextX[listNextSize] = (short)(x - 1);
+					d.listNextY[listNextSize++] = (short)y;
+				}
+				if (y < height - 1 && d.map[x + (y + 1) * width] == i + 1) {
+					d.listNextX[listNextSize] = (short)x;
+					d.listNextY[listNextSize++] = (short)(y + 1);
+				}
+				if (y > 0 && d.map[x + (y - 1) * width] == i + 1) {
+					d.listNextX[listNextSize] = (short)x;
+					d.listNextY[listNextSize++] = (short)(y - 1);
+				}
+			}
+		}
+
+		float avg = 0.0f;
+		if (count > 0) {
+			avg = (float)sum / (float)count;
+		} else if (countAlt > 0) {
+			avg = (float)sumAlt / (float)countAlt;
+		}
+
+		for (int i = 0; i < queueSize; i++) {
+			int x = d.queueX[i];
+			int y = d.queueY[i];
+			float diff = Math.max(0.0f, (float)d.inputPixels[x + y * width] - avg);
+			d.diff[x + y * width] = diff;
+			d.diffMax = Math.max(d.diffMax, diff);
+		}
+	}
+
+	private float[] calculateNet(float[] results, short[] inputPixels, short[] outputPixels) {
+		int skipPixels = 2;
+		int takePixels = 3;
+		double[] p = parseParams();
+		if (p != null) {
+			skipPixels = Math.min(16, Math.max(0, (int)(p[4] + 0.5)));
+			takePixels = Math.min(32, Math.max(0, (int)(p[5] + 0.5)));
+		}
+		CalculateNetData d = new CalculateNetData();
+		d.results = results;
+		d.diff = new float[width * height + 1];
+		d.inputPixels = inputPixels;
+		d.skipPixels = skipPixels;
+		d.maxMark = skipPixels + takePixels;
+		d.map = new byte[width * height];
+		int size = width * height / 2;
+		d.queueMask = 0;
+		while (size > 0) {
+			size >>= 1;
+			d.queueMask = (d.queueMask << 1) | 1;
+		}
+		d.queueX = new short[d.queueMask + 1];
+		d.queueY = new short[d.queueMask + 1];
+		d.listCurrX = new short[width * height / 4];
+		d.listCurrY = new short[width * height / 4];
+		d.listNextX = new short[width * height / 4];
+		d.listNextY = new short[width * height / 4];
+		Arrays.fill(d.map, (byte)127);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (results[x + y * width] >= 0 && d.map[x + y * width] == 127) {
+					calculateNetPointMarks(x, y, d);
+				}
+			}
+		}
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (results[x + y * width] >= 0 && d.map[x + y * width] == 0) {
+					calculateNetPointValue(x, y, d);
+				}
+			}
+		}
+		d.diff[width * height] = d.diffMax;
+		return d.diff;
+	}
+
 	private void outputToShortProcessor(ShortProcessor dst, ShortProcessor src, float[] results, int pointPixelOutput, int backgroundPixelOutput,
 			float minResult, float maxResult) {
 		short[] outputPixels = (short[])dst.getPixels();
@@ -194,6 +421,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		float blackF = (float)dst.getMin();
 		float whiteF = (float)dst.getMax();
 		float rangeF = whiteF - blackF;
+		float[] diff = null;
+		float diffMax = 1.0f;
+		if ((pointPixelOutput == PIXEL_OUTPUT_NET) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED)) {
+			diff = calculateNet(results, inputPixels, outputPixels);
+			diffMax = Math.max(1.0f, diff[width * height]);
+		}
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (results[x + y * width] < 0) { // background
@@ -215,12 +448,15 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 						outputPixels[x + y * width] = black;
 					} else if (pointPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
 						outputPixels[x + y * width] = inputPixels[x + y * width];
+					} else if (pointPixelOutput == PIXEL_OUTPUT_NET) {
+						outputPixels[x + y * width] = (short)(black + diff[x + y * width]);
+					} else if (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED) {
+						outputPixels[x + y * width] = (short)(black + diff[x + y * width] / diffMax * rangeF + 0.5);
 					} else if (backgroundPixelOutput == PIXEL_OUTPUT_RESULT) {
 						outputPixels[x + y * width] = (short) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
 					} else {
 						outputPixels[x + y * width] = (short) (blackF + rangeF * results[x + y * width] / maxResult);
 					}
-
 				}
 			}
 		}
@@ -352,9 +588,6 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	private void showDialog(boolean manual) {
 		logMethod();
-		if (lastParams == null) {
-			lastParams = "20; 5; 1; 0";
-		}
 		boolean[] initCheckBox = new boolean[] { false, false, false, false };
 		int[] initChoice = new int[] { PIXEL_OUTPUT_WHITE, PIXEL_OUTPUT_BLACK };
 		if (dialog != null) {
@@ -369,23 +602,27 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		dialog = new NonBlockingGenericDialog("Parameters");
 		String initialValue;
 		if (params == null) {
-			params = new String[] { "[!]", "", "", "", "" };
+			params = new String[] { "[!]", "", "", "", "", "", "" };
 			initialValue = lastParams;
 		} else {
 			initialValue = params[0];
 		}
-		String[] choiceTexts = new String[4];
+		String[] choiceTexts = new String[6];
 		choiceTexts[PIXEL_OUTPUT_WHITE] = "White";
 		choiceTexts[PIXEL_OUTPUT_BLACK] = "Black";
 		choiceTexts[PIXEL_OUTPUT_ORIGINAL] = "Original";
 		choiceTexts[PIXEL_OUTPUT_RESULT] = "Degree of matching";
-		dialog.addStringField("Parameters (W; R; A; B)", initialValue, 30);
+		choiceTexts[PIXEL_OUTPUT_NET] = "Net signal";
+		choiceTexts[PIXEL_OUTPUT_NET_SCALED] = "Net signal scaled";
+		dialog.addStringField("Parameters (W; R; A; B; SP; TP)", initialValue, 30);
 		dialog.addStringField("Scanning window radius [pixels](W)" + (manual ? " *" : ""), params[1], 10);
 		dialog.addStringField("Point radius [pixels] (R)", params[2], 10);
 		dialog.addStringField("Slope (A)", params[3], 10);
 		dialog.addStringField("Y-intercept (B)", params[4], 10);
+		dialog.addStringField("Skip pixels (SP)", params[5], 10);
+		dialog.addStringField("Take pixels (TP)", params[6], 10);
 		dialog.addChoice("Points color", choiceTexts, choiceTexts[initChoice[0]]);
-		dialog.addChoice("Background color", choiceTexts, choiceTexts[initChoice[1]]);
+		dialog.addChoice("Background color", Arrays.copyOf(choiceTexts, 4), choiceTexts[initChoice[1]]);
 		dialog.addCheckbox("All slices", initCheckBox[0]);
 		dialog.addCheckbox("Keep original slices", initCheckBox[1]);
 		if (manual) {
@@ -407,20 +644,22 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		params[2] = vect.get(2).getText();
 		params[3] = vect.get(3).getText();
 		params[4] = vect.get(4).getText();
+		params[5] = vect.get(5).getText();
+		params[6] = vect.get(6).getText();
 	}
 
 	private void closed() {
 		logMethod();
 		Roi.removeRoiListener(this);
-		if (previewImage != null)
+		if (previewImage != null && previewImage.getWindow() != null)
 			previewImage.getWindow().dispose();
-		if (pointsImage != null)
+		if (pointsImage != null && pointsImage.getWindow() != null)
 			pointsImage.getWindow().dispose();
-		if (noiseImage != null)
+		if (noiseImage != null && noiseImage.getWindow() != null)
 			noiseImage.getWindow().dispose();
-		if (plot != null)
+		if (plot != null && plot.getImagePlus() != null && plot.getImagePlus().getWindow() != null)
 			plot.getImagePlus().getWindow().dispose();
-		if (profilePlot != null)
+		if (profilePlot != null && profilePlot.getImagePlus() != null && profilePlot.getImagePlus().getWindow() != null)
 			profilePlot.getImagePlus().getWindow().dispose();
 		if (dialog != null)
 			dialog.dispose();
@@ -785,6 +1024,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		String r = vect.get(2).getText();
 		String a = vect.get(3).getText();
 		String b = vect.get(4).getText();
+		String sp = vect.get(5).getText();
+		String tp = vect.get(6).getText();
 		boolean updatePointRadius = false;
 		boolean updatePlotRoi = false;
 		if (!p.equals(params[0])) {
@@ -799,18 +1040,24 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			params[2] = parts[1];
 			params[3] = parts[2];
 			params[4] = parts[3];
+			params[5] = parts[4];
+			params[6] = parts[5];
 			vect.get(1).setText(params[1]);
 			vect.get(2).setText(params[2]);
 			vect.get(3).setText(params[3]);
 			vect.get(4).setText(params[4]);
+			vect.get(5).setText(params[5]);
+			vect.get(6).setText(params[6]);
 		} else if (!(w.equals(params[1]) && r.equals(params[2]) && a.equals(params[3])
-				&& b.equals(params[4]))) {
+				&& b.equals(params[4]) && sp.equals(params[5]) && tp.equals(params[6]))) {
 			updatePointRadius = !params[2].equals(r);
 			updatePlotRoi = !params[3].equals(a) || !params[4].equals(b);
 			params[1] = w;
 			params[2] = r;
 			params[3] = a;
 			params[4] = b;
+			params[5] = sp;
+			params[6] = tp;
 			params[0] = joinParams();
 			vect.get(0).setText(params[0]);
 		}
@@ -843,16 +1090,18 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private String joinParams() {
-		return params[1] + "; " + params[2] + "; " + params[3] + "; " + params[4];
+		return params[1] + "; " + params[2] + "; " + params[3] + "; " + params[4] + "; " + params[5] + "; " + params[6];
 	}
 
 	private double[] parseParams() {
 		try {
-			double[] res = new double[4];
+			double[] res = new double[6];
 			res[0] = Integer.parseInt(params[1].replace(",", ".").trim());
 			res[1] = Integer.parseInt(params[2].replace(",", ".").trim());
 			res[2] = Double.parseDouble(params[3].replace(",", ".").trim());
 			res[3] = Double.parseDouble(params[4].replace(",", ".").trim());
+			res[4] = Integer.parseInt(params[5].replace(",", ".").trim());
+			res[5] = Integer.parseInt(params[6].replace(",", ".").trim());
 			if (res[0] < 4.5 || res[0] > 150 || res[1] < 1.5 || res[1] > res[0] * 0.75) {
 				return null;
 			}
@@ -867,7 +1116,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (arr.length == 1) {
 			arr = p.split(",");
 		}
-		if (arr.length != 4) {
+		if (arr.length != 6) {
 			return null;
 		}
 		for (int i = 0; i < arr.length; i++) {
