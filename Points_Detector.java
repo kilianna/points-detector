@@ -255,17 +255,16 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		int queueSize = 1;
 		int queueIndex = 0;
 		int listCurrSize = 0;
-		int listCurrIndex = 0;
 		int listNextSize = 0;
 		while (queueIndex < queueSize) {
 			int x = d.queueX[queueIndex];
 			int y = d.queueY[queueIndex++];
-			d.map[x + y * width] = 126;
 			if (queueSize + 4 >= d.queueX.length || listNextSize + 4 >= d.listNextX.length) {
 				continue;
 			}
 			if (x < width - 1 && d.map[(x + 1) + y * width] <= 1) {
 				if (d.map[(x + 1) + y * width] == 0) {
+					d.map[(x + 1) + y * width] = 126;
 					d.queueX[queueSize] = (short)(x + 1);
 					d.queueY[queueSize++] = (short)y;
 				} else {
@@ -275,6 +274,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			}
 			if (x > 0 && d.map[(x - 1) + y * width] <= 1) {
 				if (d.map[(x - 1) + y * width] == 0) {
+					d.map[(x - 1) + y * width] = 126;
 					d.queueX[queueSize] = (short)(x - 1);
 					d.queueY[queueSize++] = (short)y;
 				} else {
@@ -284,6 +284,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			}
 			if (y < height - 1 && d.map[x + (y + 1) * width] <= 1) {
 				if (d.map[x + (y + 1) * width] == 0) {
+					d.map[x + (y + 1) * width] = 126;
 					d.queueX[queueSize] = (short)x;
 					d.queueY[queueSize++] = (short)(y + 1);
 				} else {
@@ -293,6 +294,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			}
 			if (y > 0 && d.map[x + (y - 1) * width] <= 1) {
 				if (d.map[x + (y - 1) * width] == 0) {
+					d.map[x + (y - 1) * width] = 126;
 					d.queueX[queueSize] = (short)x;
 					d.queueY[queueSize++] = (short)(y - 1);
 				} else {
@@ -309,7 +311,6 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	
 		for (int i = 1; i <= d.maxMark; i++) {
 			listCurrSize = listNextSize;
-			listCurrIndex = 0;
 			listNextSize = 0;
 			short[] tmp;
 			tmp = d.listCurrX;
@@ -318,14 +319,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			tmp = d.listCurrY;
 			d.listCurrY = d.listNextY;
 			d.listNextY = tmp;
-			while (listCurrIndex < listCurrSize) {
+			for (int listCurrIndex = 0; listCurrIndex < listCurrSize; listCurrIndex++) {
 				int x = d.listCurrX[listCurrIndex];
-				int y = d.listCurrY[listCurrIndex++];
+				int y = d.listCurrY[listCurrIndex];
 				if (i > d.skipPixels) {
-					sum += (long)d.inputPixels[x + y * width];
+					sum += (long)d.inputPixels[x + y * width] & (long)0xFFFF;
 					count++;
 				} else {
-					sumAlt += (long)d.inputPixels[x + y * width];
+					sumAlt += (long)d.inputPixels[x + y * width] & (long)0xFFFF;
 					countAlt++;
 				}
 				if (listNextSize + 4 >= d.listCurrX.length) {
@@ -360,7 +361,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		for (int i = 0; i < queueSize; i++) {
 			int x = d.queueX[i];
 			int y = d.queueY[i];
-			float diff = Math.max(0.0f, (float)d.inputPixels[x + y * width] - avg);
+			float diff = Math.max(0.0f, (float)((int)d.inputPixels[x + y * width] & 0xFFFF) - avg);
 			d.diff[x + y * width] = diff;
 			d.diffMax = Math.max(d.diffMax, diff);
 		}
@@ -449,9 +450,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 					} else if (pointPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
 						outputPixels[x + y * width] = inputPixels[x + y * width];
 					} else if (pointPixelOutput == PIXEL_OUTPUT_NET) {
-						outputPixels[x + y * width] = (short)(black + diff[x + y * width]);
+						outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width]);
 					} else if (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED) {
-						outputPixels[x + y * width] = (short)(black + diff[x + y * width] / diffMax * rangeF + 0.5);
+						outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width] / diffMax * rangeF + 0.5);
 					} else if (backgroundPixelOutput == PIXEL_OUTPUT_RESULT) {
 						outputPixels[x + y * width] = (short) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
 					} else {
