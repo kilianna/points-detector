@@ -19,6 +19,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	static final int PIXEL_OUTPUT_RESULT = 3;
 	static final int PIXEL_OUTPUT_NET = 4;
 	static final int PIXEL_OUTPUT_NET_SCALED = 5;
+	static final int PIXEL_OUTPUT_NET_MODE = 6;
+	static final int PIXEL_OUTPUT_NET_SCALED_MODE = 7;
+	static final int PIXEL_OUTPUT_NET_MEDIAN = 8;
+	static final int PIXEL_OUTPUT_NET_SCALED_MEDIAN = 9;
+
+	static final int NET_TYPE_AVERAGE = 0;
+	static final int NET_TYPE_MODE = 1;
+	static final int NET_TYPE_MEDIAN = 2;
 
 	// GUI
 	private String[] params;
@@ -188,6 +196,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private class CalculateNetData {
+		public int netType;
 		public float[] results;
 		public float[] diff;
 		public float diffMax;
@@ -202,6 +211,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		public short[] listCurrY;
 		public short[] listNextX;
 		public short[] listNextY;
+		public int[] listValues;
+		public HashMap<Integer, Integer> valuesCount;
 	}
 
 	private void calculateNetPointMarks(int startX, int startY, CalculateNetData d) {
@@ -308,6 +319,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		int count = 0;
 		long sumAlt = 0;
 		int countAlt = 0;
+
+		if (d.valuesCount != null) {
+			d.valuesCount.clear();
+		}
 	
 		for (int i = 1; i <= d.maxMark; i++) {
 			listCurrSize = listNextSize;
@@ -323,10 +338,27 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				int x = d.listCurrX[listCurrIndex];
 				int y = d.listCurrY[listCurrIndex];
 				if (i > d.skipPixels) {
-					sum += (long)d.inputPixels[x + y * width] & (long)0xFFFF;
+					int value = (int)d.inputPixels[x + y * width] & (int)0xFFFF;
+					if (d.listValues != null && count < d.listValues.length) {
+						d.listValues[count] = value;
+					}
+					if (d.valuesCount != null) {
+						if (count == 0) {
+							d.valuesCount.clear();
+						}
+						d.valuesCount.put(value, d.valuesCount.getOrDefault(value, 0) + 1);
+					}
+					sum += (long)value;
 					count++;
-				} else {
-					sumAlt += (long)d.inputPixels[x + y * width] & (long)0xFFFF;
+				} else if (count == 0) {
+					int value = (int)d.inputPixels[x + y * width] & (int)0xFFFF;
+					if (d.listValues != null && countAlt < d.listValues.length) {
+						d.listValues[countAlt] = value;
+					}
+					if (d.valuesCount != null) {
+						d.valuesCount.put(value, d.valuesCount.getOrDefault(value, 0) + 1);
+					}
+					sumAlt += (long)value;
 					countAlt++;
 				}
 				if (listNextSize + 4 >= d.listCurrX.length) {
@@ -355,7 +387,33 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (count > 0) {
 			avg = (float)sum / (float)count;
 		} else if (countAlt > 0) {
+			count = countAlt;
 			avg = (float)sumAlt / (float)countAlt;
+		}
+
+		if (d.netType == NET_TYPE_MODE && d.valuesCount.size() > 0) {
+			int bestValueCount = -1;
+			for (Map.Entry<Integer, Integer> entry : d.valuesCount.entrySet()) {
+				int v = entry.getKey();
+				int vc = entry.getValue();
+				if (vc > bestValueCount) {
+					d.listValues[0] = v;
+					count = 1;
+					bestValueCount = vc;
+				} else if (vc == bestValueCount && count < d.listValues.length) {
+					d.listValues[count] = v;
+					count++;
+				}
+			}
+		}
+
+		if ((d.netType == NET_TYPE_MEDIAN || d.netType == NET_TYPE_MODE) && count > 0) {
+			Arrays.sort(d.listValues, 0, count);
+			if (count % 2 == 0) {
+				avg = (float)(d.listValues[count / 2 - 1] + d.listValues[count / 2]) / 2.0f;
+			} else {
+				avg = (float)d.listValues[count / 2];
+			}
 		}
 
 		for (int i = 0; i < queueSize; i++) {
@@ -367,7 +425,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 	}
 
-	private float[] calculateNet(float[] results, short[] inputPixels, short[] outputPixels) {
+	private float[] calculateNet(float[] results, short[] inputPixels, short[] outputPixels, int netType) {
 		int skipPixels = 2;
 		int takePixels = 3;
 		double[] p = parseParams();
@@ -376,6 +434,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			takePixels = Math.min(32, Math.max(0, (int)(p[5] + 0.5)));
 		}
 		CalculateNetData d = new CalculateNetData();
+		d.netType = netType;
 		d.results = results;
 		d.diff = new float[width * height + 1];
 		d.inputPixels = inputPixels;
@@ -394,6 +453,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		d.listCurrY = new short[width * height / 4];
 		d.listNextX = new short[width * height / 4];
 		d.listNextY = new short[width * height / 4];
+		if ((netType == NET_TYPE_MEDIAN) || (netType == NET_TYPE_MODE)) {
+			d.listValues = new int[width * height / 4];
+		}
+		if (netType == NET_TYPE_MODE) {
+			d.valuesCount = new HashMap<Integer, Integer>();
+		}
 		Arrays.fill(d.map, (byte)127);
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
@@ -425,7 +490,13 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		float[] diff = null;
 		float diffMax = 1.0f;
 		if ((pointPixelOutput == PIXEL_OUTPUT_NET) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED)) {
-			diff = calculateNet(results, inputPixels, outputPixels);
+			diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_AVERAGE);
+			diffMax = Math.max(1.0f, diff[width * height]);
+		} else if ((pointPixelOutput == PIXEL_OUTPUT_NET_MODE) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED_MODE)) {
+			diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_MODE);
+			diffMax = Math.max(1.0f, diff[width * height]);
+		} else if ((pointPixelOutput == PIXEL_OUTPUT_NET_MEDIAN) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED_MEDIAN)) {
+			diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_MEDIAN);
 			diffMax = Math.max(1.0f, diff[width * height]);
 		}
 		for (int y = 0; y < height; y++) {
@@ -449,9 +520,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 						outputPixels[x + y * width] = black;
 					} else if (pointPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
 						outputPixels[x + y * width] = inputPixels[x + y * width];
-					} else if (pointPixelOutput == PIXEL_OUTPUT_NET) {
+					} else if ((pointPixelOutput == PIXEL_OUTPUT_NET) || (pointPixelOutput == PIXEL_OUTPUT_NET_MODE) || (pointPixelOutput == PIXEL_OUTPUT_NET_MEDIAN)) {
 						outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width]);
-					} else if (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED) {
+					} else if ((pointPixelOutput == PIXEL_OUTPUT_NET_SCALED) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED_MODE) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED_MEDIAN)) {
 						outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width] / diffMax * rangeF + 0.5);
 					} else if (backgroundPixelOutput == PIXEL_OUTPUT_RESULT) {
 						outputPixels[x + y * width] = (short) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
@@ -608,13 +679,17 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		} else {
 			initialValue = params[0];
 		}
-		String[] choiceTexts = new String[6];
+		String[] choiceTexts = new String[10];
 		choiceTexts[PIXEL_OUTPUT_WHITE] = "White";
 		choiceTexts[PIXEL_OUTPUT_BLACK] = "Black";
 		choiceTexts[PIXEL_OUTPUT_ORIGINAL] = "Original";
 		choiceTexts[PIXEL_OUTPUT_RESULT] = "Degree of matching";
-		choiceTexts[PIXEL_OUTPUT_NET] = "Net signal";
-		choiceTexts[PIXEL_OUTPUT_NET_SCALED] = "Net signal scaled";
+		choiceTexts[PIXEL_OUTPUT_NET] = "Net signal (average)";
+		choiceTexts[PIXEL_OUTPUT_NET_SCALED] = "Net signal scaled (average)";
+		choiceTexts[PIXEL_OUTPUT_NET_MODE] = "Net signal (mode)";
+		choiceTexts[PIXEL_OUTPUT_NET_SCALED_MODE] = "Net signal scaled (mode)";
+		choiceTexts[PIXEL_OUTPUT_NET_MEDIAN] = "Net signal (median)";
+		choiceTexts[PIXEL_OUTPUT_NET_SCALED_MEDIAN] = "Net signal scaled (median)";
 		dialog.addStringField("Parameters (W; R; A; B; SP; TP)", initialValue, 30);
 		dialog.addStringField("Scanning window radius [pixels](W)" + (manual ? " *" : ""), params[1], 10);
 		dialog.addStringField("Point radius [pixels] (R)", params[2], 10);
