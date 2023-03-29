@@ -6,7 +6,12 @@
 		{
 			"label": "Build the plugin",
 			"type": "shell",
-			"command": "./buduj.sh /home/doki/my/Fiji.app/",
+			"windows": {
+				"command": "./buduj.bat",
+			},
+			"linux": {
+				"command": "./buduj.sh /home/doki/my/Fiji.app/",
+			},
 			"problemMatcher": {
 				"source": "JAVA-BUILD",
 				"owner": "external",
@@ -26,7 +31,12 @@
 		{
 			"label": "Build and restart",
 			"type": "shell",
-			"command": "./buduj.sh /home/doki/my/Fiji.app/ \"\" run",
+			"windows": {
+				"command": "./buduj.bat run",
+			},
+			"linux": {
+				"command": "./buduj.sh /home/doki/my/Fiji.app/ \"\" run",
+			},
 			"problemMatcher": {
 				"source": "JAVA-BUILD",
 				"owner": "external",
