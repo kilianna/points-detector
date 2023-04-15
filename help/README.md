@@ -2,11 +2,17 @@
 
 ## Instalacja
 
-Aby móc używać pluginu Points detector należy pobrać plik Points_Detector.jar i umieścić go w katalogu Plugins. Po ponownym uruchomieniu programu powinien być on widoczny w menu rozwijanym w Imagej -> Plugins.
+Aby móc używać zestawu narzędzi do przetwarzania obrazów z mikroskopu w celu wyszukania śladów po promieniowaniu należy pobrać plik Points_Detector.jar i umieścić go w katalogu Plugins (podkatalog katalogu ImageJ lub Figi.app). Po ponownym uruchomieniu programu powinien być on widoczny w menu rozwijanym w ImageJ: **Plugins -> FNDT IFJ**.
+
+W skład paczki FNDT IFJ wchodzą następujące narzędzia:
+1. _Reset color balance_ - plugin przesuwający zakres wyświetlania (display range) tak, aby 0 odpowiadało kolorowi czarnemu.
+2. _Slices Correction_ - plugin służący wprowadzaniu do stosu obrazów poprawek na wypalanie i głębokość.
+3. _Slice Dev_ - plugin pozwalający na wprowadzenie dodatkowych poprawek do stosu obrazów.
+4. _Points detector_ - główna część paczki, która służy do analizy obrazu i odseparowania sygnału of szumu.
 
 ## Uruchomienie pluginu
 
-W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Plugin uruchamia się domyślnie dla aktywnego okna.
+W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Plugin uruchamia się domyślnie dla aktywnego okna. 
 
 ![MENU](img/Menu.jpg)
 
