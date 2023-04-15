@@ -10,9 +10,11 @@ W skład paczki FNDT IFJ wchodzą następujące narzędzia:
 3. _Slice Dev_ - plugin pozwalający na wprowadzenie dodatkowych poprawek do stosu obrazów.
 4. _Points detector_ - główna część paczki, która służy do analizy obrazu i odseparowania sygnału of szumu.
 
-## Uruchomienie pluginu
+## Reset color balance
 
-W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Plugin uruchamia się domyślnie dla aktywnego okna. 
+W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Plugin uruchamia się domyślnie dla aktywnego okna. Dla wybranego obrazka lub stosu zakres wyświetlania (Display range) zostaje przesunięty tak, aby 0 odpowiadało kolorowi czarnemu. Po wykonaniu wyświetlone zostaje okno z informacją z o przesunięciu.
+
+![Reset](img/log_reset.jpg)
 
 ![MENU](img/Menu.jpg)
 
@@ -40,7 +42,7 @@ Wybrane obszary zostają zaznaczone na wykresie w oknie Plot. Na poniższym wykr
 
 W kolejnym etapie w oknie Points za pomoca narzędzia wyboru punktów z ImageJ zaznaczamy punkty. Oznaczone punkty pojawiają się na wykresie w oknie Plot.
 
-![NOISE](img/Points_selection.jpg)
+![POINTS](img/Points_selection.jpg)
 
 Aby zaznaczać kolejne punkty należy trzymać wciśnięty przycisk SHIFT. 
 
