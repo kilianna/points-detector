@@ -16,6 +16,23 @@ W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka alb
 
 ![Reset](img/log_reset.jpg)
 
+## Slices Correction
+
+Część pluginu umożliwiająca wprowadzenie poprawek na wypalanie oraz głębokość. 
+Współczynnik korekcyjny na wypalanie dokonywana jest według wzoru:
+
+$$
+  corr = 0.765 exp^(-A4/443.85)+0.235
+$$
+
+![Slices correction](img/Slices_corr.JPG)
+
+## Slice dev
+
+![Slice dev](img/slices_div.JPG)
+
+## Points detector
+
 ![MENU](img/Menu.jpg)
 
 Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym podajemy w polu Parameters ustalone wcześniej parametry. Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. W trybie manualnym parametry należy ustalić na bieżąco.
