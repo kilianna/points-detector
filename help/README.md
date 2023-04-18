@@ -22,8 +22,18 @@ Część pluginu umożliwiająca wprowadzenie poprawek na wypalanie oraz głębo
 Współczynnik korekcyjny na wypalanie dokonywana jest według wzoru:
 
 $$
-  corr = 0.765 exp^(-A4/443.85)+0.235
+  corr = 0.765*e^{(\frac{-t}{443.85})}+0.235
 $$
+
+$$
+  t = t_{0}+ (n-1)*step
+$$
+
+gdzie:
+$t_{0}$ - czas początkowy
+$n$ - numer obrazu
+$step$ - czas odczytu pojedynczego obrazu
+
 
 ![Slices correction](img/Slices_corr.JPG)
 
