@@ -19,10 +19,11 @@ W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka alb
 ## Slices Correction
 
 Część pluginu umożliwiająca wprowadzenie poprawek na wypalanie oraz głębokość. 
-Współczynnik korekcyjny na wypalanie obliczany jest według wyznaczonego empirycznie wzoruwzoru:
+
+Współczynnik korekcyjny na wypalanie dla konkretnego obrazu w stosie obliczany jest według wyznaczonego empirycznie wzoru:
 
 $$
-  corr = 0.765*e^{(\frac{-t}{443.85})}+0.235
+  time\\_corr = 0.765*e^{(\frac{-t}{443.85})}+0.235
 $$
 
 $$
@@ -30,12 +31,35 @@ $$
 $$
 
 gdzie:<br>
-$t_{0}$ - czas początkowy;<br>
+$t_{0}$ - czas początkowy [s];<br>
 $n$ - numer obrazu;<br>
-$step$ - czas odczytu pojedynczego obrazu.
+$step$ - czas odczytu pojedynczego obrazu [s].
+
+Poszczególne wartości pikseli na obrazie są następnie dzielone przez obliczony według powyższego wzoru współczynnik korekcyjny.
+
+Analogicznie wprowadzane są poprawki na głębokość. Tutaj także posługujemy się wzorem wyznaczonym empirycznie:
+
+$$
+depth\\_corr = e^{-0.015 * d}
+$$
+
+$$
+  d = d_{0}+ (n-1)*step
+$$
+
+gdzie:<br>
+$d_{0}$ - głębokość startowa [&mu;m];<br>
+$n$ - numer obrazu;<br>
+$step$ - krok o jaki zwiększana jest głębokość na jakich dokonywany jest odczyt [&mu;m].
 
 
 ![Slices correction](img/Slices_corr.JPG)
+
+Jako wartości wejściowe należy podać:<br>
+First depth - głębokość na jakiej dokonywany jest odczyt (0 oznacza powierzchnię) [&mu;m];<br>
+Slice thick - krok o jaki zwiększa się głębokość [&mu;m];<br>
+Time 0 - czas początkowy (w przypadku, gdy dany kryształ był już uprzednio odczytywany) [s];<br>
+Time - czas odczytu każdego z obrazów [s].
 
 ## Slice dev
 
