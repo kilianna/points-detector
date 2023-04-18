@@ -19,7 +19,7 @@ W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka alb
 ## Slices Correction
 
 Część pluginu umożliwiająca wprowadzenie poprawek na wypalanie oraz głębokość. 
-Współczynnik korekcyjny na wypalanie dokonywana jest według wzoru:
+Współczynnik korekcyjny na wypalanie obliczany jest według wyznaczonego empirycznie wzoruwzoru:
 
 $$
   corr = 0.765*e^{(\frac{-t}{443.85})}+0.235
@@ -29,10 +29,10 @@ $$
   t = t_{0}+ (n-1)*step
 $$
 
-gdzie:
-$t_{0}$ - czas początkowy
-$n$ - numer obrazu
-$step$ - czas odczytu pojedynczego obrazu
+gdzie:<br>
+$t_{0}$ - czas początkowy;<br>
+$n$ - numer obrazu;<br>
+$step$ - czas odczytu pojedynczego obrazu.
 
 
 ![Slices correction](img/Slices_corr.JPG)
