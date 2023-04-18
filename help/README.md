@@ -52,7 +52,7 @@ $d_{0}$ - głębokość startowa [&mu;m];<br>
 $n$ - numer obrazu;<br>
 $step$ - krok o jaki zwiększana jest głębokość na jakich dokonywany jest odczyt [&mu;m].
 
-Podobnoe jak wzceśniej wartości poszczególnych pikseli na obrazie dzielone są przez wartość współczynnika korekcyjnego na głębokość wyznaczonego dla danego obrazu.
+Podobnie jak wcześniej - wartości poszczególnych pikseli na obrazie dzielone są przez wartość współczynnika korekcyjnego na głębokość wyznaczonego dla danego obrazu.
 
 ![Slices correction](img/Slices_corr.JPG)
 
