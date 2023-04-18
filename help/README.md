@@ -52,14 +52,17 @@ $d_{0}$ - głębokość startowa [&mu;m];<br>
 $n$ - numer obrazu;<br>
 $step$ - krok o jaki zwiększana jest głębokość na jakich dokonywany jest odczyt [&mu;m].
 
+Podobnoe jak wzceśniej wartości poszczególnych pikseli na obrazie dzielone są przez wartość współczynnika korekcyjnego na głębokość wyznaczonego dla danego obrazu.
 
 ![Slices correction](img/Slices_corr.JPG)
 
 Jako wartości wejściowe należy podać:<br>
-First depth - głębokość na jakiej dokonywany jest odczyt (0 oznacza powierzchnię) [&mu;m];<br>
-Slice thick - krok o jaki zwiększa się głębokość [&mu;m];<br>
-Time 0 - czas początkowy (w przypadku, gdy dany kryształ był już uprzednio odczytywany) [s];<br>
-Time - czas odczytu każdego z obrazów [s].
+**First depth** - głębokość na jakiej dokonywany jest odczyt (0 oznacza powierzchnię) [&mu;m];<br>
+**Slice thick** - krok o jaki zwiększa się głębokość [&mu;m];<br>
+**Time 0** - czas początkowy (w przypadku, gdy dany kryształ był już uprzednio odczytywany) [s];<br>
+**Time** - czas odczytu każdego z obrazów [s].
+
+Program wprowadzi obie poprawki jednocześnie na oryginalnym obrazie.
 
 ## Slice dev
 
