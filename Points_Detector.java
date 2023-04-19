@@ -54,6 +54,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	// Parameters
 	private int windowRadius;
 	private int pointRadius;
+	private int backgroundRadius;
 	private float limitLineA;
 	private float limitLineB;
 
@@ -81,7 +82,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			IJ.error("Select image");
 		}
 		if (lastParams == null) {
-			lastParams = "20; 5; 1; 0; 2; 3";
+			lastParams = "20; 5; 6; 1; 0; 2; 3";
 		}
 		showDialog(false);
 		if (getCheckbox(MANUAL_MODE_CHECK_BOX) && !dialog.wasCanceled()) {
@@ -99,8 +100,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		double[] p = parseParams();
 		windowRadius = (int) (p[0] + 0.5);
 		pointRadius = (int) (p[1] + 0.5);
-		limitLineA = (float) p[2];
-		limitLineB = (float) p[3];
+		backgroundRadius = (int) (p[2] + 0.5);
+		limitLineA = (float) p[3];
+		limitLineB = (float) p[4];
 		makeWindow();
 		boolean allSlices = getCheckbox(ALL_SLICES_CHECK_BOX);
 		int pointPixelOutput = getChoice(POINT_COLOR_CHOICE);
@@ -172,10 +174,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				}
 				firstValue /= (float) (pointRadius + 1);
 				float lastValue = 0;
-				for (int k = pointRadius + 1; k < histSize; k++) {
+				for (int k = backgroundRadius; k < histSize; k++) {
 					lastValue += hist[histOffset + k];
 				}
-				lastValue /= (float) (histSize - pointRadius - 1);
+				lastValue /= (float) (histSize - backgroundRadius);
 				float yy = firstValue;
 				float xx = lastValue;
 				float res = yy - (limitLineA * xx + limitLineB);
@@ -614,6 +616,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		profilePlot = new Plot("Profile", "Distance from pixel", "Average value");
 		profilePlot.add("line", new double[0], new double[0]);
 		profilePlot.add("line", new double[0], new double[0]);
+		profilePlot.add("line", new double[0], new double[0]);
 		for (int i = 0; i < 2 * MAX_PROFILE_PLOTS; i++) {
 			profilePlot.add("connected circle", new double[0], new double[0]);
 		}
@@ -628,8 +631,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			double[] p = parseParams();
 			windowRadius = (int) (p[0] + 0.5);
 			pointRadius = (int) (p[1] + 0.5);
-			limitLineA = (float) p[2];
-			limitLineB = (float) p[3];
+			backgroundRadius = (int) (p[2] + 0.5);
+			limitLineA = (float) p[3];
+			limitLineB = (float) p[4];
 			makeWindow();
 			makeHist(0, 1);
 			updatePoints(true);
@@ -674,7 +678,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		dialog = new NonBlockingGenericDialog("Parameters");
 		String initialValue;
 		if (params == null) {
-			params = new String[] { "[!]", "", "", "", "", "", "" };
+			params = new String[] { "[!]", "", "", "", "", "", "", "" };
 			initialValue = lastParams;
 		} else {
 			initialValue = params[0];
@@ -690,13 +694,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		choiceTexts[PIXEL_OUTPUT_NET_SCALED_MODE] = "Net signal scaled (mode)";
 		choiceTexts[PIXEL_OUTPUT_NET_MEDIAN] = "Net signal (median)";
 		choiceTexts[PIXEL_OUTPUT_NET_SCALED_MEDIAN] = "Net signal scaled (median)";
-		dialog.addStringField("Parameters (W; R; A; B; SP; TP)", initialValue, 30);
-		dialog.addStringField("Scanning window radius [pixels](W)" + (manual ? " *" : ""), params[1], 10);
+		dialog.addStringField("Parameters (W; R; S; A; B; SP; TP)", initialValue, 30);
+		dialog.addStringField("Scanning window radius [pixels] (W)" + (manual ? " *" : ""), params[1], 10);
 		dialog.addStringField("Point radius [pixels] (R)", params[2], 10);
-		dialog.addStringField("Slope (A)", params[3], 10);
-		dialog.addStringField("Y-intercept (B)", params[4], 10);
-		dialog.addStringField("Skip pixels (SP)", params[5], 10);
-		dialog.addStringField("Take pixels (TP)", params[6], 10);
+		dialog.addStringField("Background start radius [pixels] (S)", params[3], 10);
+		dialog.addStringField("Slope (A)", params[4], 10);
+		dialog.addStringField("Y-intercept (B)", params[5], 10);
+		dialog.addStringField("Skip pixels (SP)", params[6], 10);
+		dialog.addStringField("Take pixels (TP)", params[7], 10);
 		dialog.addChoice("Points color", choiceTexts, choiceTexts[initChoice[0]]);
 		dialog.addChoice("Background color", Arrays.copyOf(choiceTexts, 4), choiceTexts[initChoice[1]]);
 		dialog.addCheckbox("All slices", initCheckBox[0]);
@@ -722,6 +727,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		params[4] = vect.get(4).getText();
 		params[5] = vect.get(5).getText();
 		params[6] = vect.get(6).getText();
+		params[7] = vect.get(7).getText();
 	}
 
 	private void closed() {
@@ -880,13 +886,13 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void updateLimit() {
+		logMethod();
 		ImagePlus plotImage = plot.getImagePlus();
 		Roi roi = plotImage.getRoi();
 		if (roi == null || !(roi instanceof Line) || roi == ignoreRoi) {
 			ignoreRoi = null;
 			return;
 		}
-		logMethod();
 		ignoreRoi = null;
 		Line line = (Line) roi;
 		Polygon poly = line.getPoints();
@@ -898,12 +904,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		limitLineA = (ya - yb) / (xa - xb);
 		limitLineB = ya - (ya - yb) / (xa - xb) * xa;
 		Vector<TextField> vect = dialog.getStringFields();
-		params[3] = toShortNumber(limitLineA);
-		params[4] = toShortNumber(limitLineB);
+		params[4] = toShortNumber(limitLineA);
+		params[5] = toShortNumber(limitLineB);
 		params[0] = joinParams();
 		vect.get(0).setText(params[0]);
-		vect.get(3).setText(params[3]);
 		vect.get(4).setText(params[4]);
+		vect.get(5).setText(params[5]);
 		updatePreview();
 	}
 
@@ -990,10 +996,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			}
 			firstValue /= (float) (pointRadius + 1);
 			float lastValue = 0;
-			for (int k = pointRadius + 1; k < histSize; k++) {
+			for (int k = backgroundRadius; k < histSize; k++) {
 				lastValue += hist[histOffset + k];
 			}
-			lastValue /= (float) (histSize - pointRadius - 1);
+			lastValue /= (float) (histSize - backgroundRadius);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 			if (i < MAX_PROFILE_PLOTS) {
@@ -1027,10 +1033,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			}
 			firstValue /= (float) (pointRadius + 1);
 			float lastValue = 0;
-			for (int k = pointRadius + 1; k < histSize; k++) {
+			for (int k = backgroundRadius; k < histSize; k++) {
 				lastValue += hist[histOffset + k];
 			}
-			lastValue /= (float) (histSize - pointRadius - 1);
+			lastValue /= (float) (histSize - backgroundRadius);
 			yy[i] = firstValue;
 			xx[i] = lastValue;
 			if (i < MAX_PROFILE_PLOTS) {
@@ -1069,7 +1075,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		for (int i = 0; i < histSize; i++) {
 			x[i] = i;
 		}
-		int indexOffset = isPoint ? 2 + MAX_PROFILE_PLOTS : 2;
+		int indexOffset = isPoint ? 3 + MAX_PROFILE_PLOTS : 3;
 		Color color = isPoint ? Color.RED : Color.BLUE;
 		profilePlot.setColor(color, color);
 		for (int i = 0; i < usedCount; i++) {
@@ -1083,7 +1089,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		double[] limits = profilePlot.getLimits();
 		double margin = (limits[3] - limits[2]) * 0.05;
 		profilePlot.setColor(Color.ORANGE);
-		profilePlot.replace(1, "line", new double[] { pointRadius + 0.5, pointRadius + 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
+		profilePlot.replace(1, "line", new double[] { backgroundRadius - 0.5, backgroundRadius - 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
+		profilePlot.setColor(Color.CYAN);
+		profilePlot.replace(2, "line", new double[] { pointRadius + 0.5, pointRadius + 0.5, backgroundRadius + 0.5, backgroundRadius + 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
 	}
 
 	@Override
@@ -1098,10 +1106,11 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		String p = vect.get(0).getText();
 		String w = vect.get(1).getText();
 		String r = vect.get(2).getText();
-		String a = vect.get(3).getText();
-		String b = vect.get(4).getText();
-		String sp = vect.get(5).getText();
-		String tp = vect.get(6).getText();
+		String s = vect.get(3).getText();
+		String a = vect.get(4).getText();
+		String b = vect.get(5).getText();
+		String sp = vect.get(6).getText();
+		String tp = vect.get(7).getText();
 		boolean updatePointRadius = false;
 		boolean updatePlotRoi = false;
 		if (!p.equals(params[0])) {
@@ -1110,30 +1119,34 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			if (parts == null) {
 				return false;
 			}
-			updatePointRadius = !params[2].equals(parts[1]);
-			updatePlotRoi = !params[3].equals(parts[2]) || !params[4].equals(parts[3]);
+			updatePointRadius = !params[2].equals(parts[1]) || !params[3].equals(parts[2]);
+			updatePlotRoi = !params[4].equals(parts[3]) || !params[5].equals(parts[4]);
 			params[1] = parts[0];
 			params[2] = parts[1];
 			params[3] = parts[2];
 			params[4] = parts[3];
 			params[5] = parts[4];
 			params[6] = parts[5];
+			params[7] = parts[6];
 			vect.get(1).setText(params[1]);
 			vect.get(2).setText(params[2]);
 			vect.get(3).setText(params[3]);
 			vect.get(4).setText(params[4]);
 			vect.get(5).setText(params[5]);
 			vect.get(6).setText(params[6]);
-		} else if (!(w.equals(params[1]) && r.equals(params[2]) && a.equals(params[3])
-				&& b.equals(params[4]) && sp.equals(params[5]) && tp.equals(params[6]))) {
-			updatePointRadius = !params[2].equals(r);
-			updatePlotRoi = !params[3].equals(a) || !params[4].equals(b);
+			vect.get(7).setText(params[7]);
+		} else if (!(w.equals(params[1]) && r.equals(params[2]) && s.equals(params[3])
+				&& a.equals(params[4]) && b.equals(params[5]) && sp.equals(params[6])
+				&& tp.equals(params[7]))) {
+			updatePointRadius = !params[2].equals(r) || !params[3].equals(s);
+			updatePlotRoi = !params[4].equals(a) || !params[5].equals(b);
 			params[1] = w;
 			params[2] = r;
-			params[3] = a;
-			params[4] = b;
-			params[5] = sp;
-			params[6] = tp;
+			params[3] = s;
+			params[4] = a;
+			params[5] = b;
+			params[6] = sp;
+			params[7] = tp;
 			params[0] = joinParams();
 			vect.get(0).setText(params[0]);
 		}
@@ -1151,12 +1164,13 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		double[] parsed = parseParams();
 		if (parsed != null && plot != null) {
 			if (updatePlotRoi) {
-				limitLineA = (float) parsed[2];
-				limitLineB = (float) parsed[3];
+				limitLineA = (float) parsed[3];
+				limitLineB = (float) parsed[4];
 				updateLimitLine();
 			}
 			if (updatePointRadius) {
 				pointRadius = (int) (parsed[1] + 0.5);
+				backgroundRadius = (int) (parsed[2] + 0.5);
 				updatePoints(true);
 				updateNoise();
 			}
@@ -1166,19 +1180,21 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private String joinParams() {
-		return params[1] + "; " + params[2] + "; " + params[3] + "; " + params[4] + "; " + params[5] + "; " + params[6];
+		return params[1] + "; " + params[2] + "; " + params[3] + "; " + params[4] + "; " + params[5] + "; " + params[6] + "; " + params[7];
 	}
 
 	private double[] parseParams() {
 		try {
-			double[] res = new double[6];
+			double[] res = new double[7];
 			res[0] = Integer.parseInt(params[1].replace(",", ".").trim());
 			res[1] = Integer.parseInt(params[2].replace(",", ".").trim());
-			res[2] = Double.parseDouble(params[3].replace(",", ".").trim());
+			res[2] = Integer.parseInt(params[3].replace(",", ".").trim());
 			res[3] = Double.parseDouble(params[4].replace(",", ".").trim());
-			res[4] = Integer.parseInt(params[5].replace(",", ".").trim());
+			res[4] = Double.parseDouble(params[5].replace(",", ".").trim());
 			res[5] = Integer.parseInt(params[6].replace(",", ".").trim());
-			if (res[0] < 4.5 || res[0] > 150 || res[1] < 1.5 || res[1] > res[0] * 0.75) {
+			res[6] = Integer.parseInt(params[7].replace(",", ".").trim());
+			if (res[0] < 4.5 || res[0] > 150 || res[1] < 1.5 || res[1] > res[0] * 0.75
+			    || res[2] < 1.5 || res[2] > res[0] - 0.5) {
 				return null;
 			}
 			return res;
@@ -1192,7 +1208,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (arr.length == 1) {
 			arr = p.split(",");
 		}
-		if (arr.length != 6) {
+		if (arr.length != 7) {
 			return null;
 		}
 		for (int i = 0; i < arr.length; i++) {
@@ -1201,11 +1217,15 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		return arr;
 	}
 
+	static int logMethodCounter = 1;
+
 	private void logMethod() {
 		if (true)
 			return;
 		StackTraceElement[] s = Thread.currentThread().getStackTrace();
-		IJ.log("METHOD: " + s[2].getMethodName());
+		IJ.log(logMethodCounter + " METHOD: " + s[2].getMethodName());
+		System.out.println(logMethodCounter + " METHOD: " + s[2].getMethodName());
+		logMethodCounter++;
 	}
 
 	private void logStack() {
@@ -1213,8 +1233,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			return;
 		StackTraceElement[] s = Thread.currentThread().getStackTrace();
 		IJ.log("STACK TRACE:");
+		System.out.println("STACK TRACE:");
 		for (int i = 0; i < s.length; i++) {
 			IJ.log("    " + s[i].toString());
+			System.out.println("    " + s[i].toString());
 		}
 	}
 
