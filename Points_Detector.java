@@ -97,6 +97,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	private void imageProcess() {
 		logMethod();
+		ImagePlus outputImage;
 		double[] p = parseParams();
 		windowRadius = (int) (p[0] + 0.5);
 		pointRadius = (int) (p[1] + 0.5);
@@ -119,22 +120,21 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				if (keepOriginalSlices)
 					is.addSlice(r.original);
 			}
-			ImagePlus outputImage = new ImagePlus("Output", is);
-			outputImage.show();
+			outputImage = new ImagePlus("Output", is);
 		} else if (keepOriginalSlices) {
 			ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
 			ProcessingResults r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput,
 				keepOriginalSlices, 0, 1);
 			is.addSlice(r.result);
 			is.addSlice(r.original);
-			ImagePlus outputImage = new ImagePlus("Output", is);
-			outputImage.show();
+			outputImage = new ImagePlus("Output", is);
 		} else {
 			ImageProcessor r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput,
 				keepOriginalSlices, 0, 1).result;
-			ImagePlus outputImage = new ImagePlus("Output", r);
-			outputImage.show();
+			outputImage = new ImagePlus("Output", r);
 		}
+		Utils.addProcessingInfo(sourceImage, outputImage, "Points Detector: " + params[0]);
+		outputImage.show();
 	}
 
 	private class ProcessingResults {

@@ -23,6 +23,7 @@ public class Slices_Correction implements PlugIn {
 			ImageProcessor ip = stack != null ? stack.getProcessor(i + 1) : sourceImage.getProcessor();
 			divImage(ip, numbers, i);
 		}
+		Utils.addProcessingInfo(sourceImage, sourceImage, "Slices Correction: " + numbers[0] + "; " + numbers[1] + "; " + numbers[2] + "; " + numbers[3]);
 		sourceImage.updateAndDraw();
 	}
 

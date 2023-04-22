@@ -35,6 +35,7 @@ public class Slices_Div implements PlugIn {
 			ImageProcessor ip = stack != null ? stack.getProcessor(i + 1) : sourceImage.getProcessor();
 			divImage(ip, numbers[i]);
 		}
+		Utils.addProcessingInfo(sourceImage, sourceImage, "Slices Div: " + text);
 		sourceImage.updateAndDraw();
 	}
 

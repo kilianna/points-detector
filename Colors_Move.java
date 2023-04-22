@@ -10,7 +10,8 @@ public class Colors_Move implements PlugIn {
 		ImagePlus sourceImage = IJ.getImage();
 		double min = sourceImage.getDisplayRangeMin();
 		double max = sourceImage.getDisplayRangeMax();
-		IJ.log(min + " ÷ " + max + "  ->  0 ÷ " + (max - min));
+		String info = min + " ÷ " + max + "  ->  0 ÷ " + (max - min);
+		IJ.log(info);
 		IJ.setMinAndMax(sourceImage, 0, max - min);
 		ImageStack stack = sourceImage.getStack();
 		int count = stack != null ? stack.size() : 1;
@@ -18,6 +19,7 @@ public class Colors_Move implements PlugIn {
 			ImageProcessor ip = stack != null ? stack.getProcessor(i + 1) : sourceImage.getProcessor();
 			modImage(ip, (int)(min + 0.5));
 		}
+		Utils.addProcessingInfo(sourceImage, sourceImage, "Reset colors balance: " + info);
 		sourceImage.updateAndDraw();
 	}
 
