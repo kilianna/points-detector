@@ -115,7 +115,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			for (int i = 1; i <= stack.size(); i++) {
 				ImageProcessor ip = stack.getProcessor(i);
 				ProcessingResults r = processSingleImage(ip, pointPixelOutput, backgroundPixelOutput,
-					keepOriginalSlices, i - 1, stack.size());
+						keepOriginalSlices, i - 1, stack.size());
 				is.addSlice(r.result);
 				if (keepOriginalSlices)
 					is.addSlice(r.original);
@@ -124,13 +124,13 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		} else if (keepOriginalSlices) {
 			ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
 			ProcessingResults r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput,
-				keepOriginalSlices, 0, 1);
+					keepOriginalSlices, 0, 1);
 			is.addSlice(r.result);
 			is.addSlice(r.original);
 			outputImage = new ImagePlus("Output", is);
 		} else {
 			ImageProcessor r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput,
-				keepOriginalSlices, 0, 1).result;
+					keepOriginalSlices, 0, 1).result;
 			outputImage = new ImagePlus("Output", r);
 		}
 		Utils.addProcessingInfo(sourceImage, outputImage, "Points Detector: " + params[0]);
@@ -156,7 +156,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		pixels = (float[]) src.getPixels();
 		width = src.getWidth();
 		height = src.getHeight();
-		makeHist(index, total);
+		makeHist();
+		IJ.showProgress(index, total);
 		outputToProcessor(dst, ip, pointPixelOutput, backgroundPixelOutput);
 		return new ProcessingResults(dst, original);
 	}
@@ -325,7 +326,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (d.valuesCount != null) {
 			d.valuesCount.clear();
 		}
-	
+
 		for (int i = 1; i <= d.maxMark; i++) {
 			listCurrSize = listNextSize;
 			listNextSize = 0;
@@ -635,7 +636,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			limitLineA = (float) p[3];
 			limitLineB = (float) p[4];
 			makeWindow();
-			makeHist(0, 1);
+			makeHist();
 			updatePoints(true);
 			updateNoise();
 			updatePreview();
@@ -764,16 +765,58 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		System.gc();
 	}
 
-	private void makeHist(int index, int total) {
+	private void makeHist() {
 		logMethod();
 		histSize = windowRadius + 1;
 		if (hist == null || hist.length != width * height * histSize) {
 			hist = new float[width * height * histSize];
 		}
-		for (int centerY = 0; centerY < height; centerY++) {
-			if (centerY % 10 == 9) {
-				IJ.showProgress(index * height + centerY, total * height);
+		int threadCount = Runtime.getRuntime().availableProcessors();
+		Runnable[] runnables = new Runnable[threadCount];
+		Thread[] threads = new Thread[threadCount];
+		for (int i = 1; i < threadCount; i++) {
+			final int beginY = (height * i) / threadCount;
+			final int endY = (height * (i + 1)) / threadCount;
+			runnables[i] = new Runnable() {
+				public void run() {
+					makeHistInner(beginY, endY);
+				}
+			};
+			threads[i] = new Thread(runnables[i]);
+			threads[i].start();
+		}
+		makeHistInner(0, height / threadCount);
+		for (int i = 1; i < threadCount; i++) {
+			try {
+				threads[i].join();
+			} catch (Exception ex) {
 			}
+		}
+	}
+
+	private static boolean useNativeHist = true;
+
+	private void makeHistInner(int beginY, int endY) {
+		if (useNativeHist) {
+			try {
+				makeHistNative(beginY, endY);
+			} catch (Throwable ex) {
+				useNativeHist = false;
+			}
+		}
+
+		if (!useNativeHist) {
+			makeHistVM(beginY, endY);
+		}
+	}
+
+	private void makeHistNative(int beginY, int endY) {
+		NativeTools.calHist(histSize, width, height, beginY, endY, indexDown, weightDown, indexUp, weightUp, pixels,
+				hist, new float[width * histSize]);
+	}
+
+	private void makeHistVM(int beginY, int endY) {
+		for (int centerY = beginY; centerY < endY; centerY++) {
 			for (int centerX = 0; centerX < width; centerX++) {
 				int startX = centerX - windowRadius;
 				int startY = centerY - windowRadius;
@@ -795,7 +838,6 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				}
 			}
 		}
-		IJ.showProgress(index * height, total * height);
 	}
 
 	private void makeWindow() {
@@ -1084,7 +1126,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		for (int i = usedCount; i < MAX_PROFILE_PLOTS; i++) {
 			profilePlot.replace(indexOffset + i, "connected circle", new double[0], new double[0]);
 		}
-		profilePlot.replace(1, "line", new double[0], new double[0] );
+		profilePlot.replace(1, "line", new double[0], new double[0]);
 		profilePlot.setLimitsToFit(true);
 		double[] limits = profilePlot.getLimits();
 		double margin = (limits[3] - limits[2]) * 0.05;
@@ -1194,7 +1236,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			res[5] = Integer.parseInt(params[6].replace(",", ".").trim());
 			res[6] = Integer.parseInt(params[7].replace(",", ".").trim());
 			if (res[0] < 4.5 || res[0] > 150 || res[1] < 1.5 || res[1] > res[0] * 0.75
-			    || res[2] < 1.5 || res[2] > res[0] - 0.5) {
+					|| res[2] < 1.5 || res[2] > res[0] - 0.5) {
 				return null;
 			}
 			return res;
