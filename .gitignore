@@ -2,3 +2,4 @@
 /dist/
 /*.tif*
 /*.png
+node_modules
