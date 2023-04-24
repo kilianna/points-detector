@@ -22,7 +22,7 @@ case "$OSTYPE" in
     ;;
   *msys* | *win*)
     gcc -c $FLAGS -I$JDK_INCLUDE -I$JDK_INCLUDE/win32 -o /tmp/NativeTools$ARCH.o NativeTools.c
-    gcc -shared -o build/native_tools$ARCH.dll /tmp/NativeTools$ARCH.o
+    gcc -shared -Wl,--kill-at -o build/native_tools$ARCH.dll /tmp/NativeTools$ARCH.o
     strip build/native_tools$ARCH.dll
     ;;
   *)
