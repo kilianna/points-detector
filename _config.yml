@@ -1,1 +1,7 @@
-theme: jekyll-theme-dinky
+title: "Points detector"
+description: "A plugin for point detecting in JI"
+markdown: kramdown
+remote_theme: pages-themes/dinky@v0.2.0
+show_downloads: false
+plugins:
+- jekyll-remote-theme
