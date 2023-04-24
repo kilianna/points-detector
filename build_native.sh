@@ -1,9 +1,30 @@
 #!/bin/bash
 set -e
 
-#TODO: Find header files
+ARCH=
+JDK_INCLUDE=$JAVA_HOME/include
+FLAGS="-O3 -Wall"
 
-#javah NativeTools
-gcc -fPIC -c -O2 -I /usr/lib/jvm/java-8-openjdk-amd64/include -I /usr/lib/jvm/java-8-openjdk-amd64/include/linux -Wall -o /tmp/NativeTools.o NativeTools.c
-gcc -shared -fPIC -o build/native_tools.so /tmp/NativeTools.o -nostdlib -nolibc
-strip build/native_tools.so
+if [ $# -ge 1 ]; then
+    ARCH=$1
+fi
+if [ $# -ge 2 ]; then
+    JDK_INCLUDE="$2"
+fi
+
+case "$OSTYPE" in
+  *darwin*)
+    gcc -c -fPIC $FLAGS -I$JDK_INCLUDE -I$JDK_INCLUDE/darwin -o /tmp/NativeTools.o NativeTools.c
+    gcc -dynamiclib -o build/native_tools.dylib /tmp/NativeTools.o -lc
+    strip build/native_tools.dylib
+    ;;
+  *msys* | *win*)
+    gcc -c $FLAGS -I$JDK_INCLUDE -I$JDK_INCLUDE/win32 -o /tmp/NativeTools.o NativeTools.c
+    gcc -shared -o build/native_tools$ARCH.dll /tmp/NativeTools.o
+    strip build/native_tools$ARCH.dll
+    ;;
+  *)
+    gcc -c -fPIC $FLAGS -I$JDK_INCLUDE -I$JDK_INCLUDE/linux -o /tmp/NativeTools.o NativeTools.c
+    gcc -shared -fPIC -o build/native_tools.so /tmp/NativeTools.o -lc
+    strip build/native_tools.so
+esac
