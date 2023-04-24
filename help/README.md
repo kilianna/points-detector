@@ -29,7 +29,7 @@ Część pluginu umożliwiająca wprowadzenie poprawek na wypalanie oraz głębo
 Współczynnik korekcyjny na wypalanie dla konkretnego obrazu w stosie obliczany jest według wyznaczonego empirycznie wzoru:
 
 $$
-  time\\_corr = 0.765*e^{(\frac{-t}{443.85})}+0.235
+  time\\\_corr = 0.765*e^{(\frac{-t}{443.85})}+0.235
 $$
 
 $$
@@ -46,7 +46,7 @@ Poszczególne wartości pikseli na obrazie są następnie dzielone przez obliczo
 Analogicznie wprowadzane są poprawki na głębokość. Tutaj także posługujemy się wzorem wyznaczonym empirycznie:
 
 $$
-depth\\_corr = e^{-0.015 * d}
+depth\\\_corr = e^{-0.015 * d}
 $$
 
 $$
