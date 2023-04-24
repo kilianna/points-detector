@@ -2,16 +2,32 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermissions;
-
 import ij.IJ;
+
+/*
+Use following command to update C header file after native function signature change:
+        javah NativeTools
+
+Use "build_native.sh" script to compile native library.
+
+*/
 
 public class NativeTools {
 
     static {
         try {
-            String libName = "native_tools.so";
-            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                libName = "native_tools.dll";
+            String os = System.getProperty("os.name").toLowerCase();
+            String libName;
+            if (os.contains("windows")) {
+                if (System.getProperty("os.arch").contains("64")) {
+                    libName = "native_tools64.dll";
+                } else {
+                    libName = "native_tools32.dll";
+                }
+            } else if (os.contains("mac") || os.contains("darwin")) {
+                libName = "native_tools.dylib";
+            } else {
+                libName = "native_tools.so";
             }
             String prefDir = IJ.getDirectory("preferences");
             InputStream inputStream = NativeTools.class.getResourceAsStream(libName);

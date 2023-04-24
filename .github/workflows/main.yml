@@ -8,7 +8,50 @@ on:
         description: 'Release Tag'     
         required: false
 jobs:
+  win_native:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-msys2
+          path: C:/msys64/var/cache/pacman/pkg
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - name: Build Windows native libraries
+        shell: bash
+        run: |
+          echo \#!/bin/bash > script.sh
+          echo set -e >> script.sh
+          echo pacman -S --noconfirm mingw-w64-ucrt-x86_64-gcc >> script.sh
+          echo pacman -S --noconfirm mingw-w64-i686-gcc >> script.sh
+          echo touch pacman.done >> script.sh
+          /c/msys64/ucrt64.exe ./script.sh
+          cnt=1
+          until [ -f pacman.done ]; do
+            sleep 1
+            cnt=$((cnt+1))
+            if (( cnt > 180 )); then
+              echo pacman timeout
+              exit 1
+            fi
+          done
+          /c/msys64/ucrt64.exe ./build_native.sh 64
+          /c/msys64/mingw32.exe ./build_native.sh 32
+          sleep 5
+          if [ ! -f build/native_tools32.dll ] || [ ! -f build/native_tools64.dll ]; then
+            echo Compilation failed
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v3.1.0
+        with:
+          name: IJ Plugin win native lib
+          path: ./build/*
+          retention-days: 1
   build:
+    needs: win_native
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,6 +63,13 @@ jobs:
         run: |
           mkdir -p jars
           wget -O jars/ij-1.53c.jar https://repo1.maven.org/maven2/net/imagej/ij/1.53c/ij-1.53c.jar
+      - uses: actions/download-artifact@v3
+        with:
+          name: IJ Plugin win native lib
+          path: ./build/
+      - name: Build native library
+        run: |
+          ./build_native.sh
       - name: Build the plugin
         run: |
           ./buduj.sh ./

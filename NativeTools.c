@@ -38,7 +38,7 @@ JNIEXPORT void JNICALL Java_NativeTools_calHist(
     jfloat* tempBufferPtr = NULL;
     jfloat* linePtr;
 
-    if (isCopy || 1) {
+    if (isCopy) {
       (*env)->ReleaseFloatArrayElements(env, output, outputPtr, JNI_ABORT);
       outputPtr = NULL;
       tempBufferPtr = (*env)->GetFloatArrayElements(env, tempBuffer, NULL);
