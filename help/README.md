@@ -2,9 +2,9 @@
 
 ## Instalacja i informacje wstępne
 
-Aby móc używać zestawu narzędzi do przetwarzania obrazów z mikroskopu w celu wyszukania śladów po promieniowaniu należy pobrać plik Points_Detector.jar i umieścić go w katalogu Plugins (podkatalog katalogu ImageJ lub Figi.app). Po ponownym uruchomieniu programu powinien być on widoczny w menu rozwijanym w ImageJ: **Plugins -> FNDT IFJ**.
+Aby móc używać zestawu narzędzi do przetwarzania obrazów z mikroskopu w celu wyszukania śladów po promieniowaniu należy pobrać plik Points_Detector.jar i umieścić go w katalogu Plugins (podkatalog katalogu ImageJ lub Figi.app). Po ponownym uruchomieniu programu powinien być on widoczny w menu rozwijanym w ImageJ: **Plugins -> FNTD IFJ**.
 
-W skład pakietu **FNDT IFJ** wchodzą następujące narzędzia:
+W skład pakietu **FNTD IFJ** wchodzą następujące narzędzia:
 1. _Reset color balance_ - plugin przesuwający zakres wyświetlania (display range) tak, aby 0 odpowiadało kolorowi czarnemu.
 2. _Slices Correction_ - plugin służący wprowadzaniu do stosu obrazów poprawek na wypalanie i głębokość.
 3. _Slice Dev_ - plugin pozwalający na wprowadzenie dodatkowych poprawek do stosu obrazów.
