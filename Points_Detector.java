@@ -433,8 +433,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		int takePixels = 3;
 		double[] p = parseParams();
 		if (p != null) {
-			skipPixels = Math.min(16, Math.max(0, (int)(p[4] + 0.5)));
-			takePixels = Math.min(32, Math.max(0, (int)(p[5] + 0.5)));
+			skipPixels = Math.min(16, Math.max(0, (int)(p[5] + 0.5)));
+			takePixels = Math.min(32, Math.max(0, (int)(p[6] + 0.5)));
 		}
 		CalculateNetData d = new CalculateNetData();
 		d.netType = netType;
