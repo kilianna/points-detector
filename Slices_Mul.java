@@ -6,7 +6,7 @@ import java.awt.*;
 import java.util.*;
 
 
-public class Slices_Div implements PlugIn {
+public class Slices_Mul implements PlugIn {
 
 	@Override
 	public void run(String arg) {
@@ -31,11 +31,20 @@ public class Slices_Div implements PlugIn {
 				return;
 			}
 		}
+		double whitest = 0;
+		double black = 0;
 		for (int i = 0; i < count; i++) {
 			ImageProcessor ip = stack != null ? stack.getProcessor(i + 1) : sourceImage.getProcessor();
-			divImage(ip, numbers[i]);
+			double r = mulImage(ip, numbers[i]);
+			whitest = Math.max(r, whitest);
+			black = ip.getMin();
 		}
-		Utils.addProcessingInfo(sourceImage, sourceImage, "Slices Div: " + text);
+		if ((int)(whitest + 0.5) > 65535) {
+			IJ.log("Display range too high: " + whitest + ", maximum is: 65535");
+			whitest = 65535;
+		}
+		IJ.setMinAndMax(sourceImage, black, (int)(whitest + 0.5));
+		Utils.addProcessingInfo(sourceImage, sourceImage, "Slices Multiply: " + text);
 		sourceImage.updateAndDraw();
 	}
 
@@ -50,7 +59,7 @@ public class Slices_Div implements PlugIn {
 		return vect.get(0).getText();
 	}
 
-	private void divImage(ImageProcessor ip, double number) {
+	private double mulImage(ImageProcessor ip, double number) {
 		double black = ip.getMin();
 		double white = ip.getMax();
 		int width = ip.getWidth();
@@ -61,11 +70,12 @@ public class Slices_Div implements PlugIn {
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 					double v = (double)((int)px[x + width * y] & 0xFFFF);
-					v = (v - black) / number + black;
-					px[x + width * y] = (short)(0.5 + Math.max(black, Math.min(white, Math.round(v))));
+					v = (v - black) * number + black;
+					px[x + width * y] = (short)(int)(0.5 + Math.max(black, Math.min(65535.0, Math.round(v))));
 				}
 			}
 		}
+		return (white - black) * number + black;
 	}
 
 	private String[] splitParams(String p) {

@@ -13,7 +13,7 @@ fi
 
 mkdir -p build
 mkdir -p dist
-${JDK_PATH}javac -encoding utf8 -cp ${FIJI_PATH}jars/ij-1.*.jar -d build Points_Detector.java Slices_Correction.java Slices_Div.java Colors_Move.java Utils.java NativeTools.java
+${JDK_PATH}javac -encoding utf8 -cp ${FIJI_PATH}jars/ij-1.*.jar -d build Points_Detector.java Slices_Correction.java Slices_Mul.java Colors_Move.java Utils.java NativeTools.java
 cd build
 ${JDK_PATH}jar cvf ../dist/Points_Detector.jar ../plugins.config *.*
 cd ..
