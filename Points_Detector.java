@@ -82,7 +82,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			IJ.error("Select image");
 		}
 		if (lastParams == null) {
-			lastParams = "20; 5; 6; 1; 0; 2; 3";
+			lastParams = "20; 5; 6; 1; 200; 2; 3";
 		}
 		showDialog(false);
 		if (getCheckbox(MANUAL_MODE_CHECK_BOX) && !dialog.wasCanceled()) {
@@ -134,6 +134,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			outputImage = new ImagePlus("Output", r);
 		}
 		Utils.addProcessingInfo(sourceImage, outputImage, "Points Detector: " + params[0]);
+		Utils.addAnnotation(outputImage, "Points Detector: points " + getChoiceString(POINT_COLOR_CHOICE) + ", background " + getChoiceString(BACKGROUND_COLOR_CHOICE));
 		outputImage.show();
 	}
 
@@ -661,6 +662,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	private int getChoice(int id) {
 		return ((Choice) dialog.getChoices().get(id)).getSelectedIndex();
+	}
+
+	private String getChoiceString(int id) {
+		return ((Choice) dialog.getChoices().get(id)).getSelectedItem();
 	}
 
 	private void showDialog(boolean manual) {

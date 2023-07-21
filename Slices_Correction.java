@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Slices_Correction implements PlugIn {
 
-	static double[] prevNumbers = new double[]{0.0, 0.0, 0.0, 0.0};
+	static double[] prevNumbers = new double[]{0.0, 1.0, 0.0, 30.0};
 
 	@Override
 	public void run(String arg) {
@@ -64,6 +64,8 @@ public class Slices_Correction implements PlugIn {
 		double white = ip.getMax();
 		int width = ip.getWidth();
 		int height = ip.getHeight();
+		double maxValue = Double.NEGATIVE_INFINITY;
+		double minValue = Double.POSITIVE_INFINITY;
 		if (ip instanceof ShortProcessor) {
 			ShortProcessor processor = (ShortProcessor)ip;
 			short[] px = (short[])processor.getPixels();
@@ -71,9 +73,18 @@ public class Slices_Correction implements PlugIn {
 				for (int x = 0; x < width; x++) {
 					double v = (double)((int)px[x + width * y] & 0xFFFF);
 					v = (v - black) / div + black;
-					px[x + width * y] = (short)(0.5 + Math.max(black, Math.min(white, Math.round(v))));
+					v = Math.round(v);
+					px[x + width * y] = (short)(0.5 + Math.max(black, Math.min(white, v)));
+					maxValue = Math.max(maxValue, v);
+					minValue = Math.min(minValue, v);
 				}
 			}
+		}
+		if (minValue < black) {
+			IJ.log("Values out of range on slice " + index + ". Min. value " + minValue + " < black value " + black);
+		}
+		if (maxValue > white) {
+			IJ.log("Values out of range on slice " + index + ". Max. value " + maxValue + " > white value " + white);
 		}
 	}
 

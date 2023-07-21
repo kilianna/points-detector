@@ -3,5 +3,6 @@
 		"lib/**/*.jar",
 		"/home/doki/my/Fiji.app/jars/imagej-2.9.0.jar"
 	],
-	"java.autobuild.enabled": false
+	"java.autobuild.enabled": false,
+	"java.compile.nullAnalysis.mode": "disabled"
 }
