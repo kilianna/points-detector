@@ -33,10 +33,33 @@ public class Utils {
             if (value.startsWith("File: ")) fileName = value.substring(6);
         }
         if (expectedFileName != null && !fileName.equals(expectedFileName)) {
-            lastIndex++;
-            dst.setProp("Annotation[" + lastIndex + "]", "File: " + expectedFileName);
+            int sep = Math.max(expectedFileName.lastIndexOf('/'), expectedFileName.lastIndexOf('\\'));
+            if (expectedFileName.length() > 73 && sep > 0) {
+                lastIndex = addProp(dst, lastIndex, "Path: " + expectedFileName.substring(0, sep));
+                lastIndex = addProp(dst, lastIndex, "File: " + expectedFileName.substring(sep + 1));
+            } else {
+                lastIndex = addProp(dst, lastIndex, "File: " + expectedFileName);
+            }
         }
-        lastIndex++;
-        dst.setProp("Annotation[" + lastIndex + "]", text);
+        addProp(dst, lastIndex, text);
+    }
+
+    private static int addProp(ImagePlus dst, int index, String text) {
+        if (text.length() >= 80) {
+            index++;
+            dst.setProp("Annotation[" + index + "]", text.substring(0, 76) + "...");
+            text = text.substring(76);
+            while (text.length() > 76) {
+                index++;
+                dst.setProp("Annotation[" + index + "]", "..." + text.substring(0, 73) + "...");
+                text = text.substring(73);
+            }
+            index++;
+            dst.setProp("Annotation[" + index + "]", "..." + text);
+        } else {
+            index++;
+            dst.setProp("Annotation[" + index + "]", text);
+        }
+        return index;
     }
 }
