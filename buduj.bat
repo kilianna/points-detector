@@ -8,7 +8,7 @@ if not exist %FIJI_PATH%\jars\ij-1.*.jar echo Cannot find ImageJ jar file. Insta
 cd /d %~dp0
 mkdir build 2> NUL > NUL
 mkdir dist 2> NUL > NUL
-%JDK_PATH%\javac -encoding utf8 -cp %FIJI_PATH%\jars\ij-1.*.jar -d build Points_Detector.java Slices_Correction.java Slices_Mul.java Colors_Move.java Utils.java NativeTools.java    || goto error
+%JDK_PATH%\javac -encoding utf8 -cp %FIJI_PATH%\jars\ij-1.*.jar -d build Points_Detector.java Slices_Correction.java Slices_Mul.java Colors_Move.java Stack_CSV.java Utils.java NativeTools.java    || goto error
 cd build
 %JDK_PATH%\jar cvf ..\dist\Points_Detector.jar ..\plugins.config *.*          || goto error
 cd ..
