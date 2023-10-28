@@ -776,7 +776,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	private int bordersToProcess;
 	private int threadsToWait;
 	final Lock lock = new ReentrantLock();
-	final Condition allThreadReady  = lock.newCondition(); 
+	final Condition allThreadsReady  = lock.newCondition(); 
 
 	private void resetBorderToProcess(int threads) {
 		lock.lock();
@@ -794,13 +794,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		try {
 			if (threadsToWait > 0) {
 				threadsToWait--;
-				allThreadReady.signal();
 				while (threadsToWait > 0) {
 					try {
-						allThreadReady.await();
+						allThreadsReady.await();
 					} catch (InterruptedException e) {}
 				}
-				allThreadReady.signal();
+				allThreadsReady.signal();
 			}
 			if (bordersToProcess == 0) return null;
 			index = 0;
