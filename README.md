@@ -5,3 +5,5 @@
 Download link: [`Points_Detector.jar`](https://github.com/kildot/points-detector/releases/latest/download/Points_Detector.jar)
 
 Help link: [`Points Detector Help`](help/README.md)
+
+Lastest development version: [`Points_Detector.jar`](https://github.com/kildot/points-detector/raw/dev-binaries/Points_Detector.jar)
