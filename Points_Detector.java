@@ -6,6 +6,9 @@ import ij.process.*;
 import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.SwingUtilities;
 
@@ -770,6 +773,64 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		System.gc();
 	}
 
+	private int bordersToProcess;
+	private int threadsToWait;
+	final Lock lock = new ReentrantLock();
+	final Condition allThreadReady  = lock.newCondition(); 
+
+	private void resetBorderToProcess(int threads) {
+		lock.lock();
+		try {
+			bordersToProcess = 0xFF;
+			threadsToWait = threads;
+		} finally {
+		  lock.unlock();
+		}
+	}
+
+	private Rectangle getNextBorderToProcess() {
+		int index;
+		lock.lock();
+		try {
+			if (threadsToWait > 0) {
+				threadsToWait--;
+				allThreadReady.signal();
+				while (threadsToWait > 0) {
+					try {
+						allThreadReady.await();
+					} catch (InterruptedException e) {}
+				}
+				allThreadReady.signal();
+			}
+			if (bordersToProcess == 0) return null;
+			index = 0;
+			while ((bordersToProcess & (1 << index)) == 0) index++;
+			bordersToProcess ^= (1 << index);
+		} finally {
+		  lock.unlock();
+		}
+		int marginX2 = width - windowRadius;
+		int marginY1 = windowRadius;
+		int marginY2 = height - windowRadius;
+		int midX = width / 2;
+		int midY = height / 2;
+		int width1 = midX;
+		int width2 = width - midX;
+		int height1 = midY - windowRadius;
+		int height2 = height - midY - windowRadius;
+		switch (index) {
+			case 0: return new Rectangle(0, 0, width1, windowRadius);
+			case 1: return new Rectangle(0, marginY1, windowRadius, height1);
+			case 2: return new Rectangle(0, midY, windowRadius, height2);
+			case 3: return new Rectangle(0, marginY2, width1, windowRadius);
+			case 4: return new Rectangle(midX, 0, width2, windowRadius);
+			case 5: return new Rectangle(marginX2, marginY1, windowRadius, height1);
+			case 6: return new Rectangle(marginX2, midY, windowRadius, height2);
+			case 7: return new Rectangle(midX, marginY2, width2, windowRadius);
+			default: return null;
+		}
+	}
+
 	private void makeHist() {
 		logMethod();
 		histSize = windowRadius + 1;
@@ -777,6 +838,11 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			hist = new float[width * height * histSize];
 		}
 		int threadCount = Runtime.getRuntime().availableProcessors();
+		while (threadCount > 0 && (height - 2 * windowRadius) / threadCount <= windowRadius) {
+			threadCount--;
+		}
+		threadCount = Math.max(1, threadCount);
+		resetBorderToProcess(threadCount);
 		Runnable[] runnables = new Runnable[threadCount];
 		Thread[] threads = new Thread[threadCount];
 		for (int i = 1; i < threadCount; i++) {
@@ -813,6 +879,11 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (!useNativeHist) {
 			makeHistVM(beginY, endY);
 		}
+
+		Rectangle border = getNextBorderToProcess();
+		if (border != null) {
+			makeHistBorder(border.x, border.y, border.x + border.width, border.y + border.height);
+		}
 	}
 
 	private void makeHistNative(int beginY, int endY) {
@@ -840,6 +911,36 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 								+ y * windowSize]
 								* pixels[startX + x + (startY + y) * width];
 					}
+				}
+			}
+		}
+	}
+
+	private void makeHistBorder(int beginX, int beginY, int endX, int endY) {
+		float[] weightSum = new float[histSize];
+		for (int centerY = beginY; centerY < endY; centerY++) {
+			for (int centerX = beginX; centerX < endX; centerX++) {
+				int startX = centerX - windowRadius;
+				int startY = centerY - windowRadius;
+				int offset = (centerX + centerY * width) * histSize;
+				Arrays.fill(hist, offset, offset + histSize, 0.0f);
+				Arrays.fill(weightSum, 0.0f);
+				for (int x = 0; x < windowSize; x++) {
+					for (int y = 0; y < windowSize; y++) {
+						if (startX + x >= 0 && startY + y >= 0 && startX + x < width && startY + y < height) {
+							float weight = weightUp[x + y * windowSize];
+							int index = indexUp[x + y * windowSize];
+							hist[offset + index] += weight * pixels[startX + x + (startY + y) * width];
+							weightSum[index] += weight;
+							weight = weightDown[x + y * windowSize];
+							index = indexDown[x + y * windowSize];
+							hist[offset + index] += weight * pixels[startX + x + (startY + y) * width];
+							weightSum[index] += weight;
+						}
+					}
+				}
+				for (int i = 0; i < histSize; i++) {
+					hist[offset + i] /= weightSum[i];
 				}
 			}
 		}
@@ -1035,8 +1136,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
 		double[][] profileY = new double[MAX_PROFILE_PLOTS][histSize];
-		for (int i = 0; i < points.length; i++) {
-			int histOffset = histSize * (points[i].x + points[i].y * width);
+		int plotIndex = 0;
+		int profileIndex = 0;
+		int profileStep = Math.max(1, points.length / MAX_PROFILE_PLOTS);
+		for (int pointIndex = 0; pointIndex < points.length; pointIndex++) {
+			int x = points[pointIndex].x;
+			int y = points[pointIndex].y;
+			if (x < 0 || y < 0 || x >= width || y >= height) continue;
+			int histOffset = histSize * (x + y * width);
 			float firstValue = 0;
 			for (int k = 0; k <= pointRadius; k++) {
 				firstValue += hist[histOffset + k];
@@ -1047,19 +1154,25 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				lastValue += hist[histOffset + k];
 			}
 			lastValue /= (float) (histSize - backgroundRadius);
-			yy[i] = firstValue;
-			xx[i] = lastValue;
-			if (i < MAX_PROFILE_PLOTS) {
+			yy[plotIndex] = firstValue;
+			xx[plotIndex] = lastValue;
+			if (plotIndex % profileStep == 0 && profileIndex < MAX_PROFILE_PLOTS) {
 				for (int k = 0; k < histSize; k++) {
-					profileY[i][k] = hist[histOffset + k];
+					profileY[profileIndex][k] = hist[histOffset + k];
 				}
+				profileIndex++;
 			}
+			plotIndex++;
+		}
+		if (plotIndex < xx.length) {
+			xx = Arrays.copyOfRange(xx, 0, plotIndex);
+			yy = Arrays.copyOfRange(yy, 0, plotIndex);
 		}
 		plot.setColor(Color.BLUE);
 		plot.replace(0, "circle", xx, yy);
 		plot.setLimitsToFit(true);
 		updateLimitLine();
-		updateProfilePlot(profileY, points.length, false);
+		updateProfilePlot(profileY, profileIndex, false);
 	}
 
 	private void updatePoints(boolean force) {
@@ -1072,8 +1185,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
 		double[][] profileY = new double[MAX_PROFILE_PLOTS][histSize];
-		for (int i = 0; i < points.length; i++) {
-			int histOffset = histSize * (points[i].x + points[i].y * width);
+		int plotIndex = 0;
+		int profileIndex = 0;
+		int profileStep = Math.max(1, points.length / MAX_PROFILE_PLOTS);
+		for (int pointIndex = 0; pointIndex < points.length; pointIndex++) {
+			int x = points[pointIndex].x;
+			int y = points[pointIndex].y;
+			if (x < 0 || y < 0 || x >= width || y >= height) continue;
+			int histOffset = histSize * (x + y * width);
 			float firstValue = 0;
 			for (int k = 0; k <= pointRadius; k++) {
 				firstValue += hist[histOffset + k];
@@ -1084,13 +1203,19 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				lastValue += hist[histOffset + k];
 			}
 			lastValue /= (float) (histSize - backgroundRadius);
-			yy[i] = firstValue;
-			xx[i] = lastValue;
-			if (i < MAX_PROFILE_PLOTS) {
+			yy[plotIndex] = firstValue;
+			xx[plotIndex] = lastValue;
+			if (plotIndex % profileStep == 0 && profileIndex < MAX_PROFILE_PLOTS) {
 				for (int k = 0; k < histSize; k++) {
-					profileY[i][k] = hist[histOffset + k];
+					profileY[profileIndex][k] = hist[histOffset + k];
 				}
+				profileIndex++;
 			}
+			plotIndex++;
+		}
+		if (plotIndex < xx.length) {
+			xx = Arrays.copyOfRange(xx, 0, plotIndex);
+			yy = Arrays.copyOfRange(yy, 0, plotIndex);
 		}
 		boolean update = true;
 		if (oldPointsX != null && !force && oldPointsX.length == xx.length) {
@@ -1109,7 +1234,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			plot.replace(1, "circle", xx, yy);
 			plot.setLimitsToFit(true);
 			updateLimitLine();
-			updateProfilePlot(profileY, points.length, true);
+			updateProfilePlot(profileY, profileIndex, true);
 		}
 	}
 
