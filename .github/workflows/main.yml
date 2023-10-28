@@ -67,6 +67,10 @@ jobs:
         with:
           name: IJ Plugin win native lib
           path: ./build/
+      - name: Delete Artifact
+        uses: GeekyEggo/delete-artifact@v2
+        with:
+          name: IJ Plugin win native lib
       - name: Build native library
         run: |
           ./build_native.sh
