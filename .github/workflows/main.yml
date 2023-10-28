@@ -83,6 +83,23 @@ jobs:
           name: IJ Plugin
           path: ./dist/*
           retention-days: 32
+      - name: Checkout dev-binaries
+        uses: actions/checkout@v3
+        with:
+          ref: dev-binaries
+          fetch-depth: 0
+          path: _git_tmp
+      - name: Upload dev-binaries
+        run: |
+          cd _git_tmp
+          git config --global credential.helper ""
+          git config --global --add credential.helper store
+          echo "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com" >> ~/.git-credentials
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git config user.name "${{ github.actor }}"
+          git add -A
+          git commit --amend -m "Persistent data update"
+          git push --force
       - name: Release
         uses: softprops/action-gh-release@v1
         if: "${{ github.event.inputs.tag_name != '' }}"
