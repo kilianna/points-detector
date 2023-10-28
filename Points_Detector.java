@@ -36,13 +36,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	private static String lastParams;
 	private ImagePlus sourceImage;
 	private ImagePlus previewImage;
-	private ImagePlus pointsImage;
-	private ImagePlus noiseImage;
 	private NonBlockingGenericDialog dialog;
 	private ImageProcessor previewProcessor;
 	private Timer timer;
 	private TimerTask updateNoiseTask;
 	private TimerTask updatePointsTask;
+	private Roi pointsRoi;
+	private Roi noiseRoi;
+	private boolean selectPointsCheckBoxEnabled;
 
 	// Plot
 	private Plot plot;
@@ -595,12 +596,6 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		width = fp.getWidth();
 		height = fp.getHeight();
 
-		// Create helper image windows
-		pointsImage = new ImagePlus("Points selection", ip.duplicate());
-		pointsImage.show();
-		noiseImage = new ImagePlus("Noise selection", ip.duplicate());
-		noiseImage.show();
-
 		// Create preview image
 		ImageStack is = new ImageStack(width, height);
 		previewProcessor = ip.duplicate();
@@ -652,6 +647,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	static final int KEEP_ORIGINAL_SLICES = 1;
 	static final int MANUAL_MODE_CHECK_BOX = 2;
 	static final int PROFILE_WINDOW_CHECK_BOX = 3;
+	static final int SELECT_POINTS_CHECK_BOX = 4;
 	static final int POINT_COLOR_CHOICE = 0;
 	static final int BACKGROUND_COLOR_CHOICE = 1;
 
@@ -673,13 +669,14 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	private void showDialog(boolean manual) {
 		logMethod();
-		boolean[] initCheckBox = new boolean[] { false, false, false, false };
+		boolean[] initCheckBox = new boolean[] { false, false, false, false, false };
 		int[] initChoice = new int[] { PIXEL_OUTPUT_WHITE, PIXEL_OUTPUT_BLACK };
 		if (dialog != null) {
 			initCheckBox[0] = getCheckbox(0);
 			initCheckBox[1] = getCheckbox(1);
 			initCheckBox[2] = getCheckbox(2);
 			initCheckBox[3] = getCheckbox(3);
+			initCheckBox[4] = getCheckbox(4);
 			initChoice[0] = ((Choice) dialog.getChoices().get(0)).getSelectedIndex();
 			initChoice[1] = ((Choice) dialog.getChoices().get(1)).getSelectedIndex();
 			dialog.dispose();
@@ -718,6 +715,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (manual) {
 			dialog.addCheckbox("Manual mode - uncheck to exit manual mode", initCheckBox[2]);
 			dialog.addCheckbox("Show profile plot", initCheckBox[3]);
+			dialog.addCheckbox("Select points", initCheckBox[4]);
+			selectPointsCheckBoxEnabled = initCheckBox[4];
+			IJ.setTool(selectPointsCheckBoxEnabled ? Toolbar.POINT : Toolbar.OVAL);
 		} else {
 			dialog.addCheckbox("Manual mode", initCheckBox[2]);
 		}
@@ -744,10 +744,6 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		Roi.removeRoiListener(this);
 		if (previewImage != null && previewImage.getWindow() != null)
 			previewImage.getWindow().dispose();
-		if (pointsImage != null && pointsImage.getWindow() != null)
-			pointsImage.getWindow().dispose();
-		if (noiseImage != null && noiseImage.getWindow() != null)
-			noiseImage.getWindow().dispose();
 		if (plot != null && plot.getImagePlus() != null && plot.getImagePlus().getWindow() != null)
 			plot.getImagePlus().getWindow().dispose();
 		if (profilePlot != null && profilePlot.getImagePlus() != null && profilePlot.getImagePlus().getWindow() != null)
@@ -757,8 +753,6 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (timer != null)
 			timer.cancel();
 		previewImage = null;
-		pointsImage = null;
-		noiseImage = null;
 		plot = null;
 		profilePlot = null;
 		dialog = null;
@@ -986,28 +980,47 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 	}
 
+	private Roi getPointsRoi() {
+		if (getCheckbox(SELECT_POINTS_CHECK_BOX)) {
+			pointsRoi = previewImage.getRoi();
+			//if (pointsRoi == null) IJ.log("POINTS - null"); else IJ.log("POINTS - " + pointsRoi.getClass().getName());
+		}
+		return pointsRoi;
+	}
+
+	private Roi getNoiseRoi() {
+		if (!getCheckbox(SELECT_POINTS_CHECK_BOX)) {
+			noiseRoi = previewImage.getRoi();
+			//if (noiseRoi == null) IJ.log("NOISE - null"); else IJ.log("NOISE - " + noiseRoi.getClass().getName());
+		}
+		return noiseRoi;
+	}
+
 	@Override
 	public void roiModified(ImagePlus imp, int id) {
 		if (imp == null)
 			return;
 		logMethod();
-		if (imp == pointsImage) {
-			if (updatePointsTask != null)
-				updatePointsTask.cancel();
-			updatePointsTask = invokeLater(new Runnable() {
-				public void run() {
-					updatePoints(false);
-				}
-			}, 500, 500);
-			updatePoints(true);
-		} else if (imp == noiseImage) {
-			if (updateNoiseTask != null)
-				updateNoiseTask.cancel();
-			updateNoiseTask = invokeLater(new Runnable() {
-				public void run() {
-					updateNoise();
-				}
-			}, 100, -1);
+		if (imp == previewImage && dialog != null && id != RoiListener.DELETED) {
+			//IJ.log("ROI MODIFIED - " + id);
+			if (getCheckbox(SELECT_POINTS_CHECK_BOX)) {
+				if (updatePointsTask != null)
+					updatePointsTask.cancel();
+				updatePointsTask = invokeLater(new Runnable() {
+					public void run() {
+						updatePoints(false);
+					}
+				}, 500, 500);
+				updatePoints(true);
+			} else {
+				if (updateNoiseTask != null)
+					updateNoiseTask.cancel();
+				updateNoiseTask = invokeLater(new Runnable() {
+					public void run() {
+						updateNoise();
+					}
+				}, 100, -1);
+			}
 		} else {
 			ImagePlus plotImage = plot.getImagePlus();
 			if (imp == plotImage && id != RoiListener.DELETED) {
@@ -1126,7 +1139,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void updateNoise() {
-		Roi roi = noiseImage.getRoi();
+		Roi roi = getNoiseRoi();
 		if (roi == null) {
 			return;
 		}
@@ -1175,7 +1188,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void updatePoints(boolean force) {
-		Roi roi = pointsImage.getRoi();
+		Roi roi = getPointsRoi();
 		if (roi == null) {
 			return;
 		}
@@ -1331,6 +1344,27 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 				profilePlotWindow.setVisible(false);
 				profilePlotWindow = null;
 			}
+			boolean pointsSelection = getCheckbox(SELECT_POINTS_CHECK_BOX);
+			if (!selectPointsCheckBoxEnabled && pointsSelection) {
+				IJ.setTool(Toolbar.POINT);
+				//IJ.log("POINTS - YES");
+				noiseRoi = previewImage.getRoi();
+				//if (noiseRoi == null) IJ.log("NOISE - null"); else IJ.log("NOISE - " + noiseRoi.getClass().getName());
+				previewImage.killRoi();
+				if (pointsRoi != null) {
+					previewImage.setRoi(pointsRoi);
+				}
+			} else if (selectPointsCheckBoxEnabled && !pointsSelection) {
+				IJ.setTool(Toolbar.OVAL);
+				//IJ.log("POINTS - NO");
+				pointsRoi = previewImage.getRoi();
+				//if (pointsRoi == null) IJ.log("POINTS - null"); else IJ.log("POINTS - " + pointsRoi.getClass().getName());
+				previewImage.killRoi();
+				if (noiseRoi != null) {
+					previewImage.setRoi(noiseRoi);
+				}
+			}
+			selectPointsCheckBoxEnabled = pointsSelection;
 		}
 		double[] parsed = parseParams();
 		if (parsed != null && plot != null) {
