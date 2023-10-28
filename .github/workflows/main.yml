@@ -91,6 +91,7 @@ jobs:
           path: _git_tmp
       - name: Upload dev-binaries
         run: |
+          cp dist/* _git_tmp/
           cd _git_tmp
           git config --global credential.helper ""
           git config --global --add credential.helper store
@@ -98,7 +99,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
           git add -A
-          git commit --amend -m "Persistent data update"
+          git commit --amend -m "Latest development binaries"
           git push --force
       - name: Release
         uses: softprops/action-gh-release@v1
