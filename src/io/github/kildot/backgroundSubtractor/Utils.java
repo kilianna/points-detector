@@ -1,3 +1,5 @@
+package io.github.kildot.backgroundSubtractor;
+
 import ij.ImagePlus;
 import ij.io.FileInfo;
 

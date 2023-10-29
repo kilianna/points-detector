@@ -1,3 +1,5 @@
+package io.github.kildot.backgroundSubtractor;
+
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.StandardCopyOption;

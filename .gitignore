@@ -1,4 +1,11 @@
 /build/
 /dist/
 /*.tif*
-/*.png
+/src/native_tools*
+/nbproject/private/
+/nbproject/Makefile-*.mk
+/nbproject/Package-*.bash
+/nbproject/genfiles.properties
+/nbbuild/
+/nbdist/
+/.nb-gradle/

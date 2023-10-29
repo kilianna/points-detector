@@ -1,0 +1,14 @@
+
+
+Setup NetBeans:
+ 1. Add new platform from Fiji.app/jdk/
+ 2. Update references to ji-*.*.jar and imagej-launcher-*.*.*.jar if needed
+ 3. Update Run options (linux only instructions):
+    - Run Fiji
+    - Get PID of Fiji by running "xprop _NET_WM_PID" in terminal and clicking
+      the window
+    - Get command line by running "ps -p [PID] -o args | cat"
+    - VM Options: after "java" and before "net.imagej.launcher.ClassLauncher"
+    - Main class: "net.imagej.launcher.ClassLauncher"
+    - Arguments: all after "net.imagej.launcher.ClassLauncher"
+

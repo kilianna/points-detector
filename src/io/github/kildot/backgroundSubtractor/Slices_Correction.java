@@ -1,3 +1,5 @@
+package io.github.kildot.backgroundSubtractor;
+
 import ij.*;
 import ij.gui.*;
 import ij.plugin.*;
