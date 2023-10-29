@@ -12,7 +12,7 @@
     <import file="nbproject/build-impl.xml"/>
     <target name="-pre-compile">
         <exec executable="bash">
-            <arg value="aux/BuildNative.sh"/>
+            <arg value="other/BuildNative.sh"/>
             <arg value="${platform.home}"/>
         </exec>
     </target>
