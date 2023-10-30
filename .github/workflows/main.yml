@@ -33,7 +33,7 @@ jobs:
       - name: Build Windows native libraries
         shell: cmd
         run: |
-          other\BuildNative.bat
+          other\BuildNative.bat %JAVA_HOME%
       - name: Check Windows native libraries
         shell: bash
         run: |
