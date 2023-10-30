@@ -19,7 +19,7 @@ case "$OSTYPE" in
   *darwin*)
     gcc -c -fPIC $FLAGS -I$JDK_INCLUDE -I$JDK_INCLUDE/darwin -o /tmp/NativeTools.o other/NativeTools.c
     gcc -dynamiclib -o src/native_tools.dylib /tmp/NativeTools.o -lc
-    strip src/native_tools.dylib
+    strip -ur src/native_tools.dylib
     ;;
   *msys* | *win*)
     gcc -c $FLAGS -I$JDK_INCLUDE -I$JDK_INCLUDE/win32 -o /tmp/NativeTools$ARCH.o other/NativeTools.c
