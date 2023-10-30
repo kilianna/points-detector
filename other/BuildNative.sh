@@ -1,12 +1,19 @@
 #!/bin/bash
 set -e
 
+if [ "$1" == "_check" ]; then
+  set +e
+  gcc --version > /dev/null
+  exit $?
+fi
+
 JDK_INCLUDE=$1/include
+ARCH=$2
 FLAGS="-O3 -Wall"
 
 mkdir -p build
 
-echo Compiling native tool with $JDK_INCLUDE
+echo Compiling native tools with `which gcc` using $JDK_INCLUDE
 
 case "$OSTYPE" in
   *darwin*)

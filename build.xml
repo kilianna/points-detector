@@ -36,6 +36,7 @@
         <exec executable="cmd">
             <arg value="/c"/>
             <arg value="other\BuildNative.bat"/>
+            <arg value="${platform.home}"/>
         </exec>
     </target>
     <!--

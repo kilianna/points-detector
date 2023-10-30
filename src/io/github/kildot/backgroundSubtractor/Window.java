@@ -1,5 +1,13 @@
 package io.github.kildot.backgroundSubtractor;
 
+import java.awt.Color;
+import java.awt.Desktop;
+import java.net.URI;
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -120,11 +128,23 @@ public class Window extends javax.swing.JFrame {
         labelParamW.setText("Scanning window radius [pixels]");
 
         paramW.setText("20");
+        paramW.setInputVerifier(windowRadiusVerify);
         paramW.setMinimumSize(new java.awt.Dimension(200, 24));
         paramW.setName(""); // NOI18N
         paramW.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 paramWActionPerformed(evt);
+            }
+        });
+        paramW.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
             }
         });
 
@@ -151,24 +171,39 @@ public class Window extends javax.swing.JFrame {
         labelParamW2.setText("Background start radius [pixels]");
 
         TODOGroup.add(jRadioButton6);
-        jRadioButton6.setText("TODO");
+        jRadioButton6.setText("Reset");
 
-        labelTakePixels3.setText("TODO");
+        labelTakePixels3.setText("Display range");
 
         TODOGroup.add(jRadioButton5);
         jRadioButton5.setSelected(true);
-        jRadioButton5.setText("TODO");
+        jRadioButton5.setText("Keep");
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton11ActionPerformed(evt);
+                helpButtonActionPerformed(evt);
             }
         });
 
@@ -178,54 +213,54 @@ public class Window extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(labelParamW, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
-                        .addComponent(labelParamW1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(labelParamW2, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelTakePixels3, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(labelParamW2)
+                    .addComponent(labelParamW1)
+                    .addComponent(labelParamW)
+                    .addComponent(labelTakePixels3))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(paramW, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(paramW1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(paramW2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paramW, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(paramW1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jRadioButton5)
                         .addGap(18, 18, 18)
-                        .addComponent(jRadioButton6)))
+                        .addComponent(jRadioButton6)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(paramW2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton11)
                     .addComponent(jButton2)
                     .addComponent(jButton5)
-                    .addComponent(jButton6))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton6)
+                    .addComponent(jButton11, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(paramW, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(labelParamW))
-                                .addGap(8, 8, 8)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(paramW1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(labelParamW1)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2)))
-                        .addGap(7, 7, 7)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(paramW2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelParamW2)))
+                            .addComponent(paramW, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelParamW))
+                        .addGap(8, 8, 8))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton5)
+                        .addGap(7, 7, 7)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(paramW1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(labelParamW1))
+                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(paramW2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(labelParamW2))
                     .addComponent(jButton6))
-                .addGap(9, 9, 9)
+                .addGap(8, 8, 8)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jRadioButton5)
@@ -234,6 +269,8 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(jButton11))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jButton5.getAccessibleContext().setAccessibleDescription("scanning-window-radius");
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Discrimination line parameters"));
         jPanel2.setName("nnn"); // NOI18N
@@ -261,8 +298,18 @@ public class Window extends javax.swing.JFrame {
         labelParamW4.setText("Y-intercept");
 
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -271,19 +318,17 @@ public class Window extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(labelParamW3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(labelParamW4, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE))
+                    .addComponent(labelParamW3)
+                    .addComponent(labelParamW4))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(paramW3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(paramW4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(paramW4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton8))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(paramW3, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton7, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton8, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -316,8 +361,18 @@ public class Window extends javax.swing.JFrame {
         jComboBox3.setSelectedItem("Black");
 
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         skipPixels.setText("1");
         skipPixels.setMinimumSize(new java.awt.Dimension(200, 24));
@@ -329,6 +384,11 @@ public class Window extends javax.swing.JFrame {
         });
 
         helpSkipPixels.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpSkipPixels.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         labelSkipPixels.setText("Skip pixels");
 
@@ -342,6 +402,11 @@ public class Window extends javax.swing.JFrame {
         });
 
         helpTakePixels.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpTakePixels.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         scopeGroup.add(jRadioButton1);
         jRadioButton1.setSelected(true);
@@ -364,8 +429,18 @@ public class Window extends javax.swing.JFrame {
         labelTakePixels.setText("Take pixels");
 
         helpTakePixels1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpTakePixels1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         helpTakePixels2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpTakePixels2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -375,27 +450,29 @@ public class Window extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(labelSkipPixels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(labelParamW6, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
-                        .addComponent(labelTakePixels1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(labelTakePixels2, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
-                        .addComponent(labelParamW5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(labelTakePixels, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(labelSkipPixels)
+                        .addComponent(labelParamW6)
+                        .addComponent(labelTakePixels1)
+                        .addComponent(labelTakePixels2)
+                        .addComponent(labelParamW5))
+                    .addComponent(labelTakePixels))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(takePixels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(skipPixels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox2, 0, 268, Short.MAX_VALUE)
-                        .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jRadioButton1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jRadioButton2))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jRadioButton4)
-                        .addGap(18, 18, 18)
-                        .addComponent(jRadioButton3)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jRadioButton1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jRadioButton2))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jRadioButton4)
+                                .addGap(18, 18, 18)
+                                .addComponent(jRadioButton3)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(skipPixels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(takePixels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(helpTakePixels2)
@@ -404,7 +481,7 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(jButton9)
                     .addComponent(helpSkipPixels)
                     .addComponent(helpTakePixels))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(6, 6, 6))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -447,7 +524,7 @@ public class Window extends javax.swing.JFrame {
                         .addComponent(labelTakePixels2)
                         .addComponent(jRadioButton4))
                     .addComponent(helpTakePixels2))
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         saveButton4.setText("Cancel");
@@ -496,6 +573,11 @@ public class Window extends javax.swing.JFrame {
         });
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -528,6 +610,8 @@ public class Window extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jButton3.getAccessibleContext().setAccessibleDescription("presets");
+
         showProfileButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Profile.png"))); // NOI18N
         showProfileButton.setText("Show profile plot");
 
@@ -543,14 +627,14 @@ public class Window extends javax.swing.JFrame {
         helpPointsNoiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
         helpPointsNoiseSelection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpPointsNoiseSelectionActionPerformed(evt);
+                helpButtonActionPerformed(evt);
             }
         });
 
         helpProfile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
         helpProfile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpProfileActionPerformed(evt);
+                helpButtonActionPerformed(evt);
             }
         });
 
@@ -610,11 +694,13 @@ public class Window extends javax.swing.JFrame {
                 .addGap(12, 12, 12))
         );
 
+        helpPointsNoiseSelection.getAccessibleContext().setAccessibleDescription("points-and-noise-selection");
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void paramWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramWActionPerformed
-        // TODO add your handling code here:
+        boolean ok = windowRadiusVerify.shouldYieldFocus((JComponent)evt.getSource());
     }//GEN-LAST:event_paramWActionPerformed
 
     private void paramW1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramW1ActionPerformed
@@ -674,17 +760,24 @@ public class Window extends javax.swing.JFrame {
         pack();
     }//GEN-LAST:event_formWindowOpened
 
-    private void helpPointsNoiseSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpPointsNoiseSelectionActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_helpPointsNoiseSelectionActionPerformed
+    private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
+        try {
+            if (!Desktop.isDesktopSupported()) return;
+            if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) return;
+            Object source = evt.getSource();
+            if (!(source instanceof Accessible)) return;
+            AccessibleContext ctx = ((javax.accessibility.Accessible)source).getAccessibleContext();
+            if (ctx == null) return;
+            String desc = ctx.getAccessibleDescription();
+            if (desc == null) return;
+            Desktop.getDesktop().browse(new URI(Common.HELP_URL + "#" + desc));
+        } catch (Exception ex) {}
+    }//GEN-LAST:event_helpButtonActionPerformed
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton11ActionPerformed
-
-    private void helpProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpProfileActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_helpProfileActionPerformed
+    private void keyVerifyEvent(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_keyVerifyEvent
+        InputVerifier ver = ((JComponent)evt.getSource()).getInputVerifier();
+        ver.shouldYieldFocus((JComponent)evt.getSource());
+    }//GEN-LAST:event_keyVerifyEvent
 
     /**
      * @param args the command line arguments
@@ -808,4 +901,22 @@ public class Window extends javax.swing.JFrame {
         interactiveButton.setVisible(!visible);
         this.pack();
     }
+
+    private InputVerifier windowRadiusVerify = new InputVerifier() {
+        @Override
+        public boolean verify(javax.swing.JComponent input) {
+            try {
+                int value = Integer.parseInt(((javax.swing.JTextField)input).getText());
+                return value > 5 && value < 100;
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+        @Override
+        public boolean shouldYieldFocus(javax.swing.JComponent input) {
+            boolean ok = verify(input);
+            input.setBackground(ok ? Color.WHITE : new Color(0xFF9988));
+            return ok;
+        }
+    };
 }
