@@ -10,10 +10,32 @@
 <project name="BackgroundSubtractor" default="default" basedir=".">
     <description>Builds, tests, and runs the project BackgroundSubtractor.</description>
     <import file="nbproject/build-impl.xml"/>
-    <target name="-pre-compile">
+    <condition property="isUnix">
+        <os family="unix"/>
+    </condition>
+    <condition property="isMac">
+        <os family="mac"/>
+    </condition>
+    <condition property="isWindows">
+        <os family="windows"/>
+    </condition>
+    <target name="-pre-compile" depends="pre-compile-unix, pre-compile-mac, pre-compile-windows"/>
+    <target name="pre-compile-unix" if="isUnix">
         <exec executable="bash">
             <arg value="other/BuildNative.sh"/>
             <arg value="${platform.home}"/>
+        </exec>
+    </target>
+    <target name="pre-compile-mac" if="isMac">
+        <exec executable="bash">
+            <arg value="other/BuildNative.sh"/>
+            <arg value="${platform.home}"/>
+        </exec>
+    </target>
+    <target name="pre-compile-windows" if="isWindows">
+        <exec executable="cmd">
+            <arg value="/c"/>
+            <arg value="other\BuildNative.bat"/>
         </exec>
     </target>
     <!--

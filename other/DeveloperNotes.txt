@@ -1,13 +1,15 @@
 
-
 Setup NetBeans:
- 1. Add new platform from Fiji.app/jdk/
- 2. Update references to ji-*.*.jar and imagej-launcher-*.*.*.jar if needed
- 3. Update Run options (linux only instructions):
-    - Run Fiji
-    - Get PID of Fiji by running "xprop _NET_WM_PID" in terminal and clicking
-      the window
-    - Get command line by running "ps -p [PID] -o args | cat"
+ 1. Add new platform JDK_1.8 if needed.
+ 2. Update references to ji-*.*.jar and imagej-launcher-*.*.*.jar if needed.
+    Place "Fiji.app" and this project directory in one parent directory to
+    avoid references updating.
+ 3. Update Run options:
+    - Setup java 1.8 in the terminal
+    - Run Fiji with "--system" flag
+    - Get command line by running:
+      Linux: ps -A -o args | grep -i ImageJ
+      Windows PowerShell: Get-WmiObject Win32_Process | Select CommandLine  | Select-String -Pattern 'ImageJ'
     - VM Options: after "java" and before "net.imagej.launcher.ClassLauncher"
     - Main class: "net.imagej.launcher.ClassLauncher"
     - Arguments: all after "net.imagej.launcher.ClassLauncher"

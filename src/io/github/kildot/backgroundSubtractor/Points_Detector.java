@@ -878,8 +878,9 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 
 		Rectangle border = getNextBorderToProcess();
-		if (border != null) {
+		while (border != null) {
 			makeHistBorder(border.x, border.y, border.x + border.width, border.y + border.height);
+			border = getNextBorderToProcess();
 		}
 	}
 
