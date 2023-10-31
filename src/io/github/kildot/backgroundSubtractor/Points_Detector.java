@@ -12,40 +12,23 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.swing.SwingUtilities;
 
-public class Points_Detector implements PlugIn, RoiListener, DialogListener {
-
-	static final int MAX_PROFILE_PLOTS = 25;
-
-	static final int PIXEL_OUTPUT_WHITE = 0;
-	static final int PIXEL_OUTPUT_BLACK = 1;
-	static final int PIXEL_OUTPUT_ORIGINAL = 2;
-	static final int PIXEL_OUTPUT_RESULT = 3;
-	static final int PIXEL_OUTPUT_NET = 4;
-	static final int PIXEL_OUTPUT_NET_SCALED = 5;
-	static final int PIXEL_OUTPUT_NET_MODE = 6;
-	static final int PIXEL_OUTPUT_NET_SCALED_MODE = 7;
-	static final int PIXEL_OUTPUT_NET_MEDIAN = 8;
-	static final int PIXEL_OUTPUT_NET_SCALED_MEDIAN = 9;
+public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
 
 	static final int NET_TYPE_AVERAGE = 0;
 	static final int NET_TYPE_MODE = 1;
 	static final int NET_TYPE_MEDIAN = 2;
 
 	// GUI
-	private String[] params;
-	private static String lastParams;
+    private Window guiWindow;
+    private Params globalParams;
 	private ImagePlus sourceImage;
 	private ImagePlus previewImage;
-	private NonBlockingGenericDialog dialog;
 	private ImageProcessor previewProcessor;
-	private Timer timer;
 	private TimerTask updateNoiseTask;
 	private TimerTask updatePointsTask;
 	private Roi pointsRoi;
 	private Roi noiseRoi;
-	private boolean selectPointsCheckBoxEnabled;
 
 	// Plot
 	private Plot plot;
@@ -57,19 +40,13 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	private Plot profilePlot;
 	private PlotWindow profilePlotWindow;
 
-	// Parameters
-	private int windowRadius;
-	private int pointRadius;
-	private int backgroundRadius;
-	private float limitLineA;
-	private float limitLineB;
-
 	// Image
 	private int width;
 	private int height;
 	private float[] pixels;
 
 	// Window
+	private int windowRadius;
 	private int windowSize;
 	private int[] indexUp;
 	private int[] indexDown;
@@ -87,16 +64,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (sourceImage == null) {
 			IJ.error("Select image");
 		}
-		if (lastParams == null) {
-			lastParams = "20; 5; 6; 1; 200; 2; 3";
-		}
-		showDialog(false);
-		if (getCheckbox(MANUAL_MODE_CHECK_BOX) && !dialog.wasCanceled()) {
-			manualProcess();
-		}
-		if (!dialog.wasCanceled()) {
+        globalParams = new Params();
+        globalParams.addListener(this);
+        guiWindow = new Window(globalParams);
+        guiWindow.showBlocking();
+		if (!guiWindow.wasCanceled()) {
 			imageProcess();
-			lastParams = params[0];
 		}
 		closed();
 	}
@@ -104,17 +77,11 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	private void imageProcess() {
 		logMethod();
 		ImagePlus outputImage;
-		double[] p = parseParams();
-		windowRadius = (int) (p[0] + 0.5);
-		pointRadius = (int) (p[1] + 0.5);
-		backgroundRadius = (int) (p[2] + 0.5);
-		limitLineA = (float) p[3];
-		limitLineB = (float) p[4];
 		makeWindow();
-		boolean allSlices = getCheckbox(ALL_SLICES_CHECK_BOX);
-		int pointPixelOutput = getChoice(POINT_COLOR_CHOICE);
-		int backgroundPixelOutput = getChoice(BACKGROUND_COLOR_CHOICE);
-		boolean keepOriginalSlices = getCheckbox(KEEP_ORIGINAL_SLICES);
+		boolean allSlices = globalParams.allSlices;
+		int pointPixelOutput = globalParams.pointOutput;
+		int backgroundPixelOutput = globalParams.bgOutput;
+		boolean keepOriginalSlices = globalParams.addInputSlices;
 		ImageStack stack = sourceImage.getStack();
 		if (allSlices && stack != null && stack.size() > 1) {
 			ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
@@ -139,8 +106,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 					keepOriginalSlices, 0, 1).result;
 			outputImage = new ImagePlus("Output", r);
 		}
-		Utils.addProcessingInfo(sourceImage, outputImage, "Points Detector: " + params[0]);
-		Utils.addAnnotation(outputImage, "Points Detector: points " + getChoiceString(POINT_COLOR_CHOICE) + ", background " + getChoiceString(BACKGROUND_COLOR_CHOICE));
+		Utils.addProcessingInfo(sourceImage, outputImage, "Points Detector: " + globalParams.toString());
 		outputImage.show();
 	}
 
@@ -170,6 +136,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private void outputToProcessor(ImageProcessor dst, ImageProcessor src, int pointPixelOutput, int backgroundPixelOutput) {
+        int pointRadius = globalParams.pointRadius;
+        int backgroundRadius = globalParams.backgroundStartRadius;
+		float limitLineA = (float)globalParams.slope;
+		float limitLineB = (float)globalParams.yIntercept;
 		float[] results = new float[Array.getLength(dst.getPixels())];
 		float minResult = Float.POSITIVE_INFINITY;
 		float maxResult = Float.NEGATIVE_INFINITY;
@@ -418,6 +388,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		}
 
 		if ((d.netType == NET_TYPE_MEDIAN || d.netType == NET_TYPE_MODE) && count > 0) {
+            count = Math.min(count, d.listValues.length);
 			Arrays.sort(d.listValues, 0, count);
 			if (count % 2 == 0) {
 				avg = (float)(d.listValues[count / 2 - 1] + d.listValues[count / 2]) / 2.0f;
@@ -436,13 +407,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private float[] calculateNet(float[] results, short[] inputPixels, short[] outputPixels, int netType) {
-		int skipPixels = 2;
-		int takePixels = 3;
-		double[] p = parseParams();
-		if (p != null) {
-			skipPixels = Math.min(16, Math.max(0, (int)(p[5] + 0.5)));
-			takePixels = Math.min(32, Math.max(0, (int)(p[6] + 0.5)));
-		}
+		int skipPixels = globalParams.skipPixels;
+		int takePixels = globalParams.takePixels;
 		CalculateNetData d = new CalculateNetData();
 		d.netType = netType;
 		d.results = results;
@@ -499,42 +465,42 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		float rangeF = whiteF - blackF;
 		float[] diff = null;
 		float diffMax = 1.0f;
-		if ((pointPixelOutput == PIXEL_OUTPUT_NET) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED)) {
+		if ((pointPixelOutput == Params.POINT_OUTPUT_NET) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED)) {
 			diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_AVERAGE);
 			diffMax = Math.max(1.0f, diff[width * height]);
-		} else if ((pointPixelOutput == PIXEL_OUTPUT_NET_MODE) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED_MODE)) {
+		} else if ((pointPixelOutput == Params.POINT_OUTPUT_NET_MODE) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED_MODE)) {
 			diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_MODE);
 			diffMax = Math.max(1.0f, diff[width * height]);
-		} else if ((pointPixelOutput == PIXEL_OUTPUT_NET_MEDIAN) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED_MEDIAN)) {
+		} else if ((pointPixelOutput == Params.POINT_OUTPUT_NET_MEDIAN) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED_MEDIAN)) {
 			diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_MEDIAN);
 			diffMax = Math.max(1.0f, diff[width * height]);
 		}
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (results[x + y * width] < 0) { // background
-					if (backgroundPixelOutput == PIXEL_OUTPUT_WHITE) {
+					if (backgroundPixelOutput == Params.BG_OUTPUT_WHITE) {
 						outputPixels[x + y * width] = white;
-					} else if (backgroundPixelOutput == PIXEL_OUTPUT_BLACK) {
+					} else if (backgroundPixelOutput == Params.BG_OUTPUT_BLACK) {
 						outputPixels[x + y * width] = black;
-					} else if (backgroundPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
+					} else if (backgroundPixelOutput == Params.BG_OUTPUT_ORIGINAL) {
 						outputPixels[x + y * width] = inputPixels[x + y * width];
-					} else if (pointPixelOutput == PIXEL_OUTPUT_RESULT) {
+					} else if (pointPixelOutput == Params.POINT_OUTPUT_RESULT) {
 						outputPixels[x + y * width] = (short) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
 					} else {
 						outputPixels[x + y * width] = (short) (blackF + rangeF * (1.0f - results[x + y * width] / minResult));
 					}
 				} else { // point
-					if (pointPixelOutput == PIXEL_OUTPUT_WHITE) {
+					if (pointPixelOutput == Params.POINT_OUTPUT_WHITE) {
 						outputPixels[x + y * width] = white;
-					} else if (pointPixelOutput == PIXEL_OUTPUT_BLACK) {
+					} else if (pointPixelOutput == Params.POINT_OUTPUT_BLACK) {
 						outputPixels[x + y * width] = black;
-					} else if (pointPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
+					} else if (pointPixelOutput == Params.POINT_OUTPUT_ORIGINAL) {
 						outputPixels[x + y * width] = inputPixels[x + y * width];
-					} else if ((pointPixelOutput == PIXEL_OUTPUT_NET) || (pointPixelOutput == PIXEL_OUTPUT_NET_MODE) || (pointPixelOutput == PIXEL_OUTPUT_NET_MEDIAN)) {
+					} else if ((pointPixelOutput == Params.POINT_OUTPUT_NET) || (pointPixelOutput == Params.POINT_OUTPUT_NET_MODE) || (pointPixelOutput == Params.POINT_OUTPUT_NET_MEDIAN)) {
 						outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width]);
-					} else if ((pointPixelOutput == PIXEL_OUTPUT_NET_SCALED) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED_MODE) || (pointPixelOutput == PIXEL_OUTPUT_NET_SCALED_MEDIAN)) {
+					} else if ((pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED_MODE) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED_MEDIAN)) {
 						outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width] / diffMax * rangeF + 0.5);
-					} else if (backgroundPixelOutput == PIXEL_OUTPUT_RESULT) {
+					} else if (backgroundPixelOutput == Params.BG_OUTPUT_RESULT) {
 						outputPixels[x + y * width] = (short) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
 					} else {
 						outputPixels[x + y * width] = (short) (blackF + rangeF * results[x + y * width] / maxResult);
@@ -556,191 +522,32 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (results[x + y * width] < 0) { // background
-					if (backgroundPixelOutput == PIXEL_OUTPUT_WHITE) {
+					if (backgroundPixelOutput == Params.BG_OUTPUT_WHITE) {
 						outputPixels[x + y * width] = white;
-					} else if (backgroundPixelOutput == PIXEL_OUTPUT_BLACK) {
+					} else if (backgroundPixelOutput == Params.BG_OUTPUT_BLACK) {
 						outputPixels[x + y * width] = black;
-					} else if (backgroundPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
+					} else if (backgroundPixelOutput == Params.BG_OUTPUT_ORIGINAL) {
 						outputPixels[x + y * width] = inputPixels[x + y * width];
-					} else if (pointPixelOutput == PIXEL_OUTPUT_RESULT) {
+					} else if (pointPixelOutput == Params.POINT_OUTPUT_RESULT) {
 						outputPixels[x + y * width] = (byte) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
 					} else {
 						outputPixels[x + y * width] = (byte) (blackF + rangeF * (1.0f - results[x + y * width] / minResult));
 					}
 				} else { // point
-					if (pointPixelOutput == PIXEL_OUTPUT_WHITE) {
+					if (pointPixelOutput == Params.POINT_OUTPUT_WHITE) {
 						outputPixels[x + y * width] = white;
-					} else if (pointPixelOutput == PIXEL_OUTPUT_BLACK) {
+					} else if (pointPixelOutput == Params.POINT_OUTPUT_BLACK) {
 						outputPixels[x + y * width] = black;
-					} else if (pointPixelOutput == PIXEL_OUTPUT_ORIGINAL) {
+					} else if (pointPixelOutput == Params.POINT_OUTPUT_ORIGINAL) {
 						outputPixels[x + y * width] = inputPixels[x + y * width];
-					} else if (backgroundPixelOutput == PIXEL_OUTPUT_RESULT) {
+					} else if (backgroundPixelOutput == Params.BG_OUTPUT_RESULT) {
 						outputPixels[x + y * width] = (byte) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
 					} else {
 						outputPixels[x + y * width] = (byte) (blackF + rangeF * results[x + y * width] / maxResult);
 					}
-
 				}
 			}
 		}
-	}
-
-	private void manualProcess() {
-		logMethod();
-
-		// Read image
-		ImageProcessor ip = sourceImage.getProcessor();
-		ImageProcessor fp = ip.convertToFloat();
-		if (ip == fp) {
-			fp = fp.duplicate();
-		}
-		pixels = (float[]) fp.getPixels();
-		width = fp.getWidth();
-		height = fp.getHeight();
-
-		// Create preview image
-		ImageStack is = new ImageStack(width, height);
-		previewProcessor = ip.duplicate();
-		is.addSlice(previewProcessor);
-		is.addSlice(previewProcessor.duplicate());
-		previewImage = new ImagePlus("Preview", is);
-		previewImage.show();
-
-		// Create plot
-		plot = new Plot("Plot", "Neighbourhood", "Point");
-		plot.setColor(Color.BLUE);
-		plot.add("circle", new double[0], new double[0]);
-		plot.setColor(Color.RED);
-		plot.add("circle", new double[0], new double[0]);
-		plot.show();
-
-		// Create Profile plot
-		profilePlot = new Plot("Profile", "Distance from pixel", "Average value");
-		profilePlot.add("line", new double[0], new double[0]);
-		profilePlot.add("line", new double[0], new double[0]);
-		profilePlot.add("line", new double[0], new double[0]);
-		for (int i = 0; i < 2 * MAX_PROFILE_PLOTS; i++) {
-			profilePlot.add("connected circle", new double[0], new double[0]);
-		}
-		if (getCheckbox(PROFILE_WINDOW_CHECK_BOX)) {
-			profilePlotWindow = profilePlot.show();
-		}
-
-		// Listen for ROI changes
-		Roi.addRoiListener(this);
-
-		do {
-			double[] p = parseParams();
-			windowRadius = (int) (p[0] + 0.5);
-			pointRadius = (int) (p[1] + 0.5);
-			backgroundRadius = (int) (p[2] + 0.5);
-			limitLineA = (float) p[3];
-			limitLineB = (float) p[4];
-			makeWindow();
-			makeHist();
-			updatePoints(true);
-			updateNoise();
-			updatePreview();
-			showDialog(true);
-		} while (getCheckbox(MANUAL_MODE_CHECK_BOX) && !dialog.wasCanceled());
-	}
-
-	static final int ALL_SLICES_CHECK_BOX = 0;
-	static final int KEEP_ORIGINAL_SLICES = 1;
-	static final int MANUAL_MODE_CHECK_BOX = 2;
-	static final int PROFILE_WINDOW_CHECK_BOX = 3;
-	static final int SELECT_POINTS_CHECK_BOX = 4;
-	static final int POINT_COLOR_CHOICE = 0;
-	static final int BACKGROUND_COLOR_CHOICE = 1;
-
-	private boolean getCheckbox(int id) {
-		Vector all = dialog.getCheckboxes();
-		if (id >= all.size()) {
-			return false;
-		}
-		return ((Checkbox)all.get(id)).getState();
-	}
-
-	private int getChoice(int id) {
-		return ((Choice) dialog.getChoices().get(id)).getSelectedIndex();
-	}
-
-	private String getChoiceString(int id) {
-		return ((Choice) dialog.getChoices().get(id)).getSelectedItem();
-	}
-
-	private void showDialog(boolean manual) {
-		logMethod();
-                Window fr = new Window(new Params());
-                fr.setVisible(true);
-		boolean[] initCheckBox = new boolean[] { false, false, false, false, false };
-		int[] initChoice = new int[] { PIXEL_OUTPUT_WHITE, PIXEL_OUTPUT_BLACK };
-		if (dialog != null) {
-			initCheckBox[0] = getCheckbox(0);
-			initCheckBox[1] = getCheckbox(1);
-			initCheckBox[2] = getCheckbox(2);
-			initCheckBox[3] = getCheckbox(3);
-			initCheckBox[4] = getCheckbox(4);
-			initChoice[0] = ((Choice) dialog.getChoices().get(0)).getSelectedIndex();
-			initChoice[1] = ((Choice) dialog.getChoices().get(1)).getSelectedIndex();
-			dialog.dispose();
-		}
-		dialog = new NonBlockingGenericDialog("Parameters");
-		String initialValue;
-		if (params == null) {
-			params = new String[] { "[!]", "", "", "", "", "", "", "" };
-			initialValue = lastParams;
-		} else {
-			initialValue = params[0];
-		}
-		String[] choiceTexts = new String[10];
-		choiceTexts[PIXEL_OUTPUT_WHITE] = "White";
-		choiceTexts[PIXEL_OUTPUT_BLACK] = "Black";
-		choiceTexts[PIXEL_OUTPUT_ORIGINAL] = "Original";
-		choiceTexts[PIXEL_OUTPUT_RESULT] = "Degree of matching";
-		choiceTexts[PIXEL_OUTPUT_NET] = "Net signal (average)";
-		choiceTexts[PIXEL_OUTPUT_NET_SCALED] = "Net signal scaled (average)";
-		choiceTexts[PIXEL_OUTPUT_NET_MODE] = "Net signal (mode)";
-		choiceTexts[PIXEL_OUTPUT_NET_SCALED_MODE] = "Net signal scaled (mode)";
-		choiceTexts[PIXEL_OUTPUT_NET_MEDIAN] = "Net signal (median)";
-		choiceTexts[PIXEL_OUTPUT_NET_SCALED_MEDIAN] = "Net signal scaled (median)";
-		dialog.addStringField("Parameters (W; R; S; A; B; SP; TP)", initialValue, 30);
-		dialog.addStringField("Scanning window radius [pixels] (W)" + (manual ? " *" : ""), params[1], 10);
-		dialog.addStringField("Point radius [pixels] (R)", params[2], 10);
-		dialog.addStringField("Background start radius [pixels] (S)", params[3], 10);
-		dialog.addStringField("Slope (A)", params[4], 10);
-		dialog.addStringField("Y-intercept (B)", params[5], 10);
-		dialog.addStringField("Skip pixels (SP)", params[6], 10);
-		dialog.addStringField("Take pixels (TP)", params[7], 10);
-		dialog.addChoice("Points color", choiceTexts, choiceTexts[initChoice[0]]);
-		dialog.addChoice("Background color", Arrays.copyOf(choiceTexts, 4), choiceTexts[initChoice[1]]);
-		dialog.addCheckbox("All slices", initCheckBox[0]);
-		dialog.addCheckbox("Keep original slices", initCheckBox[1]);
-		if (manual) {
-			dialog.addCheckbox("Manual mode - uncheck to exit manual mode", initCheckBox[2]);
-			dialog.addCheckbox("Show profile plot", initCheckBox[3]);
-			dialog.addCheckbox("Select points", initCheckBox[4]);
-			selectPointsCheckBoxEnabled = initCheckBox[4];
-			IJ.setTool(selectPointsCheckBoxEnabled ? Toolbar.POINT : Toolbar.OVAL);
-		} else {
-			dialog.addCheckbox("Manual mode", initCheckBox[2]);
-		}
-		if (manual) {
-			dialog.addMessage("* - changing window radius requires pressing 'OK'");
-		}
-		dialog.addHelp(helpText);
-		updateDialog();
-		dialog.addDialogListener(this);
-		dialog.showDialog();
-		Vector<TextField> vect = dialog.getStringFields();
-		params[0] = vect.get(0).getText();
-		params[1] = vect.get(1).getText();
-		params[2] = vect.get(2).getText();
-		params[3] = vect.get(3).getText();
-		params[4] = vect.get(4).getText();
-		params[5] = vect.get(5).getText();
-		params[6] = vect.get(6).getText();
-		params[7] = vect.get(7).getText();
 	}
 
 	private void closed() {
@@ -752,22 +559,18 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			plot.getImagePlus().getWindow().dispose();
 		if (profilePlot != null && profilePlot.getImagePlus() != null && profilePlot.getImagePlus().getWindow() != null)
 			profilePlot.getImagePlus().getWindow().dispose();
-		if (dialog != null)
-			dialog.dispose();
-		if (timer != null)
-			timer.cancel();
+		if (guiWindow != null)
+			guiWindow.dispose();
 		previewImage = null;
 		plot = null;
 		profilePlot = null;
-		dialog = null;
-		timer = null;
+		guiWindow = null;
 		pixels = null;
 		indexUp = null;
 		indexDown = null;
 		weightUp = null;
 		weightDown = null;
 		hist = null;
-		params = null;
 		System.gc();
 	}
 
@@ -946,6 +749,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	private void makeWindow() {
 		logMethod();
+        windowRadius = globalParams.windowRadius;
 		windowSize = 2 * windowRadius + 1;
 		indexUp = new int[windowSize * windowSize];
 		indexDown = new int[windowSize * windowSize];
@@ -986,17 +790,15 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 	}
 
 	private Roi getPointsRoi() {
-		if (getCheckbox(SELECT_POINTS_CHECK_BOX)) {
+		if (!globalParams.selectNoise) {
 			pointsRoi = previewImage.getRoi();
-			//if (pointsRoi == null) IJ.log("POINTS - null"); else IJ.log("POINTS - " + pointsRoi.getClass().getName());
 		}
 		return pointsRoi;
 	}
 
 	private Roi getNoiseRoi() {
-		if (!getCheckbox(SELECT_POINTS_CHECK_BOX)) {
+		if (globalParams.selectNoise) {
 			noiseRoi = previewImage.getRoi();
-			//if (noiseRoi == null) IJ.log("NOISE - null"); else IJ.log("NOISE - " + noiseRoi.getClass().getName());
 		}
 		return noiseRoi;
 	}
@@ -1006,12 +808,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (imp == null)
 			return;
 		logMethod();
-		if (imp == previewImage && dialog != null && id != RoiListener.DELETED) {
+		if (imp == previewImage && globalParams.interactive && id != RoiListener.DELETED) {
 			//IJ.log("ROI MODIFIED - " + id);
-			if (getCheckbox(SELECT_POINTS_CHECK_BOX)) {
+			if (!globalParams.selectNoise) {
 				if (updatePointsTask != null)
 					updatePointsTask.cancel();
-				updatePointsTask = invokeLater(new Runnable() {
+				updatePointsTask = Common.invokeLater(new Runnable() {
 					public void run() {
 						updatePoints(false);
 					}
@@ -1020,7 +822,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			} else {
 				if (updateNoiseTask != null)
 					updateNoiseTask.cancel();
-				updateNoiseTask = invokeLater(new Runnable() {
+				updateNoiseTask = Common.invokeLater(new Runnable() {
 					public void run() {
 						updateNoise();
 					}
@@ -1029,28 +831,12 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		} else {
 			ImagePlus plotImage = plot.getImagePlus();
 			if (imp == plotImage && id != RoiListener.DELETED) {
-				updateLimit();
+				updateLimitParams();
 			}
 		}
 	}
 
-	private TimerTask invokeLater(Runnable doRun, int ms, int period) {
-		TimerTask tt = new TimerTask() {
-			public void run() {
-				SwingUtilities.invokeLater(doRun);
-			}
-		};
-		if (timer == null)
-			timer = new Timer();
-		if (period < 0) {
-			timer.schedule(tt, ms);
-		} else {
-			timer.schedule(tt, ms, period);
-		}
-		return tt;
-	}
-
-	private void updateLimit() {
+	private void updateLimitParams() {
 		logMethod();
 		ImagePlus plotImage = plot.getImagePlus();
 		Roi roi = plotImage.getRoi();
@@ -1066,15 +852,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		float ya = (float) plot.descaleY(poly.ypoints[0]);
 		float xb = (float) plot.descaleX(poly.xpoints[1]);
 		float yb = (float) plot.descaleY(poly.ypoints[1]);
-		limitLineA = (ya - yb) / (xa - xb);
-		limitLineB = ya - (ya - yb) / (xa - xb) * xa;
-		Vector<TextField> vect = dialog.getStringFields();
-		params[4] = toShortNumber(limitLineA);
-		params[5] = toShortNumber(limitLineB);
-		params[0] = joinParams();
-		vect.get(0).setText(params[0]);
-		vect.get(4).setText(params[4]);
-		vect.get(5).setText(params[5]);
+        Params copy = globalParams.copy();
+        copy.slope = (ya - yb) / (xa - xb);
+        copy.yIntercept = ya - (ya - yb) / (xa - xb) * xa;
+        globalParams.set(copy, false, this);
 		updatePreview();
 	}
 
@@ -1082,6 +863,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (plot == null)
 			return;
 		logMethod();
+		float limitLineA = (float)globalParams.slope;
+		float limitLineB = (float)globalParams.yIntercept;
 		ImagePlus plotImage = plot.getImagePlus();
 		Rectangle rect = plot.getDrawingFrame();
 		float rx1 = (float) plot.descaleX(rect.x + 4);
@@ -1118,27 +901,10 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		plotImage.setRoi(ignoreRoi);
 	}
 
-	private static String toShortNumber(double number) {
-		int num = (int) Math.ceil(Math.log10(Math.abs(number * 1.000001)));
-		if (num > 5)
-			num = 5;
-		if (num < -10)
-			return String.format("%e", number);
-		num = 5 - num;
-		String res = String.format("%.0" + num + "f", number);
-		if (res.contains(".")) {
-			while (res.endsWith("0"))
-				res = res.substring(0, res.length() - 1);
-			if (res.endsWith("."))
-				res = res.substring(0, res.length() - 1);
-		}
-		return res;
-	}
-
 	private void updatePreview() {
 		logMethod();
-		int pointPixelOutput = getChoice(POINT_COLOR_CHOICE);
-		int backgroundPixelOutput = getChoice(BACKGROUND_COLOR_CHOICE);
+		int pointPixelOutput = globalParams.pointOutput;
+		int backgroundPixelOutput = globalParams.bgOutput;
 		this.outputToProcessor(previewProcessor, sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput);
 		previewImage.updateAndDraw();
 	}
@@ -1149,13 +915,15 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			return;
 		}
 		logMethod();
+        int pointRadius = globalParams.pointRadius;
+        int backgroundRadius = globalParams.backgroundStartRadius;
 		Point[] points = roi.getContainedPoints();
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
-		double[][] profileY = new double[MAX_PROFILE_PLOTS][histSize];
+		double[][] profileY = new double[Common.MAX_PROFILE_PLOTS][histSize];
 		int plotIndex = 0;
 		int profileIndex = 0;
-		int profileStep = Math.max(1, points.length / MAX_PROFILE_PLOTS);
+		int profileStep = Math.max(1, points.length / Common.MAX_PROFILE_PLOTS);
 		for (int pointIndex = 0; pointIndex < points.length; pointIndex++) {
 			int x = points[pointIndex].x;
 			int y = points[pointIndex].y;
@@ -1173,7 +941,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			lastValue /= (float) (histSize - backgroundRadius);
 			yy[plotIndex] = firstValue;
 			xx[plotIndex] = lastValue;
-			if (plotIndex % profileStep == 0 && profileIndex < MAX_PROFILE_PLOTS) {
+			if (plotIndex % profileStep == 0 && profileIndex < Common.MAX_PROFILE_PLOTS) {
 				for (int k = 0; k < histSize; k++) {
 					profileY[profileIndex][k] = hist[histOffset + k];
 				}
@@ -1198,13 +966,15 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			return;
 		}
 		logMethod();
+        int pointRadius = globalParams.pointRadius;
+        int backgroundRadius = globalParams.backgroundStartRadius;
 		Point[] points = roi.getContainedPoints();
 		double[] xx = new double[points.length];
 		double[] yy = new double[points.length];
-		double[][] profileY = new double[MAX_PROFILE_PLOTS][histSize];
+		double[][] profileY = new double[Common.MAX_PROFILE_PLOTS][histSize];
 		int plotIndex = 0;
 		int profileIndex = 0;
-		int profileStep = Math.max(1, points.length / MAX_PROFILE_PLOTS);
+		int profileStep = Math.max(1, points.length / Common.MAX_PROFILE_PLOTS);
 		for (int pointIndex = 0; pointIndex < points.length; pointIndex++) {
 			int x = points[pointIndex].x;
 			int y = points[pointIndex].y;
@@ -1222,7 +992,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			lastValue /= (float) (histSize - backgroundRadius);
 			yy[plotIndex] = firstValue;
 			xx[plotIndex] = lastValue;
-			if (plotIndex % profileStep == 0 && profileIndex < MAX_PROFILE_PLOTS) {
+			if (plotIndex % profileStep == 0 && profileIndex < Common.MAX_PROFILE_PLOTS) {
 				for (int k = 0; k < histSize; k++) {
 					profileY[profileIndex][k] = hist[histOffset + k];
 				}
@@ -1259,18 +1029,18 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		if (profilePlotWindow == null) {
 			return;
 		}
-		usedCount = Math.min(MAX_PROFILE_PLOTS, usedCount);
+		usedCount = Math.min(Common.MAX_PROFILE_PLOTS, usedCount);
 		double[] x = new double[histSize];
 		for (int i = 0; i < histSize; i++) {
 			x[i] = i;
 		}
-		int indexOffset = isPoint ? 3 + MAX_PROFILE_PLOTS : 3;
+		int indexOffset = isPoint ? 3 + Common.MAX_PROFILE_PLOTS : 3;
 		Color color = isPoint ? Color.RED : Color.BLUE;
 		profilePlot.setColor(color, color);
 		for (int i = 0; i < usedCount; i++) {
 			profilePlot.replace(indexOffset + i, "connected circle", x, profileY[i]);
 		}
-		for (int i = usedCount; i < MAX_PROFILE_PLOTS; i++) {
+		for (int i = usedCount; i < Common.MAX_PROFILE_PLOTS; i++) {
 			profilePlot.replace(indexOffset + i, "connected circle", new double[0], new double[0]);
 		}
 		profilePlot.replace(1, "line", new double[0], new double[0]);
@@ -1278,153 +1048,11 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 		double[] limits = profilePlot.getLimits();
 		double margin = (limits[3] - limits[2]) * 0.05;
 		profilePlot.setColor(Color.ORANGE);
+        int backgroundRadius = globalParams.backgroundStartRadius;
 		profilePlot.replace(1, "line", new double[] { backgroundRadius - 0.5, backgroundRadius - 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
 		profilePlot.setColor(Color.CYAN);
+        int pointRadius = globalParams.pointRadius;
 		profilePlot.replace(2, "line", new double[] { pointRadius + 0.5, pointRadius + 0.5, backgroundRadius + 0.5, backgroundRadius + 0.5 }, new double[] { limits[2] + margin, limits[3] - margin });
-	}
-
-	@Override
-	public boolean dialogItemChanged(GenericDialog arg0, AWTEvent arg1) {
-		logMethod();
-		return updateDialog();
-	}
-
-	private boolean updateDialog() {
-		logMethod();
-		Vector<TextField> vect = dialog.getStringFields();
-		String p = vect.get(0).getText();
-		String w = vect.get(1).getText();
-		String r = vect.get(2).getText();
-		String s = vect.get(3).getText();
-		String a = vect.get(4).getText();
-		String b = vect.get(5).getText();
-		String sp = vect.get(6).getText();
-		String tp = vect.get(7).getText();
-		boolean updatePointRadius = false;
-		boolean updatePlotRoi = false;
-		if (!p.equals(params[0])) {
-			params[0] = p;
-			String[] parts = splitParams(p);
-			if (parts == null) {
-				return false;
-			}
-			updatePointRadius = !params[2].equals(parts[1]) || !params[3].equals(parts[2]);
-			updatePlotRoi = !params[4].equals(parts[3]) || !params[5].equals(parts[4]);
-			params[1] = parts[0];
-			params[2] = parts[1];
-			params[3] = parts[2];
-			params[4] = parts[3];
-			params[5] = parts[4];
-			params[6] = parts[5];
-			params[7] = parts[6];
-			vect.get(1).setText(params[1]);
-			vect.get(2).setText(params[2]);
-			vect.get(3).setText(params[3]);
-			vect.get(4).setText(params[4]);
-			vect.get(5).setText(params[5]);
-			vect.get(6).setText(params[6]);
-			vect.get(7).setText(params[7]);
-		} else if (!(w.equals(params[1]) && r.equals(params[2]) && s.equals(params[3])
-				&& a.equals(params[4]) && b.equals(params[5]) && sp.equals(params[6])
-				&& tp.equals(params[7]))) {
-			updatePointRadius = !params[2].equals(r) || !params[3].equals(s);
-			updatePlotRoi = !params[4].equals(a) || !params[5].equals(b);
-			params[1] = w;
-			params[2] = r;
-			params[3] = s;
-			params[4] = a;
-			params[5] = b;
-			params[6] = sp;
-			params[7] = tp;
-			params[0] = joinParams();
-			vect.get(0).setText(params[0]);
-		}
-		if (dialog != null && plot != null) {
-			boolean profileWindowVisible = getCheckbox(PROFILE_WINDOW_CHECK_BOX);
-			if (profileWindowVisible && profilePlotWindow == null) {
-				profilePlotWindow = profilePlot.show();
-				updatePoints(true);
-				updateNoise();
-			} else if (!profileWindowVisible && profilePlotWindow != null) {
-				profilePlotWindow.setVisible(false);
-				profilePlotWindow = null;
-			}
-			boolean pointsSelection = getCheckbox(SELECT_POINTS_CHECK_BOX);
-			if (!selectPointsCheckBoxEnabled && pointsSelection) {
-				IJ.setTool(Toolbar.POINT);
-				//IJ.log("POINTS - YES");
-				noiseRoi = previewImage.getRoi();
-				//if (noiseRoi == null) IJ.log("NOISE - null"); else IJ.log("NOISE - " + noiseRoi.getClass().getName());
-				previewImage.killRoi();
-				if (pointsRoi != null) {
-					previewImage.setRoi(pointsRoi);
-				}
-			} else if (selectPointsCheckBoxEnabled && !pointsSelection) {
-				IJ.setTool(Toolbar.OVAL);
-				//IJ.log("POINTS - NO");
-				pointsRoi = previewImage.getRoi();
-				//if (pointsRoi == null) IJ.log("POINTS - null"); else IJ.log("POINTS - " + pointsRoi.getClass().getName());
-				previewImage.killRoi();
-				if (noiseRoi != null) {
-					previewImage.setRoi(noiseRoi);
-				}
-			}
-			selectPointsCheckBoxEnabled = pointsSelection;
-		}
-		double[] parsed = parseParams();
-		if (parsed != null && plot != null) {
-			if (updatePlotRoi) {
-				limitLineA = (float) parsed[3];
-				limitLineB = (float) parsed[4];
-				updateLimitLine();
-			}
-			if (updatePointRadius) {
-				pointRadius = (int) (parsed[1] + 0.5);
-				backgroundRadius = (int) (parsed[2] + 0.5);
-				updatePoints(true);
-				updateNoise();
-			}
-			updatePreview();
-		}
-		return parsed != null;
-	}
-
-	private String joinParams() {
-		return params[1] + "; " + params[2] + "; " + params[3] + "; " + params[4] + "; " + params[5] + "; " + params[6] + "; " + params[7];
-	}
-
-	private double[] parseParams() {
-		try {
-			double[] res = new double[7];
-			res[0] = Integer.parseInt(params[1].replace(",", ".").trim());
-			res[1] = Integer.parseInt(params[2].replace(",", ".").trim());
-			res[2] = Integer.parseInt(params[3].replace(",", ".").trim());
-			res[3] = Double.parseDouble(params[4].replace(",", ".").trim());
-			res[4] = Double.parseDouble(params[5].replace(",", ".").trim());
-			res[5] = Integer.parseInt(params[6].replace(",", ".").trim());
-			res[6] = Integer.parseInt(params[7].replace(",", ".").trim());
-			if (res[0] < 4.5 || res[0] > 150 || res[1] < 1.5 || res[1] > res[0] * 0.75
-					|| res[2] < 1.5 || res[2] > res[0] - 0.5) {
-				return null;
-			}
-			return res;
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-
-	private String[] splitParams(String p) {
-		String[] arr = p.split(";");
-		if (arr.length == 1) {
-			arr = p.split(",");
-		}
-		if (arr.length != 7) {
-			return null;
-		}
-		for (int i = 0; i < arr.length; i++) {
-			arr[i] = arr[i].replace(",", ".").trim();
-		}
-		return arr;
 	}
 
 	static int logMethodCounter = 1;
@@ -1449,6 +1077,125 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 			System.out.println("    " + s[i].toString());
 		}
 	}
+    
+    private static boolean updated(long fields, long mask) {
+        return (fields & mask) != 0;
+    }
 
-	static private String helpText = "https://kildot.github.io/points-detector/help/";
+    public static final long MAKE_HIST_MASK = Params.WINDOW_RADIUS;
+    public static final long UPDATE_LIMIT_LINE_MASK = Params.WINDOW_RADIUS;
+    
+    @Override
+    public void parametersChanged(long fields, boolean self) {
+		logMethod();
+
+        if ((fields & Params.INTERACTIVE) != 0 && globalParams.interactive && previewImage == null) {
+            startInteractive();
+            return;
+        }
+
+        if (!globalParams.interactive || self) {
+            return;
+        }
+        
+        if (updated(fields,Params.PROFILE_WINDOW)) {
+            if (globalParams.profileWindow && profilePlotWindow == null) {
+                profilePlotWindow = profilePlot.show();
+            } else if (!globalParams.profileWindow && profilePlotWindow != null) {
+                profilePlotWindow.setVisible(globalParams.profileWindow);
+				profilePlotWindow = null;
+            }
+        }
+
+        if (updated(fields, Params.WINDOW_RADIUS)) {
+            makeWindow();
+            makeHist();
+        }
+
+        if (updated(fields, Params.WINDOW_RADIUS | Params.POINT_RADIUS | Params.BACKGROUND_START_RADIUS
+                | Params.PROFILE_WINDOW)) {
+            updatePoints(true);
+            updateNoise();
+        } else if (updated(fields, Params.SLOPE | Params.Y_INTERCEPT)) {
+            updateLimitLine();
+        }
+
+        if (updated(fields, Params.WINDOW_RADIUS | Params.POINT_RADIUS | Params.BACKGROUND_START_RADIUS
+                | Params.SLOPE | Params.Y_INTERCEPT | Params.POINT_OUTPUT | Params.BG_OUTPUT
+                | Params.SKIP_PIXELS | Params.TAKE_PIXELS)) {
+            updatePreview();
+        }
+
+        // Points/noise selection
+        if (updated(fields,Params.SELECT_NOISE)) {
+            updateSelectionTool();
+        }
+    }
+    
+    private void updateSelectionTool() {
+        if (globalParams.selectNoise) {
+            IJ.setTool(Toolbar.OVAL);
+            pointsRoi = previewImage.getRoi();
+            previewImage.killRoi();
+            if (noiseRoi != null) {
+                previewImage.setRoi(noiseRoi);
+            }
+        } else {
+            IJ.setTool(Toolbar.POINT);
+            noiseRoi = previewImage.getRoi();
+            previewImage.killRoi();
+            if (pointsRoi != null) {
+                previewImage.setRoi(pointsRoi);
+            }
+        }
+    }
+        
+	private void startInteractive() {
+		logMethod();
+
+		// Read image
+		ImageProcessor ip = sourceImage.getProcessor();
+		ImageProcessor fp = ip.convertToFloat();
+		if (ip == fp) {
+			fp = fp.duplicate();
+		}
+		pixels = (float[]) fp.getPixels();
+		width = fp.getWidth();
+		height = fp.getHeight();
+
+		// Create preview image
+		ImageStack is = new ImageStack(width, height);
+		previewProcessor = ip.duplicate();
+		is.addSlice(previewProcessor);
+		is.addSlice(previewProcessor.duplicate());
+		previewImage = new ImagePlus("Preview", is);
+		previewImage.show();
+
+		// Create plot
+		plot = new Plot("Plot", "Neighbourhood", "Point");
+		plot.setColor(Color.BLUE);
+		plot.add("circle", new double[0], new double[0]);
+		plot.setColor(Color.RED);
+		plot.add("circle", new double[0], new double[0]);
+		plot.show();
+
+		// Create Profile plot
+		profilePlot = new Plot("Profile", "Distance from pixel", "Average value");
+		profilePlot.add("line", new double[0], new double[0]);
+		profilePlot.add("line", new double[0], new double[0]);
+		profilePlot.add("line", new double[0], new double[0]);
+		for (int i = 0; i < 2 * Common.MAX_PROFILE_PLOTS; i++) {
+			profilePlot.add("connected circle", new double[0], new double[0]);
+		}
+
+		// Listen for ROI changes
+		Roi.addRoiListener(this);
+
+        makeWindow();
+        makeHist();
+        updatePoints(true);
+        updateNoise();
+        updatePreview();
+        updateSelectionTool();
+	}
 }

@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JOptionPane;
@@ -165,27 +167,27 @@ public class Params {
         return flags;
     }
     
-    private void toProperties(String prefix, String name) {
-        properties.setProperty(prefix + "windowRadius", Integer.toString(windowRadius));
-        properties.setProperty(prefix + "pointRadius", Integer.toString(pointRadius));
-        properties.setProperty(prefix + "backgroundStartRadius", Integer.toString(backgroundStartRadius));
-        properties.setProperty(prefix + "resetDisplayRange", Boolean.toString(resetDisplayRange));
+    private void toProperties(Properties props, String prefix, String name) {
+        props.setProperty(prefix + "windowRadius", Integer.toString(windowRadius));
+        props.setProperty(prefix + "pointRadius", Integer.toString(pointRadius));
+        props.setProperty(prefix + "backgroundStartRadius", Integer.toString(backgroundStartRadius));
+        props.setProperty(prefix + "resetDisplayRange", Boolean.toString(resetDisplayRange));
 
-        properties.setProperty(prefix + "slope", Double.toString(slope));
-        properties.setProperty(prefix + "yIntercept", Double.toString(yIntercept));
+        props.setProperty(prefix + "slope", Double.toString(slope));
+        props.setProperty(prefix + "yIntercept", Double.toString(yIntercept));
 
-        properties.setProperty(prefix + "pointOutput", Integer.toString(pointOutput));
-        properties.setProperty(prefix + "bgOutput", Integer.toString(bgOutput));
-        properties.setProperty(prefix + "skipPixels", Integer.toString(skipPixels));
-        properties.setProperty(prefix + "takePixels", Integer.toString(takePixels));
-        properties.setProperty(prefix + "allSlices", Boolean.toString(allSlices));
-        properties.setProperty(prefix + "addInputSlices", Boolean.toString(addInputSlices));
+        props.setProperty(prefix + "pointOutput", Integer.toString(pointOutput));
+        props.setProperty(prefix + "bgOutput", Integer.toString(bgOutput));
+        props.setProperty(prefix + "skipPixels", Integer.toString(skipPixels));
+        props.setProperty(prefix + "takePixels", Integer.toString(takePixels));
+        props.setProperty(prefix + "allSlices", Boolean.toString(allSlices));
+        props.setProperty(prefix + "addInputSlices", Boolean.toString(addInputSlices));
         
         // skip selectNoise
         // skip interactive
         // skip profileWindow
 
-        properties.setProperty(prefix + "name", name);
+        props.setProperty(prefix + "name", name);
     }
 
     private void setParamUnchecked(String paramName, String value) {
@@ -388,9 +390,31 @@ public class Params {
         notifyListeners(flags, sender);
     }
     
+    public Params copy() {
+        Params p = new Params();
+        p.set(this, false, null);
+        return p;
+    }
+    
     public boolean equal(Params other, boolean persistentOnly) {
         long mask = persistentOnly ? PERSISTENT_PARAMETERS_MASK : -1L;
         return (getFlags(other) & mask) == 0;
+    }
+    
+    @Override
+    public String toString() {
+        Properties props = new Properties();
+        toProperties(props, "", "");
+        props.remove("name");
+        String res;
+        try {
+            Writer writer = new StringWriter();
+            props.store(writer, null);
+            res = writer.toString().trim().replaceAll("(\\s*\\r?\\n)+\\s*", ", ");
+        } catch (IOException ex) {
+            res = "";
+        }
+        return res;
     }
     
     public void addListener(Listener listener) {
@@ -424,7 +448,7 @@ public class Params {
                 properties.load(new FileInputStream(PRESETS_PATH));
             } catch (FileNotFoundException ex) {
                 Params p = new Params();
-                p.toProperties("0-", Common.MRU_PARAMS);
+                p.toProperties(properties, "0-", Common.MRU_PARAMS);
                 writeProperties();
                 properties.load(new FileInputStream(PRESETS_PATH));
             }
@@ -516,7 +540,7 @@ public class Params {
                 break;
             }
         }
-        toProperties(prefix, name);
+        toProperties(properties, prefix, name);
         writeProperties();
     }
     

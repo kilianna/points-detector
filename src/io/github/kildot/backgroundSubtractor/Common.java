@@ -10,6 +10,7 @@ public final class Common {
     public static final String NEW_PARAMS = "[ New preset ]";
     public static final String MRU_PARAMS = "[ Recently used ]";
     public static final int PLOT_UPDATE_DELAY = 1000;
+    public static final int MAX_PROFILE_PLOTS = 25;
     
     //-------------------------------------------------------------------------
     

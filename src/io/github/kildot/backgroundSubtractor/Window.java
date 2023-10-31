@@ -2,7 +2,12 @@ package io.github.kildot.backgroundSubtractor;
 
 import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.EventQueue;
+import java.awt.SecondaryLoop;
+import java.awt.Toolkit;
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.TimerTask;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
@@ -12,15 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 
-/**
- *
- * @author doki
- */
 public class Window extends javax.swing.JFrame implements Params.Listener {
 
     private DefaultComboBoxModel<String> presetsModel = new DefaultComboBoxModel<>();
@@ -28,6 +25,8 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private Params globalParams;
     private Params presetParams = Params.loadPreset(Common.MRU_PARAMS);
     private String presetName = Common.NEW_PARAMS;
+    private SecondaryLoop secondaryLoop;
+    private boolean canceled = false;
     
     private static Color defaultTextBackgroundColor = null;
 
@@ -85,7 +84,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         scopeGroup = new javax.swing.ButtonGroup();
         originalSlicesGroup = new javax.swing.ButtonGroup();
         saveButton2 = new javax.swing.JButton();
-        TODOGroup = new javax.swing.ButtonGroup();
+        DisplayRangeGroup = new javax.swing.ButtonGroup();
         selectionTypeGroup = new javax.swing.ButtonGroup();
         saveButton3 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
@@ -153,6 +152,11 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         setTitle("Parameters");
         setMinimumSize(new java.awt.Dimension(480, 100));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Preliminary parameters"));
         jPanel1.setName("nnn"); // NOI18N
@@ -223,7 +227,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         labelParamW2.setText("Background start radius [pixels]");
 
-        TODOGroup.add(displayRangeResetTrueRadio);
+        DisplayRangeGroup.add(displayRangeResetTrueRadio);
         displayRangeResetTrueRadio.setText("Reset");
         displayRangeResetTrueRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -233,7 +237,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         labelTakePixels3.setText("Display range");
 
-        TODOGroup.add(displayRangeResetFalseRadio);
+        DisplayRangeGroup.add(displayRangeResetFalseRadio);
         displayRangeResetFalseRadio.setSelected(true);
         displayRangeResetFalseRadio.setText("Keep");
         displayRangeResetFalseRadio.addActionListener(new java.awt.event.ActionListener() {
@@ -912,11 +916,11 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        this.dispose();
+        closeWindow(true);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        // TODO add your handling code here:
+        closeWindow(false);
     }//GEN-LAST:event_okButtonActionPerformed
 
     private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
@@ -947,9 +951,13 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         updatePresetButtons();
     }//GEN-LAST:event_presetsComboBoxActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        closeWindow(true);
+    }//GEN-LAST:event_formWindowClosing
+
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">                      
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup TODOGroup;
+    private javax.swing.ButtonGroup DisplayRangeGroup;
     private javax.swing.JRadioButton addInputSlicesFalseRadio;
     private javax.swing.JRadioButton addInputSlicesTrueRadio;
     private javax.swing.JRadioButton allSlicesFalseRadio;
@@ -1151,5 +1159,32 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         }, postpone ? Common.PLOT_UPDATE_DELAY : 0);
     }
 
+    public void showBlocking() {
+        setVisible(true);
+        try {
+            canceled = true;
+            final EventQueue eventQueue = AccessController.doPrivileged(
+                    (PrivilegedAction<EventQueue>) () -> Toolkit.getDefaultToolkit().getSystemEventQueue()
+            );
+            secondaryLoop = eventQueue.createSecondaryLoop();
+            secondaryLoop.enter();
+            secondaryLoop = null;
+        } finally {
+            setVisible(false);
+        }
+    }
+    
+    public boolean wasCanceled() {
+        return canceled;
+    }
+
+    private void closeWindow(boolean canceled) {
+        globalParams.set(localParams, false, this);
+        this.canceled = canceled;
+        setVisible(false);
+        if (secondaryLoop != null) {
+            secondaryLoop.exit();
+        }
+    }
 
 }

@@ -2,8 +2,8 @@
 
 # Points Detector
 
-Download link: [`Points_Detector.jar`](https://github.com/kildot/points-detector/releases/latest/download/Points_Detector.jar)
+Download link: [`BackgroundSubtractor.jar`](https://github.com/kildot/points-detector/releases/latest/download/BackgroundSubtractor.jar)
 
 Help link: [`Points Detector Help`](help/README.md)
 
-Lastest development version: [`Points_Detector.jar`](https://github.com/kildot/points-detector/raw/dev-binaries/Points_Detector.jar)
+Lastest development version: [`BackgroundSubtractor.jar`](https://github.com/kildot/points-detector/raw/dev-binaries/BackgroundSubtractor.jar)
