@@ -23,45 +23,54 @@ import javax.swing.JToggleButton;
  */
 public class Window extends javax.swing.JFrame implements Params.Listener {
 
+    private DefaultComboBoxModel<String> presetsModel = new DefaultComboBoxModel<>();
     private Params localParams = new Params();
     private Params globalParams;
+    private Params presetParams = Params.loadPreset(Common.MRU_PARAMS);
+    private String presetName = Common.NEW_PARAMS;
     
     private static Color defaultTextBackgroundColor = null;
+
     
-    /**
-     * Creates new form NewJFrame
-     */
     public Window(Params globalParams) {
         this.globalParams = globalParams;
         globalParams.addListener(this);
-        loadPresets(null);
         initComponents();
+        loadPresets();
         defaultTextBackgroundColor = pointRadiusText.getBackground();
         setInteractiveVisible(false);
         parametersChanged(0xFFFFFFFFFFFFFFFFL, false);
     }
-    
-    private String getPresetName() {
-        Object obj = presetsModel.getSelectedItem();
-        return obj != null && (obj instanceof String) ? (String)obj : Common.NEW_PARAMS;
-    }
-    
-    private void loadPresets(String current) {
-        if (current == null) {
-            current = getPresetName();
-        }
+
+    private void loadPresets() {
+        String selected = presetName;
         presetsModel.removeAllElements();
         presetsModel.addElement(Common.NEW_PARAMS);
-        boolean exists = current.equals(Common.NEW_PARAMS);
+        boolean exists = false;
         for (String name : Params.listPresets()) {
             presetsModel.addElement(name);
-            exists = exists || current.equals(name);
+            exists = exists || selected.equals(name);
         }
-        if (exists) {
-            presetsModel.setSelectedItem(current);
+        if (!exists) {
+            presetName = Common.NEW_PARAMS;
         } else {
-            presetsModel.setSelectedItem(Common.NEW_PARAMS);            
+            presetName = selected;
         }
+        presetsModel.setSelectedItem(presetName);
+        updatePresetButtons();
+    }
+    
+    private void updatePresetButtons() {
+        saveButton.setEnabled(
+            !presetName.equals(Common.MRU_PARAMS)
+            && (
+                presetName.equals(Common.NEW_PARAMS)
+                || !presetParams.equal(localParams, true)
+            ));
+        deleteButton.setEnabled(
+            !presetName.equals(Common.MRU_PARAMS)
+            && !presetName.equals(Common.NEW_PARAMS)
+            );
     }
 
     /**
@@ -121,44 +130,29 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         labelTakePixels = new javax.swing.JLabel();
         helpTakePixels1 = new javax.swing.JButton();
         helpTakePixels2 = new javax.swing.JButton();
-        saveButton4 = new javax.swing.JButton();
-        saveButton5 = new javax.swing.JButton();
-        interactiveButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
+        okButton = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         presetsComboBox = new javax.swing.JComboBox<>();
         saveButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        showProfileButton = new javax.swing.JButton();
         pointsSelection = new javax.swing.JToggleButton();
         noiseSelection = new javax.swing.JToggleButton();
         helpPointsNoiseSelection = new javax.swing.JButton();
         helpProfile = new javax.swing.JButton();
+        interactiveButton = new javax.swing.JToggleButton();
+        profileWindowButton = new javax.swing.JToggleButton();
 
         saveButton2.setText("Copy to clipboard");
-        saveButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveButton2ActionPerformed(evt);
-            }
-        });
 
         saveButton3.setText("Paste from clipboard");
-        saveButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveButton3ActionPerformed(evt);
-            }
-        });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Parameters");
         setMinimumSize(new java.awt.Dimension(480, 100));
         setResizable(false);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Preliminary parameters"));
         jPanel1.setName("nnn"); // NOI18N
@@ -685,25 +679,17 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         addInputSlicesTrueRadio.getAccessibleContext().setAccessibleDescription("true:addInputSlices");
         addInputSlicesFalseRadio.getAccessibleContext().setAccessibleDescription("false:addInputSlices");
 
-        saveButton4.setText("Cancel");
-        saveButton4.addActionListener(new java.awt.event.ActionListener() {
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveButton4ActionPerformed(evt);
+                cancelButtonActionPerformed(evt);
             }
         });
 
-        saveButton5.setText("OK");
-        saveButton5.addActionListener(new java.awt.event.ActionListener() {
+        okButton.setText("OK");
+        okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveButton5ActionPerformed(evt);
-            }
-        });
-
-        interactiveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Tune.png"))); // NOI18N
-        interactiveButton.setText("Interactive parameters tuning");
-        interactiveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                interactiveButtonActionPerformed(evt);
+                okButtonActionPerformed(evt);
             }
         });
 
@@ -775,14 +761,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         jButton3.getAccessibleContext().setAccessibleDescription("presets");
 
-        showProfileButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Profile.png"))); // NOI18N
-        showProfileButton.setText("Show profile plot");
-        showProfileButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showProfileButtonActionPerformed(evt);
-            }
-        });
-
         selectionTypeGroup.add(pointsSelection);
         pointsSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Point.png"))); // NOI18N
         pointsSelection.setSelected(true);
@@ -818,6 +796,22 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
+        interactiveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Tune.png"))); // NOI18N
+        interactiveButton.setText("Interactive parameters tuning");
+        interactiveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
+
+        profileWindowButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Profile.png"))); // NOI18N
+        profileWindowButton.setText("Profile plot window");
+        profileWindowButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -832,13 +826,13 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(interactiveButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(showProfileButton)
+                        .addComponent(profileWindowButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(helpProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-                        .addComponent(saveButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(saveButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(pointsSelection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -866,10 +860,11 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(saveButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(saveButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(interactiveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(showProfileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(interactiveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(profileWindowButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(helpProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12))
         );
@@ -877,6 +872,8 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         pointsSelection.getAccessibleContext().setAccessibleDescription("false:selectNoise");
         noiseSelection.getAccessibleContext().setAccessibleDescription("true:selectNoise");
         helpPointsNoiseSelection.getAccessibleContext().setAccessibleDescription("points-and-noise-selection");
+        interactiveButton.getAccessibleContext().setAccessibleDescription("interactive");
+        profileWindowButton.getAccessibleContext().setAccessibleDescription("profileWindow");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -885,54 +882,42 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         if (evt.getSource() instanceof JTextField) {
             textParamUpdated(evt.getSource());
         } else if (evt.getSource() instanceof JToggleButton) {
-            radioParamUpdated(evt.getSource());
+            toggleParamUpdated(evt.getSource());
         } else if (evt.getSource() instanceof JComboBox) {
             comboBoxParamUpdated(evt.getSource());
         }
     }//GEN-LAST:event_paramActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        String name = getPresetName();
-        if (name.equals(Common.NEW_PARAMS)) {
-            name = JOptionPane.showInputDialog(this, "New preset name:");
-            if (name == null || name.trim().length() == 0) return;
+        if (presetName.equals(Common.NEW_PARAMS)) {
+            String newName = JOptionPane.showInputDialog(this, "New preset name:");
+            if (newName == null || newName.trim().length() == 0) return;
+            presetName = newName;
+            presetParams.set(localParams, true, null);
+            presetParams.storePreset(presetName);
+            loadPresets();
+        } else {
+            presetParams.set(localParams, true, null);
+            presetParams.storePreset(presetName);
+            updatePresetButtons();
         }
-        localParams.storePreset(name);
-        loadPresets(name);
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        String name = getPresetName();
-        if (!name.equals(Common.NEW_PARAMS)) {
-            Params.remove(name);
+        if (presetName.equals(Common.NEW_PARAMS) || presetName.equals(Common.MRU_PARAMS)) {
+            return;
         }
-        loadPresets(null);
+        Params.remove(presetName);
+        loadPresets();
     }//GEN-LAST:event_deleteButtonActionPerformed
 
-    private void saveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_saveButton2ActionPerformed
-
-    private void saveButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_saveButton3ActionPerformed
-
-    private void saveButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButton4ActionPerformed
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         this.dispose();
-    }//GEN-LAST:event_saveButton4ActionPerformed
+    }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void saveButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButton5ActionPerformed
+    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_saveButton5ActionPerformed
-
-    private void interactiveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interactiveButtonActionPerformed
-        setInteractiveVisible(true);
-    }//GEN-LAST:event_interactiveButtonActionPerformed
-
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        showProfileButton.setVisible(false);
-        pack();
-    }//GEN-LAST:event_formWindowOpened
+    }//GEN-LAST:event_okButtonActionPerformed
 
     private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
         try {
@@ -953,15 +938,16 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     }//GEN-LAST:event_keyVerifyEvent
 
     private void presetsComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_presetsComboBoxActionPerformed
-        String name = getPresetName();
-        if (name.equals(Common.NEW_PARAMS)) return;
-        localParams.loadPreset(name, this);
+        Object obj = presetsModel.getSelectedItem();
+        presetName = obj != null && (obj instanceof String) ? (String)obj : Common.NEW_PARAMS;
+        if (!presetName.equals(Common.NEW_PARAMS)) {
+            presetParams = Params.loadPreset(presetName);
+            globalParams.set(presetParams, true, null);
+        }
+        updatePresetButtons();
     }//GEN-LAST:event_presetsComboBoxActionPerformed
 
-    private void showProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showProfileButtonActionPerformed
-        setInteractiveVisible(false);
-    }//GEN-LAST:event_showProfileButtonActionPerformed
-
+    // <editor-fold defaultstate="collapsed" desc="Variables declaration">                      
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup TODOGroup;
     private javax.swing.JRadioButton addInputSlicesFalseRadio;
@@ -970,6 +956,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JRadioButton allSlicesTrueRadio;
     private javax.swing.JTextField backgroundStartRadiusText;
     private javax.swing.JComboBox<String> bgOutputBox;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JButton deleteButton;
     private javax.swing.JRadioButton displayRangeResetFalseRadio;
     private javax.swing.JRadioButton displayRangeResetTrueRadio;
@@ -979,7 +966,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JButton helpTakePixels;
     private javax.swing.JButton helpTakePixels1;
     private javax.swing.JButton helpTakePixels2;
-    private javax.swing.JButton interactiveButton;
+    private javax.swing.JToggleButton interactiveButton;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton2;
@@ -1007,25 +994,25 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JLabel labelTakePixels2;
     private javax.swing.JLabel labelTakePixels3;
     private javax.swing.JToggleButton noiseSelection;
+    private javax.swing.JButton okButton;
     private javax.swing.ButtonGroup originalSlicesGroup;
     private javax.swing.JComboBox<String> pointOutputBox;
     private javax.swing.JTextField pointRadiusText;
     private javax.swing.JToggleButton pointsSelection;
     private javax.swing.JComboBox<String> presetsComboBox;
+    private javax.swing.JToggleButton profileWindowButton;
     private javax.swing.JButton saveButton;
     private javax.swing.JButton saveButton2;
     private javax.swing.JButton saveButton3;
-    private javax.swing.JButton saveButton4;
-    private javax.swing.JButton saveButton5;
     private javax.swing.ButtonGroup scopeGroup;
     private javax.swing.ButtonGroup selectionTypeGroup;
-    private javax.swing.JButton showProfileButton;
     private javax.swing.JTextField skipPixelsText;
     private javax.swing.JTextField slopeText;
     private javax.swing.JTextField takePixelsText;
     private javax.swing.JTextField windowRadiusText;
     private javax.swing.JTextField yInterceptText;
     // End of variables declaration//GEN-END:variables
+    // </editor-fold>
 
     private void setSkipTakeVisible(boolean visible) {
         labelSkipPixels.setVisible(visible);
@@ -1041,21 +1028,22 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         pointsSelection.setVisible(visible);
         noiseSelection.setVisible(visible);
         helpPointsNoiseSelection.setVisible(visible);
-        showProfileButton.setVisible(visible);
+        profileWindowButton.setVisible(visible);
         helpProfile.setVisible(visible);
         interactiveButton.setVisible(!visible);
         this.pack();
     }
-    
-    private DefaultComboBoxModel<String> presetsModel = new DefaultComboBoxModel<>();
     
     @Override
     public final void parametersChanged(long fields, boolean self) {
         if ((fields & Params.POINT_OUTPUT) != 0) {
             setSkipTakeVisible(Params.isSkipTakePixelsNeeded(globalParams.pointOutput));
         }
+        if ((fields & Params.INTERACTIVE) != 0) {
+            setInteractiveVisible(globalParams.interactive);
+        }
         if (self) return;
-        localParams.set(globalParams, null);
+        localParams.set(globalParams, false, null);
         parameterChangedText(fields, Params.WINDOW_RADIUS, localParams.windowRadius, windowRadiusText);
         parameterChangedText(fields, Params.POINT_RADIUS, localParams.pointRadius, pointRadiusText);
         parameterChangedText(fields, Params.BACKGROUND_START_RADIUS, localParams.backgroundStartRadius, backgroundStartRadiusText);
@@ -1069,6 +1057,9 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         parameterChangedBoolRadio(fields, Params.ALL_SLICES, localParams.allSlices, allSlicesFalseRadio, allSlicesTrueRadio);
         parameterChangedBoolRadio(fields, Params.ADD_INPUT_SLICES, localParams.addInputSlices, addInputSlicesFalseRadio, addInputSlicesTrueRadio);
         parameterChangedBoolRadio(fields, Params.SELECT_NOISE, localParams.selectNoise, pointsSelection, noiseSelection);
+        parameterChangedToggle(fields, Params.INTERACTIVE, localParams.interactive, interactiveButton);
+        parameterChangedToggle(fields, Params.PROFILE_WINDOW, localParams.profileWindow, profileWindowButton);
+        updatePresetButtons();
     }
     
     private void parameterChangedText(long fields, long flag, int value, JTextField field) {
@@ -1088,6 +1079,11 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         falseRadio.setSelected(!value);
         trueRadio.setSelected(value);
     }
+    
+    private void parameterChangedToggle(long fields, long flag, boolean value, JToggleButton button) {
+        if ((fields & flag) == 0) return;
+        button.setSelected(value);
+    }
 
     private void parameterChangedComboBox(long fields, long flag, int value, JComboBox<String> box) {
         if ((fields & flag) == 0) return;
@@ -1104,9 +1100,10 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         } else {
             field.setBackground(new Color(0xFFAA99));
         }
+        updatePresetButtons();
     }
     
-    private void radioParamUpdated(Object obj) {
+    private void toggleParamUpdated(Object obj) {
         JToggleButton button = (JToggleButton)obj;
         String desc = button.getAccessibleContext().getAccessibleDescription();
         boolean invert;
@@ -1118,11 +1115,13 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             invert = true;
             paramName = desc.substring(6);
         } else {
-            return;
+            invert = false;
+            paramName = desc;
         }
         boolean value = button.isSelected();
         localParams.setParamBoolean(paramName, invert ? !value : value);
         globalParamsUpdate(false);
+        updatePresetButtons();
     }
     
     private void comboBoxParamUpdated(Object obj) {
@@ -1131,6 +1130,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         String paramValue = (String)box.getSelectedItem();
         localParams.setParamString(paramName, paramValue);
         globalParamsUpdate(false);
+        updatePresetButtons();
     }
     
     private TimerTask globalParamsUpdateTask = null;
@@ -1147,7 +1147,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         globalParamsUpdatePostponed = postpone;
         globalParamsUpdateTask = Common.invokeLater(() -> {
             globalParamsUpdateTask = null;
-            globalParams.set(localParams, Window.this);
+            globalParams.set(localParams, false, Window.this);
         }, postpone ? Common.PLOT_UPDATE_DELAY : 0);
     }
 

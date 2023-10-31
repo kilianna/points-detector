@@ -61,7 +61,7 @@ public class Params {
     public double slope;
     public double yIntercept;
     
-    // ..
+    // Output parameters
     public int pointOutput;
     public int bgOutput;
     public int skipPixels;
@@ -71,23 +71,30 @@ public class Params {
     
     // Additional
     public boolean selectNoise;
+    public boolean interactive;
+    public boolean profileWindow;
 
-    public static final long WINDOW_RADIUS = 1;
-    public static final long POINT_RADIUS = 2;
-    public static final long BACKGROUND_START_RADIUS = 4;
-    public static final long RESET_DISPLAY_RANGE = 8;
+    public static final long WINDOW_RADIUS = 0x0001;
+    public static final long POINT_RADIUS = 0x0002;
+    public static final long BACKGROUND_START_RADIUS = 0x0004;
+    public static final long RESET_DISPLAY_RANGE = 0x0008;
     
-    public static final long SLOPE = 16;
-    public static final long Y_INTERCEPT = 32;
+    public static final long SLOPE = 0x0010;
+    public static final long Y_INTERCEPT = 0x0020;
     
-    public static final long POINT_OUTPUT = 64;
-    public static final long BG_OUTPUT = 128;
-    public static final long SKIP_PIXELS = 256;
-    public static final long TAKE_PIXELS = 512;
-    public static final long ALL_SLICES = 1024;
-    public static final long ADD_INPUT_SLICES = 2048;
+    public static final long POINT_OUTPUT = 0x0040;
+    public static final long BG_OUTPUT = 0x0080;
+    public static final long SKIP_PIXELS = 0x0100;
+    public static final long TAKE_PIXELS = 0x0200;
+    public static final long ALL_SLICES = 0x0400;
+    public static final long ADD_INPUT_SLICES = 0x0800;
 
-    public static final long SELECT_NOISE = 2 * 2048;
+    public static final long PERSISTENT_PARAMETERS_MASK = 0x0FFF;
+
+    public static final long SELECT_NOISE = 0x1000;
+    public static final long INTERACTIVE = 0x2000;
+    public static final long PROFILE_WINDOW = 0x4000;
+
     
     public final void loadDefaults() {
         windowRadius = 20;
@@ -106,9 +113,11 @@ public class Params {
         addInputSlices = false;
         
         selectNoise = false;
+        interactive = false;
+        profileWindow = false;
     }
 
-    private void setDirect(Params src) {
+    private void setDirect(Params src, boolean persistentOnly) {
         windowRadius = src.windowRadius;
         pointRadius = src.pointRadius;
         backgroundStartRadius = src.backgroundStartRadius;
@@ -123,8 +132,12 @@ public class Params {
         takePixels = src.takePixels;
         allSlices = src.allSlices;
         addInputSlices = src.addInputSlices;
+        
+        if (persistentOnly) return;
 
         selectNoise = src.selectNoise;
+        interactive = src.interactive;
+        profileWindow = src.profileWindow;
     }
     
     private long getFlags(Params src) {
@@ -146,6 +159,8 @@ public class Params {
         if (addInputSlices != src.addInputSlices) flags |= ADD_INPUT_SLICES;
 
         if (selectNoise != src.selectNoise) flags |= SELECT_NOISE;
+        if (interactive != src.interactive) flags |= INTERACTIVE;
+        if (profileWindow != src.profileWindow) flags |= PROFILE_WINDOW;
 
         return flags;
     }
@@ -167,6 +182,8 @@ public class Params {
         properties.setProperty(prefix + "addInputSlices", Boolean.toString(addInputSlices));
         
         // skip selectNoise
+        // skip interactive
+        // skip profileWindow
 
         properties.setProperty(prefix + "name", name);
     }
@@ -212,6 +229,12 @@ public class Params {
                 break;
             case "selectNoise":
                 selectNoise = Boolean.parseBoolean(value);
+                break;
+            case "interactive":
+                interactive = Boolean.parseBoolean(value);
+                break;
+            case "profileWindow":
+                profileWindow = Boolean.parseBoolean(value);
                 break;
             default:
                 break;
@@ -273,6 +296,12 @@ public class Params {
                 return true;
             case "selectNoise":
                 selectNoise = value;
+                return true;
+            case "interactive":
+                interactive = value;
+                return true;
+            case "profileWindow":
+                profileWindow = value;
                 return true;
             default:
                 return true;
@@ -350,20 +379,18 @@ public class Params {
         loadDefaults();
     }
     
-    public void set(Params src, Listener sender) {
+    public void set(Params src, boolean persistentOnly, Listener sender) {
         long flags = getFlags(src);
-        setDirect(src);
+        if (persistentOnly) {
+            flags &= PERSISTENT_PARAMETERS_MASK;
+        }
+        setDirect(src, persistentOnly);
         notifyListeners(flags, sender);
     }
     
-    public Params copy() {
-        Params res = new Params();
-        res.set(this, null);
-        return res;
-    }
-    
-    public boolean equal(Params other) {
-        return getFlags(other) == 0;
+    public boolean equal(Params other, boolean persistentOnly) {
+        long mask = persistentOnly ? PERSISTENT_PARAMETERS_MASK : -1L;
+        return (getFlags(other) & mask) == 0;
     }
     
     public void addListener(Listener listener) {
@@ -459,12 +486,13 @@ public class Params {
         return true;
     }
     
-    public void loadPreset(String name, Listener sender) {
+    public static Params loadPreset(String name) {
         Params p = new Params();
         if (p.loadUnchecked(name) && p.verifyAll()) {
-            set(p, sender);
+            return p;
         } else {
             error("Cannot load '" + name + "' preset.");
+            return new Params();
         }
     }
 
