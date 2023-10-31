@@ -26,7 +26,7 @@ ECHO WARNING!!! Cannot compile native tools for Windows x86 platform. 1>&2
 GOTO install_help
 :success_mingw32
 
-CALL C:\msys64\msys2_shell.cmd -defterm -here -no-start -ucrt64 %~dp0\BuildNative.sh "%1" 32
+CALL C:\msys64\msys2_shell.cmd -defterm -here -no-start -mingw32 %~dp0\BuildNative.sh "%1" 32
 
 goto :EOF
 

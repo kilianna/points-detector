@@ -671,7 +671,7 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	private void showDialog(boolean manual) {
 		logMethod();
-                Window fr = new Window();
+                Window fr = new Window(new Params());
                 fr.setVisible(true);
 		boolean[] initCheckBox = new boolean[] { false, false, false, false, false };
 		int[] initChoice = new int[] { PIXEL_OUTPUT_WHITE, PIXEL_OUTPUT_BLACK };

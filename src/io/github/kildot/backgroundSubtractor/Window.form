@@ -146,15 +146,15 @@
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="paramW1" max="32767" attributes="0"/>
-                      <Component id="paramW" alignment="0" max="32767" attributes="0"/>
+                      <Component id="pointRadiusText" max="32767" attributes="0"/>
+                      <Component id="windowRadiusText" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
-                          <Component id="jRadioButton5" min="-2" max="-2" attributes="0"/>
+                          <Component id="displayRangeResetFalseRadio" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="jRadioButton6" min="-2" max="-2" attributes="0"/>
+                          <Component id="displayRangeResetTrueRadio" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="paramW2" alignment="0" max="32767" attributes="0"/>
+                      <Component id="backgroundStartRadiusText" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -175,7 +175,7 @@
                   <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="paramW" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="windowRadiusText" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelParamW" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButton5" min="-2" max="-2" attributes="0"/>
@@ -183,7 +183,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="paramW1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="pointRadiusText" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelParamW1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
@@ -191,7 +191,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="paramW2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="backgroundStartRadiusText" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelParamW2" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButton6" min="-2" max="-2" attributes="0"/>
@@ -199,8 +199,8 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jRadioButton5" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jRadioButton6" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="displayRangeResetFalseRadio" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="displayRangeResetTrueRadio" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelTakePixels3" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButton11" min="-2" max="-2" attributes="0"/>
@@ -216,37 +216,37 @@
             <Property name="text" type="java.lang.String" value="Scanning window radius [pixels]"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="paramW">
+        <Component class="javax.swing.JTextField" name="windowRadiusText">
           <Properties>
             <Property name="text" type="java.lang.String" value="20"/>
-            <Property name="inputVerifier" type="javax.swing.InputVerifier" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="params.windowRadiusVerifier" type="code"/>
-            </Property>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[200, 24]"/>
             </Property>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="windowRadius"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramWActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
             <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JTextField" name="paramW1">
+        <Component class="javax.swing.JTextField" name="pointRadiusText">
           <Properties>
             <Property name="text" type="java.lang.String" value="5"/>
-            <Property name="inputVerifier" type="javax.swing.InputVerifier" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="params.pointRadiusVerifier" type="code"/>
-            </Property>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[200, 24]"/>
             </Property>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="pointRadius"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramW1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
             <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
@@ -257,19 +257,19 @@
             <Property name="text" type="java.lang.String" value="Point radius [pixels]"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="paramW2">
+        <Component class="javax.swing.JTextField" name="backgroundStartRadiusText">
           <Properties>
             <Property name="text" type="java.lang.String" value="6"/>
-            <Property name="inputVerifier" type="javax.swing.InputVerifier" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="params.backgroungStartRadiusVerifier" type="code"/>
-            </Property>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[200, 24]"/>
             </Property>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="backgroundStartRadius"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramW2ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
             <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
@@ -280,20 +280,26 @@
             <Property name="text" type="java.lang.String" value="Background start radius [pixels]"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="jRadioButton6">
+        <Component class="javax.swing.JRadioButton" name="displayRangeResetTrueRadio">
           <Properties>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="TODOGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Reset"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="true:resetDisplayRange"/>
+          </AccessibilityProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="labelTakePixels3">
           <Properties>
             <Property name="text" type="java.lang.String" value="Display range"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="jRadioButton5">
+        <Component class="javax.swing.JRadioButton" name="displayRangeResetFalseRadio">
           <Properties>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="TODOGroup"/>
@@ -301,6 +307,12 @@
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Keep"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="false:resetDisplayRange"/>
+          </AccessibilityProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButton5">
           <Properties>
@@ -370,8 +382,8 @@
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="paramW3" max="32767" attributes="0"/>
-                      <Component id="paramW4" max="32767" attributes="0"/>
+                      <Component id="slopeText" max="32767" attributes="0"/>
+                      <Component id="yInterceptText" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -388,7 +400,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="paramW3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="slopeText" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelParamW3" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButton7" min="-2" max="-2" attributes="0"/>
@@ -396,7 +408,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="paramW4" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="yInterceptText" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelParamW4" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButton8" min="-2" max="-2" attributes="0"/>
@@ -412,7 +424,7 @@
             <Property name="text" type="java.lang.String" value="Slope"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="paramW3">
+        <Component class="javax.swing.JTextField" name="slopeText">
           <Properties>
             <Property name="text" type="java.lang.String" value="1"/>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -420,11 +432,17 @@
             </Property>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="slope"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramW3ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JTextField" name="paramW4">
+        <Component class="javax.swing.JTextField" name="yInterceptText">
           <Properties>
             <Property name="text" type="java.lang.String" value="200"/>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -432,8 +450,14 @@
             </Property>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="yIntercept"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramW4ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="labelParamW4">
@@ -490,25 +514,25 @@
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jComboBox3" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jComboBox2" alignment="0" max="32767" attributes="0"/>
+                      <Component id="bgOutputBox" alignment="0" max="32767" attributes="0"/>
+                      <Component id="pointOutputBox" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jRadioButton1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="allSlicesFalseRadio" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jRadioButton2" min="-2" max="-2" attributes="0"/>
+                                  <Component id="allSlicesTrueRadio" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jRadioButton4" min="-2" max="-2" attributes="0"/>
+                                  <Component id="addInputSlicesFalseRadio" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jRadioButton3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="addInputSlicesTrueRadio" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="skipPixels" alignment="0" max="32767" attributes="0"/>
-                      <Component id="takePixels" alignment="0" max="32767" attributes="0"/>
+                      <Component id="skipPixelsText" alignment="0" max="32767" attributes="0"/>
+                      <Component id="takePixelsText" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -530,7 +554,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="labelParamW5" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jComboBox2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="pointOutputBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButton9" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -538,14 +562,14 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="labelParamW6" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jComboBox3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="bgOutputBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButton10" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="skipPixels" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="skipPixelsText" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelSkipPixels" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="helpSkipPixels" min="-2" max="-2" attributes="0"/>
@@ -553,7 +577,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="takePixels" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="takePixelsText" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelTakePixels" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="helpTakePixels" min="-2" max="-2" attributes="0"/>
@@ -561,18 +585,18 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                          <Component id="jRadioButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="allSlicesFalseRadio" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelTakePixels1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jRadioButton2" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="allSlicesTrueRadio" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="helpTakePixels1" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jRadioButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="addInputSlicesTrueRadio" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelTakePixels2" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jRadioButton4" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="addInputSlicesFalseRadio" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="helpTakePixels2" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -592,46 +616,36 @@
             <Property name="text" type="java.lang.String" value="Background"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox2">
+        <Component class="javax.swing.JComboBox" name="pointOutputBox">
           <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="10">
-                <StringItem index="0" value="White"/>
-                <StringItem index="1" value="Black"/>
-                <StringItem index="2" value="Original"/>
-                <StringItem index="3" value="Degree of matching"/>
-                <StringItem index="4" value="Net signal (average)"/>
-                <StringItem index="5" value="Net signal scaled (average)"/>
-                <StringItem index="6" value="Net signal (mode)"/>
-                <StringItem index="7" value="Net signal scaled (mode)"/>
-                <StringItem index="8" value="Net signal (median)"/>
-                <StringItem index="9" value="Net signal scaled (median)"/>
-              </StringArray>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new DefaultComboBoxModel&lt;&gt;(Params.POINT_OUTPUTS)&#xd;&#xa;" type="code"/>
             </Property>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="pointOutput"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox2ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox3">
+        <Component class="javax.swing.JComboBox" name="bgOutputBox">
           <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
-                <StringItem index="0" value="White"/>
-                <StringItem index="1" value="Black"/>
-                <StringItem index="2" value="Original"/>
-                <StringItem index="3" value="Degree of matching"/>
-              </StringArray>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new DefaultComboBoxModel&lt;&gt;(Params.BG_OUTPUTS)" type="code"/>
             </Property>
             <Property name="selectedItem" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="&quot;Black&quot;" type="code"/>
+              <Connection code="Params.BG_OUTPUTS[Params.BG_OUTPUT_BLACK]" type="code"/>
             </Property>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="bgOutput"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox3ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -657,7 +671,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpButtonActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JTextField" name="skipPixels">
+        <Component class="javax.swing.JTextField" name="skipPixelsText">
           <Properties>
             <Property name="text" type="java.lang.String" value="1"/>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -665,8 +679,14 @@
             </Property>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="skipPixels"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="skipPixelsActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="helpSkipPixels">
@@ -684,7 +704,7 @@
             <Property name="text" type="java.lang.String" value="Skip pixels"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="takePixels">
+        <Component class="javax.swing.JTextField" name="takePixelsText">
           <Properties>
             <Property name="text" type="java.lang.String" value="200"/>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -692,8 +712,14 @@
             </Property>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="takePixels"/>
+          </AccessibilityProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="takePixelsActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="keyVerifyEvent"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="helpTakePixels">
@@ -706,7 +732,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpButtonActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="jRadioButton1">
+        <Component class="javax.swing.JRadioButton" name="allSlicesFalseRadio">
           <Properties>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="scopeGroup"/>
@@ -714,34 +740,52 @@
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Current slice"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="false:allSlices"/>
+          </AccessibilityProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="labelTakePixels1">
           <Properties>
             <Property name="text" type="java.lang.String" value="Scope"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="jRadioButton2">
+        <Component class="javax.swing.JRadioButton" name="allSlicesTrueRadio">
           <Properties>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="scopeGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" value="All slices"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="true:allSlices"/>
+          </AccessibilityProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+          </Events>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="jRadioButton3">
+        <Component class="javax.swing.JRadioButton" name="addInputSlicesTrueRadio">
           <Properties>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="originalSlicesGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Include"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="true:addInputSlices"/>
+          </AccessibilityProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="labelTakePixels2">
           <Properties>
             <Property name="text" type="java.lang.String" value="Input slices"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="jRadioButton4">
+        <Component class="javax.swing.JRadioButton" name="addInputSlicesFalseRadio">
           <Properties>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="originalSlicesGroup"/>
@@ -749,6 +793,12 @@
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Omit"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="false:addInputSlices"/>
+          </AccessibilityProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="labelTakePixels">
           <Properties>
@@ -925,6 +975,12 @@
           <Dimension value="[130, 29]"/>
         </Property>
       </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="false:selectNoise"/>
+      </AccessibilityProperties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JToggleButton" name="noiseSelection">
       <Properties>
@@ -939,6 +995,12 @@
           <Dimension value="[130, 29]"/>
         </Property>
       </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="true:selectNoise"/>
+      </AccessibilityProperties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paramActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="helpPointsNoiseSelection">
       <Properties>

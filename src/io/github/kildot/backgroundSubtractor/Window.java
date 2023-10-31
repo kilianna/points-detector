@@ -1,13 +1,16 @@
 package io.github.kildot.backgroundSubtractor;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.net.URI;
+import java.util.TimerTask;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -18,19 +21,24 @@ import javax.swing.JOptionPane;
  *
  * @author doki
  */
-public class Window extends javax.swing.JFrame {
+public class Window extends javax.swing.JFrame implements Params.Listener {
 
-    public Params params;
+    private Params localParams = new Params();
+    private Params globalParams;
+    
+    private static Color defaultTextBackgroundColor = null;
     
     /**
      * Creates new form NewJFrame
      */
-    public Window() {
-        params = new Params();
+    public Window(Params globalParams) {
+        this.globalParams = globalParams;
+        globalParams.addListener(this);
         loadPresets(null);
         initComponents();
+        defaultTextBackgroundColor = pointRadiusText.getBackground();
         setInteractiveVisible(false);
-        setSkipTakeVisible(false);
+        parametersChanged(0xFFFFFFFFFFFFFFFFL, false);
     }
     
     private String getPresetName() {
@@ -45,7 +53,7 @@ public class Window extends javax.swing.JFrame {
         presetsModel.removeAllElements();
         presetsModel.addElement(Common.NEW_PARAMS);
         boolean exists = current.equals(Common.NEW_PARAMS);
-        for (String name : params.list()) {
+        for (String name : Params.listPresets()) {
             presetsModel.addElement(name);
             exists = exists || current.equals(name);
         }
@@ -73,43 +81,43 @@ public class Window extends javax.swing.JFrame {
         saveButton3 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         labelParamW = new javax.swing.JLabel();
-        paramW = new javax.swing.JTextField();
-        paramW1 = new javax.swing.JTextField();
+        windowRadiusText = new javax.swing.JTextField();
+        pointRadiusText = new javax.swing.JTextField();
         labelParamW1 = new javax.swing.JLabel();
-        paramW2 = new javax.swing.JTextField();
+        backgroundStartRadiusText = new javax.swing.JTextField();
         labelParamW2 = new javax.swing.JLabel();
-        jRadioButton6 = new javax.swing.JRadioButton();
+        displayRangeResetTrueRadio = new javax.swing.JRadioButton();
         labelTakePixels3 = new javax.swing.JLabel();
-        jRadioButton5 = new javax.swing.JRadioButton();
+        displayRangeResetFalseRadio = new javax.swing.JRadioButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton11 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         labelParamW3 = new javax.swing.JLabel();
-        paramW3 = new javax.swing.JTextField();
-        paramW4 = new javax.swing.JTextField();
+        slopeText = new javax.swing.JTextField();
+        yInterceptText = new javax.swing.JTextField();
         labelParamW4 = new javax.swing.JLabel();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         labelParamW5 = new javax.swing.JLabel();
         labelParamW6 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jComboBox3 = new javax.swing.JComboBox<>();
+        pointOutputBox = new javax.swing.JComboBox<>();
+        bgOutputBox = new javax.swing.JComboBox<>();
         jButton9 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
-        skipPixels = new javax.swing.JTextField();
+        skipPixelsText = new javax.swing.JTextField();
         helpSkipPixels = new javax.swing.JButton();
         labelSkipPixels = new javax.swing.JLabel();
-        takePixels = new javax.swing.JTextField();
+        takePixelsText = new javax.swing.JTextField();
         helpTakePixels = new javax.swing.JButton();
-        jRadioButton1 = new javax.swing.JRadioButton();
+        allSlicesFalseRadio = new javax.swing.JRadioButton();
         labelTakePixels1 = new javax.swing.JLabel();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        allSlicesTrueRadio = new javax.swing.JRadioButton();
+        addInputSlicesTrueRadio = new javax.swing.JRadioButton();
         labelTakePixels2 = new javax.swing.JLabel();
-        jRadioButton4 = new javax.swing.JRadioButton();
+        addInputSlicesFalseRadio = new javax.swing.JRadioButton();
         labelTakePixels = new javax.swing.JLabel();
         helpTakePixels1 = new javax.swing.JButton();
         helpTakePixels2 = new javax.swing.JButton();
@@ -157,16 +165,15 @@ public class Window extends javax.swing.JFrame {
 
         labelParamW.setText("Scanning window radius [pixels]");
 
-        paramW.setText("20");
-        paramW.setInputVerifier(params.windowRadiusVerifier);
-        paramW.setMinimumSize(new java.awt.Dimension(200, 24));
-        paramW.setName(""); // NOI18N
-        paramW.addActionListener(new java.awt.event.ActionListener() {
+        windowRadiusText.setText("20");
+        windowRadiusText.setMinimumSize(new java.awt.Dimension(200, 24));
+        windowRadiusText.setName(""); // NOI18N
+        windowRadiusText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramWActionPerformed(evt);
+                paramActionPerformed(evt);
             }
         });
-        paramW.addKeyListener(new java.awt.event.KeyAdapter() {
+        windowRadiusText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 keyVerifyEvent(evt);
             }
@@ -178,16 +185,15 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        paramW1.setText("5");
-        paramW1.setInputVerifier(params.pointRadiusVerifier);
-        paramW1.setMinimumSize(new java.awt.Dimension(200, 24));
-        paramW1.setName(""); // NOI18N
-        paramW1.addActionListener(new java.awt.event.ActionListener() {
+        pointRadiusText.setText("5");
+        pointRadiusText.setMinimumSize(new java.awt.Dimension(200, 24));
+        pointRadiusText.setName(""); // NOI18N
+        pointRadiusText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramW1ActionPerformed(evt);
+                paramActionPerformed(evt);
             }
         });
-        paramW1.addKeyListener(new java.awt.event.KeyAdapter() {
+        pointRadiusText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 keyVerifyEvent(evt);
             }
@@ -201,16 +207,15 @@ public class Window extends javax.swing.JFrame {
 
         labelParamW1.setText("Point radius [pixels]");
 
-        paramW2.setText("6");
-        paramW2.setInputVerifier(params.backgroungStartRadiusVerifier);
-        paramW2.setMinimumSize(new java.awt.Dimension(200, 24));
-        paramW2.setName(""); // NOI18N
-        paramW2.addActionListener(new java.awt.event.ActionListener() {
+        backgroundStartRadiusText.setText("6");
+        backgroundStartRadiusText.setMinimumSize(new java.awt.Dimension(200, 24));
+        backgroundStartRadiusText.setName(""); // NOI18N
+        backgroundStartRadiusText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramW2ActionPerformed(evt);
+                paramActionPerformed(evt);
             }
         });
-        paramW2.addKeyListener(new java.awt.event.KeyAdapter() {
+        backgroundStartRadiusText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 keyVerifyEvent(evt);
             }
@@ -224,14 +229,24 @@ public class Window extends javax.swing.JFrame {
 
         labelParamW2.setText("Background start radius [pixels]");
 
-        TODOGroup.add(jRadioButton6);
-        jRadioButton6.setText("Reset");
+        TODOGroup.add(displayRangeResetTrueRadio);
+        displayRangeResetTrueRadio.setText("Reset");
+        displayRangeResetTrueRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
 
         labelTakePixels3.setText("Display range");
 
-        TODOGroup.add(jRadioButton5);
-        jRadioButton5.setSelected(true);
-        jRadioButton5.setText("Keep");
+        TODOGroup.add(displayRangeResetFalseRadio);
+        displayRangeResetFalseRadio.setSelected(true);
+        displayRangeResetFalseRadio.setText("Keep");
+        displayRangeResetFalseRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -274,14 +289,14 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(labelTakePixels3))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(paramW1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(paramW, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pointRadiusText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(windowRadiusText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jRadioButton5)
+                        .addComponent(displayRangeResetFalseRadio)
                         .addGap(18, 18, 18)
-                        .addComponent(jRadioButton6)
+                        .addComponent(displayRangeResetTrueRadio)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(paramW2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(backgroundStartRadiusText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -297,31 +312,36 @@ public class Window extends javax.swing.JFrame {
                 .addGap(7, 7, 7)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(paramW, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(windowRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelParamW))
                     .addComponent(jButton5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(paramW1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pointRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelParamW1))
                     .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(paramW2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(backgroundStartRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelParamW2))
                     .addComponent(jButton6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jRadioButton5)
-                        .addComponent(jRadioButton6)
+                        .addComponent(displayRangeResetFalseRadio)
+                        .addComponent(displayRangeResetTrueRadio)
                         .addComponent(labelTakePixels3))
                     .addComponent(jButton11))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        windowRadiusText.getAccessibleContext().setAccessibleDescription("windowRadius");
+        pointRadiusText.getAccessibleContext().setAccessibleDescription("pointRadius");
+        backgroundStartRadiusText.getAccessibleContext().setAccessibleDescription("backgroundStartRadius");
+        displayRangeResetTrueRadio.getAccessibleContext().setAccessibleDescription("true:resetDisplayRange");
+        displayRangeResetFalseRadio.getAccessibleContext().setAccessibleDescription("false:resetDisplayRange");
         jButton5.getAccessibleContext().setAccessibleDescription("scanning-window-radius");
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Discrimination line parameters"));
@@ -329,21 +349,43 @@ public class Window extends javax.swing.JFrame {
 
         labelParamW3.setText("Slope");
 
-        paramW3.setText("1");
-        paramW3.setMinimumSize(new java.awt.Dimension(200, 24));
-        paramW3.setName(""); // NOI18N
-        paramW3.addActionListener(new java.awt.event.ActionListener() {
+        slopeText.setText("1");
+        slopeText.setMinimumSize(new java.awt.Dimension(200, 24));
+        slopeText.setName(""); // NOI18N
+        slopeText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramW3ActionPerformed(evt);
+                paramActionPerformed(evt);
+            }
+        });
+        slopeText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
             }
         });
 
-        paramW4.setText("200");
-        paramW4.setMinimumSize(new java.awt.Dimension(200, 24));
-        paramW4.setName(""); // NOI18N
-        paramW4.addActionListener(new java.awt.event.ActionListener() {
+        yInterceptText.setText("200");
+        yInterceptText.setMinimumSize(new java.awt.Dimension(200, 24));
+        yInterceptText.setName(""); // NOI18N
+        yInterceptText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramW4ActionPerformed(evt);
+                paramActionPerformed(evt);
+            }
+        });
+        yInterceptText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
             }
         });
 
@@ -374,8 +416,8 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(labelParamW4))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(paramW3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(paramW4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(slopeText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(yInterceptText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton7, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -388,17 +430,20 @@ public class Window extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(paramW3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(slopeText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelParamW3))
                     .addComponent(jButton7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(paramW4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(yInterceptText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelParamW4))
                     .addComponent(jButton8))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        slopeText.getAccessibleContext().setAccessibleDescription("slope");
+        yInterceptText.getAccessibleContext().setAccessibleDescription("yIntercept");
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Output parameters"));
         jPanel3.setName("nnn"); // NOI18N
@@ -407,18 +452,19 @@ public class Window extends javax.swing.JFrame {
 
         labelParamW6.setText("Background");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "White", "Black", "Original", "Degree of matching", "Net signal (average)", "Net signal scaled (average)", "Net signal (mode)", "Net signal scaled (mode)", "Net signal (median)", "Net signal scaled (median)" }));
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+        pointOutputBox.setModel(new DefaultComboBoxModel<>(Params.POINT_OUTPUTS)
+        );
+        pointOutputBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
+                paramActionPerformed(evt);
             }
         });
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "White", "Black", "Original", "Degree of matching" }));
-        jComboBox3.setSelectedItem("Black");
-        jComboBox3.addActionListener(new java.awt.event.ActionListener() {
+        bgOutputBox.setModel(new DefaultComboBoxModel<>(Params.BG_OUTPUTS));
+        bgOutputBox.setSelectedItem(Params.BG_OUTPUTS[Params.BG_OUTPUT_BLACK]);
+        bgOutputBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox3ActionPerformed(evt);
+                paramActionPerformed(evt);
             }
         });
 
@@ -436,12 +482,23 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        skipPixels.setText("1");
-        skipPixels.setMinimumSize(new java.awt.Dimension(200, 24));
-        skipPixels.setName(""); // NOI18N
-        skipPixels.addActionListener(new java.awt.event.ActionListener() {
+        skipPixelsText.setText("1");
+        skipPixelsText.setMinimumSize(new java.awt.Dimension(200, 24));
+        skipPixelsText.setName(""); // NOI18N
+        skipPixelsText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                skipPixelsActionPerformed(evt);
+                paramActionPerformed(evt);
+            }
+        });
+        skipPixelsText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
             }
         });
 
@@ -454,12 +511,23 @@ public class Window extends javax.swing.JFrame {
 
         labelSkipPixels.setText("Skip pixels");
 
-        takePixels.setText("200");
-        takePixels.setMinimumSize(new java.awt.Dimension(200, 24));
-        takePixels.setName(""); // NOI18N
-        takePixels.addActionListener(new java.awt.event.ActionListener() {
+        takePixelsText.setText("200");
+        takePixelsText.setMinimumSize(new java.awt.Dimension(200, 24));
+        takePixelsText.setName(""); // NOI18N
+        takePixelsText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                takePixelsActionPerformed(evt);
+                paramActionPerformed(evt);
+            }
+        });
+        takePixelsText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
             }
         });
 
@@ -470,23 +538,43 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        scopeGroup.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Current slice");
+        scopeGroup.add(allSlicesFalseRadio);
+        allSlicesFalseRadio.setSelected(true);
+        allSlicesFalseRadio.setText("Current slice");
+        allSlicesFalseRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
 
         labelTakePixels1.setText("Scope");
 
-        scopeGroup.add(jRadioButton2);
-        jRadioButton2.setText("All slices");
+        scopeGroup.add(allSlicesTrueRadio);
+        allSlicesTrueRadio.setText("All slices");
+        allSlicesTrueRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
 
-        originalSlicesGroup.add(jRadioButton3);
-        jRadioButton3.setText("Include");
+        originalSlicesGroup.add(addInputSlicesTrueRadio);
+        addInputSlicesTrueRadio.setText("Include");
+        addInputSlicesTrueRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
 
         labelTakePixels2.setText("Input slices");
 
-        originalSlicesGroup.add(jRadioButton4);
-        jRadioButton4.setSelected(true);
-        jRadioButton4.setText("Omit");
+        originalSlicesGroup.add(addInputSlicesFalseRadio);
+        addInputSlicesFalseRadio.setSelected(true);
+        addInputSlicesFalseRadio.setText("Omit");
+        addInputSlicesFalseRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
 
         labelTakePixels.setText("Take pixels");
 
@@ -519,21 +607,21 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(labelTakePixels))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bgOutputBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pointOutputBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jRadioButton1)
+                                .addComponent(allSlicesFalseRadio)
                                 .addGap(18, 18, 18)
-                                .addComponent(jRadioButton2))
+                                .addComponent(allSlicesTrueRadio))
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jRadioButton4)
+                                .addComponent(addInputSlicesFalseRadio)
                                 .addGap(18, 18, 18)
-                                .addComponent(jRadioButton3)))
+                                .addComponent(addInputSlicesTrueRadio)))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(skipPixels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(takePixels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(skipPixelsText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(takePixelsText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(helpTakePixels2)
@@ -551,42 +639,51 @@ public class Window extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(labelParamW5)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(pointOutputBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jButton9))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(labelParamW6)
-                        .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(bgOutputBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jButton10))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(skipPixels, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(skipPixelsText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelSkipPixels))
                     .addComponent(helpSkipPixels))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(takePixels, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(takePixelsText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelTakePixels))
                     .addComponent(helpTakePixels))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jRadioButton1)
+                        .addComponent(allSlicesFalseRadio)
                         .addComponent(labelTakePixels1))
-                    .addComponent(jRadioButton2)
+                    .addComponent(allSlicesTrueRadio)
                     .addComponent(helpTakePixels1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jRadioButton3)
+                        .addComponent(addInputSlicesTrueRadio)
                         .addComponent(labelTakePixels2)
-                        .addComponent(jRadioButton4))
+                        .addComponent(addInputSlicesFalseRadio))
                     .addComponent(helpTakePixels2))
                 .addContainerGap())
         );
+
+        pointOutputBox.getAccessibleContext().setAccessibleDescription("pointOutput");
+        bgOutputBox.getAccessibleContext().setAccessibleDescription("bgOutput");
+        skipPixelsText.getAccessibleContext().setAccessibleDescription("skipPixels");
+        takePixelsText.getAccessibleContext().setAccessibleDescription("takePixels");
+        allSlicesFalseRadio.getAccessibleContext().setAccessibleDescription("false:allSlices");
+        allSlicesTrueRadio.getAccessibleContext().setAccessibleDescription("true:allSlices");
+        addInputSlicesTrueRadio.getAccessibleContext().setAccessibleDescription("true:addInputSlices");
+        addInputSlicesFalseRadio.getAccessibleContext().setAccessibleDescription("false:addInputSlices");
 
         saveButton4.setText("Cancel");
         saveButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -691,11 +788,21 @@ public class Window extends javax.swing.JFrame {
         pointsSelection.setSelected(true);
         pointsSelection.setText("Points selection");
         pointsSelection.setPreferredSize(new java.awt.Dimension(130, 29));
+        pointsSelection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
 
         selectionTypeGroup.add(noiseSelection);
         noiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Noise.png"))); // NOI18N
         noiseSelection.setText("Noise selection");
         noiseSelection.setPreferredSize(new java.awt.Dimension(130, 29));
+        noiseSelection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
 
         helpPointsNoiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
         helpPointsNoiseSelection.addActionListener(new java.awt.event.ActionListener() {
@@ -767,29 +874,22 @@ public class Window extends javax.swing.JFrame {
                 .addGap(12, 12, 12))
         );
 
+        pointsSelection.getAccessibleContext().setAccessibleDescription("false:selectNoise");
+        noiseSelection.getAccessibleContext().setAccessibleDescription("true:selectNoise");
         helpPointsNoiseSelection.getAccessibleContext().setAccessibleDescription("points-and-noise-selection");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void paramWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramWActionPerformed
-    }//GEN-LAST:event_paramWActionPerformed
-
-    private void paramW1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramW1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_paramW1ActionPerformed
-
-    private void paramW2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramW2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_paramW2ActionPerformed
-
-    private void paramW3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramW3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_paramW3ActionPerformed
-
-    private void paramW4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramW4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_paramW4ActionPerformed
+    private void paramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramActionPerformed
+        if (evt.getSource() instanceof JTextField) {
+            textParamUpdated(evt.getSource());
+        } else if (evt.getSource() instanceof JToggleButton) {
+            radioParamUpdated(evt.getSource());
+        } else if (evt.getSource() instanceof JComboBox) {
+            comboBoxParamUpdated(evt.getSource());
+        }
+    }//GEN-LAST:event_paramActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         String name = getPresetName();
@@ -797,22 +897,14 @@ public class Window extends javax.swing.JFrame {
             name = JOptionPane.showInputDialog(this, "New preset name:");
             if (name == null || name.trim().length() == 0) return;
         }
-        params.store(name);
+        localParams.storePreset(name);
         loadPresets(name);
     }//GEN-LAST:event_saveButtonActionPerformed
-
-    private void takePixelsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takePixelsActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_takePixelsActionPerformed
-
-    private void skipPixelsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_skipPixelsActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_skipPixelsActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         String name = getPresetName();
         if (!name.equals(Common.NEW_PARAMS)) {
-            params.remove(name);
+            Params.remove(name);
         }
         loadPresets(null);
     }//GEN-LAST:event_deleteButtonActionPerformed
@@ -857,38 +949,30 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_helpButtonActionPerformed
 
     private void keyVerifyEvent(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_keyVerifyEvent
-        InputVerifier ver = ((JComponent)evt.getSource()).getInputVerifier();
-        ver.shouldYieldFocus((JComponent)evt.getSource());
+        textParamUpdated(evt.getSource());
     }//GEN-LAST:event_keyVerifyEvent
 
     private void presetsComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_presetsComboBoxActionPerformed
         String name = getPresetName();
         if (name.equals(Common.NEW_PARAMS)) return;
-        params.load(name);
+        localParams.loadPreset(name, this);
     }//GEN-LAST:event_presetsComboBoxActionPerformed
 
     private void showProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showProfileButtonActionPerformed
         setInteractiveVisible(false);
     }//GEN-LAST:event_showProfileButtonActionPerformed
 
-    private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
-
-    }//GEN-LAST:event_jComboBox3ActionPerformed
-
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
-        if ("Black".equals(jComboBox2.getModel().getSelectedItem())
-                || "White".equals(jComboBox2.getModel().getSelectedItem())
-                || "Original".equals(jComboBox2.getModel().getSelectedItem())
-                || "Degree of matching".equals(jComboBox2.getModel().getSelectedItem())) {
-            setSkipTakeVisible(false);
-        } else {
-            setSkipTakeVisible(true);
-        }
-    }//GEN-LAST:event_jComboBox2ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup TODOGroup;
+    private javax.swing.JRadioButton addInputSlicesFalseRadio;
+    private javax.swing.JRadioButton addInputSlicesTrueRadio;
+    private javax.swing.JRadioButton allSlicesFalseRadio;
+    private javax.swing.JRadioButton allSlicesTrueRadio;
+    private javax.swing.JTextField backgroundStartRadiusText;
+    private javax.swing.JComboBox<String> bgOutputBox;
     private javax.swing.JButton deleteButton;
+    private javax.swing.JRadioButton displayRangeResetFalseRadio;
+    private javax.swing.JRadioButton displayRangeResetTrueRadio;
     private javax.swing.JButton helpPointsNoiseSelection;
     private javax.swing.JButton helpProfile;
     private javax.swing.JButton helpSkipPixels;
@@ -905,19 +989,11 @@ public class Window extends javax.swing.JFrame {
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
-    private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
-    private javax.swing.JRadioButton jRadioButton5;
-    private javax.swing.JRadioButton jRadioButton6;
     private javax.swing.JLabel labelParamW;
     private javax.swing.JLabel labelParamW1;
     private javax.swing.JLabel labelParamW2;
@@ -932,11 +1008,8 @@ public class Window extends javax.swing.JFrame {
     private javax.swing.JLabel labelTakePixels3;
     private javax.swing.JToggleButton noiseSelection;
     private javax.swing.ButtonGroup originalSlicesGroup;
-    private javax.swing.JTextField paramW;
-    private javax.swing.JTextField paramW1;
-    private javax.swing.JTextField paramW2;
-    private javax.swing.JTextField paramW3;
-    private javax.swing.JTextField paramW4;
+    private javax.swing.JComboBox<String> pointOutputBox;
+    private javax.swing.JTextField pointRadiusText;
     private javax.swing.JToggleButton pointsSelection;
     private javax.swing.JComboBox<String> presetsComboBox;
     private javax.swing.JButton saveButton;
@@ -947,8 +1020,11 @@ public class Window extends javax.swing.JFrame {
     private javax.swing.ButtonGroup scopeGroup;
     private javax.swing.ButtonGroup selectionTypeGroup;
     private javax.swing.JButton showProfileButton;
-    private javax.swing.JTextField skipPixels;
-    private javax.swing.JTextField takePixels;
+    private javax.swing.JTextField skipPixelsText;
+    private javax.swing.JTextField slopeText;
+    private javax.swing.JTextField takePixelsText;
+    private javax.swing.JTextField windowRadiusText;
+    private javax.swing.JTextField yInterceptText;
     // End of variables declaration//GEN-END:variables
 
     private void setSkipTakeVisible(boolean visible) {
@@ -956,8 +1032,8 @@ public class Window extends javax.swing.JFrame {
         labelTakePixels.setVisible(visible);
         helpSkipPixels.setVisible(visible);
         helpTakePixels.setVisible(visible);
-        skipPixels.setVisible(visible);
-        takePixels.setVisible(visible);
+        skipPixelsText.setVisible(visible);
+        takePixelsText.setVisible(visible);
         this.pack();
     }
 
@@ -973,4 +1049,107 @@ public class Window extends javax.swing.JFrame {
     
     private DefaultComboBoxModel<String> presetsModel = new DefaultComboBoxModel<>();
     
+    @Override
+    public final void parametersChanged(long fields, boolean self) {
+        if ((fields & Params.POINT_OUTPUT) != 0) {
+            setSkipTakeVisible(Params.isSkipTakePixelsNeeded(globalParams.pointOutput));
+        }
+        if (self) return;
+        localParams.set(globalParams, null);
+        parameterChangedText(fields, Params.WINDOW_RADIUS, localParams.windowRadius, windowRadiusText);
+        parameterChangedText(fields, Params.POINT_RADIUS, localParams.pointRadius, pointRadiusText);
+        parameterChangedText(fields, Params.BACKGROUND_START_RADIUS, localParams.backgroundStartRadius, backgroundStartRadiusText);
+        parameterChangedBoolRadio(fields, Params.RESET_DISPLAY_RANGE, localParams.resetDisplayRange, displayRangeResetFalseRadio, displayRangeResetTrueRadio);
+        parameterChangedText(fields, Params.SLOPE, localParams.slope, slopeText);
+        parameterChangedText(fields, Params.Y_INTERCEPT, localParams.yIntercept, yInterceptText);
+        parameterChangedComboBox(fields, Params.POINT_OUTPUT, localParams.pointOutput, pointOutputBox);
+        parameterChangedComboBox(fields, Params.BG_OUTPUT, localParams.bgOutput, bgOutputBox);
+        parameterChangedText(fields, Params.SKIP_PIXELS, localParams.skipPixels, skipPixelsText);
+        parameterChangedText(fields, Params.TAKE_PIXELS, localParams.takePixels, takePixelsText);
+        parameterChangedBoolRadio(fields, Params.ALL_SLICES, localParams.allSlices, allSlicesFalseRadio, allSlicesTrueRadio);
+        parameterChangedBoolRadio(fields, Params.ADD_INPUT_SLICES, localParams.addInputSlices, addInputSlicesFalseRadio, addInputSlicesTrueRadio);
+        parameterChangedBoolRadio(fields, Params.SELECT_NOISE, localParams.selectNoise, pointsSelection, noiseSelection);
+    }
+    
+    private void parameterChangedText(long fields, long flag, int value, JTextField field) {
+        if ((fields & flag) == 0) return;
+        field.setText(Integer.toString(value));
+        field.setBackground(defaultTextBackgroundColor);
+    }
+    
+    private void parameterChangedText(long fields, long flag, double value, JTextField field) {
+        if ((fields & flag) == 0) return;
+        field.setText(Double.toString(value));
+        field.setBackground(defaultTextBackgroundColor);
+    }
+    
+    private void parameterChangedBoolRadio(long fields, long flag, boolean value, JToggleButton falseRadio, JToggleButton trueRadio) {
+        if ((fields & flag) == 0) return;
+        falseRadio.setSelected(!value);
+        trueRadio.setSelected(value);
+    }
+
+    private void parameterChangedComboBox(long fields, long flag, int value, JComboBox<String> box) {
+        if ((fields & flag) == 0) return;
+        box.setSelectedIndex(value);
+    }
+    
+    private void textParamUpdated(Object obj) {
+        JTextField field = (JTextField)obj;
+        String paramName = field.getAccessibleContext().getAccessibleDescription();
+        boolean valid = localParams.setParamString(paramName, field.getText());
+        globalParamsUpdate(true);
+        if (valid) {
+            field.setBackground(defaultTextBackgroundColor);
+        } else {
+            field.setBackground(new Color(0xFFAA99));
+        }
+    }
+    
+    private void radioParamUpdated(Object obj) {
+        JToggleButton button = (JToggleButton)obj;
+        String desc = button.getAccessibleContext().getAccessibleDescription();
+        boolean invert;
+        String paramName;
+        if (desc.startsWith("true:")) {
+            invert = false;
+            paramName = desc.substring(5);
+        } else if (desc.startsWith("false:")) {
+            invert = true;
+            paramName = desc.substring(6);
+        } else {
+            return;
+        }
+        boolean value = button.isSelected();
+        localParams.setParamBoolean(paramName, invert ? !value : value);
+        globalParamsUpdate(false);
+    }
+    
+    private void comboBoxParamUpdated(Object obj) {
+        JComboBox<String> box = (JComboBox<String>)obj;
+        String paramName = box.getAccessibleContext().getAccessibleDescription();
+        String paramValue = (String)box.getSelectedItem();
+        localParams.setParamString(paramName, paramValue);
+        globalParamsUpdate(false);
+    }
+    
+    private TimerTask globalParamsUpdateTask = null;
+    private boolean globalParamsUpdatePostponed = true;
+
+    private void globalParamsUpdate(boolean postpone) {
+        if (globalParamsUpdateTask != null) {
+            if (globalParamsUpdatePostponed) {
+                globalParamsUpdateTask.cancel();
+            } else {
+                return;
+            }
+        }
+        globalParamsUpdatePostponed = postpone;
+        globalParamsUpdateTask = Common.invokeLater(() -> {
+            globalParamsUpdateTask = null;
+            globalParams.set(localParams, Window.this);
+        }, postpone ? Common.PLOT_UPDATE_DELAY : 0);
+    }
+
+
 }
