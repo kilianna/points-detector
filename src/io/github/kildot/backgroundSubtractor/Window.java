@@ -1,12 +1,13 @@
 package io.github.kildot.backgroundSubtractor;
 
-import java.awt.Color;
 import java.awt.Desktop;
 import java.net.URI;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -19,11 +20,40 @@ import javax.swing.JComponent;
  */
 public class Window extends javax.swing.JFrame {
 
+    public Params params;
+    
     /**
      * Creates new form NewJFrame
      */
     public Window() {
+        params = new Params();
+        loadPresets(null);
         initComponents();
+        setInteractiveVisible(false);
+        setSkipTakeVisible(false);
+    }
+    
+    private String getPresetName() {
+        Object obj = presetsModel.getSelectedItem();
+        return obj != null && (obj instanceof String) ? (String)obj : Common.NEW_PARAMS;
+    }
+    
+    private void loadPresets(String current) {
+        if (current == null) {
+            current = getPresetName();
+        }
+        presetsModel.removeAllElements();
+        presetsModel.addElement(Common.NEW_PARAMS);
+        boolean exists = current.equals(Common.NEW_PARAMS);
+        for (String name : params.list()) {
+            presetsModel.addElement(name);
+            exists = exists || current.equals(name);
+        }
+        if (exists) {
+            presetsModel.setSelectedItem(current);
+        } else {
+            presetsModel.setSelectedItem(Common.NEW_PARAMS);            
+        }
     }
 
     /**
@@ -51,10 +81,10 @@ public class Window extends javax.swing.JFrame {
         jRadioButton6 = new javax.swing.JRadioButton();
         labelTakePixels3 = new javax.swing.JLabel();
         jRadioButton5 = new javax.swing.JRadioButton();
-        jButton2 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton11 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         labelParamW3 = new javax.swing.JLabel();
         paramW3 = new javax.swing.JTextField();
@@ -88,9 +118,9 @@ public class Window extends javax.swing.JFrame {
         interactiveButton = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        presetsComboBox = new javax.swing.JComboBox<>();
         saveButton = new javax.swing.JButton();
-        saveButton1 = new javax.swing.JButton();
+        deleteButton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         showProfileButton = new javax.swing.JButton();
         pointsSelection = new javax.swing.JToggleButton();
@@ -128,7 +158,7 @@ public class Window extends javax.swing.JFrame {
         labelParamW.setText("Scanning window radius [pixels]");
 
         paramW.setText("20");
-        paramW.setInputVerifier(windowRadiusVerify);
+        paramW.setInputVerifier(params.windowRadiusVerifier);
         paramW.setMinimumSize(new java.awt.Dimension(200, 24));
         paramW.setName(""); // NOI18N
         paramW.addActionListener(new java.awt.event.ActionListener() {
@@ -149,6 +179,7 @@ public class Window extends javax.swing.JFrame {
         });
 
         paramW1.setText("5");
+        paramW1.setInputVerifier(params.pointRadiusVerifier);
         paramW1.setMinimumSize(new java.awt.Dimension(200, 24));
         paramW1.setName(""); // NOI18N
         paramW1.addActionListener(new java.awt.event.ActionListener() {
@@ -156,15 +187,38 @@ public class Window extends javax.swing.JFrame {
                 paramW1ActionPerformed(evt);
             }
         });
+        paramW1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+        });
 
         labelParamW1.setText("Point radius [pixels]");
 
         paramW2.setText("6");
+        paramW2.setInputVerifier(params.backgroungStartRadiusVerifier);
         paramW2.setMinimumSize(new java.awt.Dimension(200, 24));
         paramW2.setName(""); // NOI18N
         paramW2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 paramW2ActionPerformed(evt);
+            }
+        });
+        paramW2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                keyVerifyEvent(evt);
             }
         });
 
@@ -178,13 +232,6 @@ public class Window extends javax.swing.JFrame {
         TODOGroup.add(jRadioButton5);
         jRadioButton5.setSelected(true);
         jRadioButton5.setText("Keep");
-
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -207,6 +254,13 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -220,8 +274,8 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(labelTakePixels3))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(paramW, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(paramW1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(paramW, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jRadioButton5)
                         .addGap(18, 18, 18)
@@ -230,25 +284,23 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(paramW2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2)
-                    .addComponent(jButton5)
-                    .addComponent(jButton6)
-                    .addComponent(jButton11, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jButton6)
+                        .addComponent(jButton11, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jButton5))
+                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(7, 7, 7)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(paramW, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelParamW))
-                        .addGap(8, 8, 8))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton5)
-                        .addGap(7, 7, 7)))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(paramW, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(labelParamW))
+                    .addComponent(jButton5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(paramW1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -260,7 +312,7 @@ public class Window extends javax.swing.JFrame {
                         .addComponent(paramW2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelParamW2))
                     .addComponent(jButton6))
-                .addGap(8, 8, 8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jRadioButton5)
@@ -356,9 +408,19 @@ public class Window extends javax.swing.JFrame {
         labelParamW6.setText("Background");
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "White", "Black", "Original", "Degree of matching", "Net signal (average)", "Net signal scaled (average)", "Net signal (mode)", "Net signal scaled (mode)", "Net signal (median)", "Net signal scaled (median)" }));
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "White", "Black", "Original", "Degree of matching" }));
         jComboBox3.setSelectedItem("Black");
+        jComboBox3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox3ActionPerformed(evt);
+            }
+        });
 
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
         jButton9.addActionListener(new java.awt.event.ActionListener() {
@@ -449,12 +511,11 @@ public class Window extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(labelSkipPixels)
-                        .addComponent(labelParamW6)
-                        .addComponent(labelTakePixels1)
-                        .addComponent(labelTakePixels2)
-                        .addComponent(labelParamW5))
+                    .addComponent(labelSkipPixels)
+                    .addComponent(labelParamW6)
+                    .addComponent(labelTakePixels1)
+                    .addComponent(labelTakePixels2)
+                    .addComponent(labelParamW5)
                     .addComponent(labelTakePixels))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -556,7 +617,12 @@ public class Window extends javax.swing.JFrame {
 
         jLabel2.setText("Presets:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        presetsComboBox.setModel(presetsModel);
+        presetsComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                presetsComboBoxActionPerformed(evt);
+            }
+        });
 
         saveButton.setText("Save");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
@@ -565,10 +631,10 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        saveButton1.setText("Delete");
-        saveButton1.addActionListener(new java.awt.event.ActionListener() {
+        deleteButton.setText("Delete");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveButton1ActionPerformed(evt);
+                deleteButtonActionPerformed(evt);
             }
         });
 
@@ -587,11 +653,11 @@ public class Window extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(presetsComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(saveButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(saveButton1)
+                .addComponent(deleteButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3)
                 .addContainerGap())
@@ -602,10 +668,10 @@ public class Window extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(presetsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel2)
                         .addComponent(saveButton)
-                        .addComponent(saveButton1))
+                        .addComponent(deleteButton))
                     .addComponent(jButton3))
                 .addContainerGap())
         );
@@ -614,15 +680,22 @@ public class Window extends javax.swing.JFrame {
 
         showProfileButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Profile.png"))); // NOI18N
         showProfileButton.setText("Show profile plot");
+        showProfileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showProfileButtonActionPerformed(evt);
+            }
+        });
 
         selectionTypeGroup.add(pointsSelection);
         pointsSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Point.png"))); // NOI18N
         pointsSelection.setSelected(true);
         pointsSelection.setText("Points selection");
+        pointsSelection.setPreferredSize(new java.awt.Dimension(130, 29));
 
         selectionTypeGroup.add(noiseSelection);
         noiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Noise.png"))); // NOI18N
         noiseSelection.setText("Noise selection");
+        noiseSelection.setPreferredSize(new java.awt.Dimension(130, 29));
 
         helpPointsNoiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
         helpPointsNoiseSelection.addActionListener(new java.awt.event.ActionListener() {
@@ -655,7 +728,7 @@ public class Window extends javax.swing.JFrame {
                         .addComponent(showProfileButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(helpProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                         .addComponent(saveButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(saveButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -700,7 +773,6 @@ public class Window extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void paramWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramWActionPerformed
-        boolean ok = windowRadiusVerify.shouldYieldFocus((JComponent)evt.getSource());
     }//GEN-LAST:event_paramWActionPerformed
 
     private void paramW1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramW1ActionPerformed
@@ -720,7 +792,13 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_paramW4ActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        setSkipTakeVisible(!labelTakePixels.isVisible());
+        String name = getPresetName();
+        if (name.equals(Common.NEW_PARAMS)) {
+            name = JOptionPane.showInputDialog(this, "New preset name:");
+            if (name == null || name.trim().length() == 0) return;
+        }
+        params.store(name);
+        loadPresets(name);
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void takePixelsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takePixelsActionPerformed
@@ -731,9 +809,13 @@ public class Window extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_skipPixelsActionPerformed
 
-    private void saveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButton1ActionPerformed
-        setInteractiveVisible(!noiseSelection.isVisible());
-    }//GEN-LAST:event_saveButton1ActionPerformed
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        String name = getPresetName();
+        if (!name.equals(Common.NEW_PARAMS)) {
+            params.remove(name);
+        }
+        loadPresets(null);
+    }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void saveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButton2ActionPerformed
         // TODO add your handling code here:
@@ -744,7 +826,7 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_saveButton3ActionPerformed
 
     private void saveButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButton4ActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_saveButton4ActionPerformed
 
     private void saveButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButton5ActionPerformed
@@ -752,7 +834,7 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_saveButton5ActionPerformed
 
     private void interactiveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interactiveButtonActionPerformed
-        // TODO add your handling code here:
+        setInteractiveVisible(true);
     }//GEN-LAST:event_interactiveButtonActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -779,46 +861,34 @@ public class Window extends javax.swing.JFrame {
         ver.shouldYieldFocus((JComponent)evt.getSource());
     }//GEN-LAST:event_keyVerifyEvent
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Window.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Window.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Window.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Window.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
+    private void presetsComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_presetsComboBoxActionPerformed
+        String name = getPresetName();
+        if (name.equals(Common.NEW_PARAMS)) return;
+        params.load(name);
+    }//GEN-LAST:event_presetsComboBoxActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Window().setVisible(true);
-            }
-        });
-    }
+    private void showProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showProfileButtonActionPerformed
+        setInteractiveVisible(false);
+    }//GEN-LAST:event_showProfileButtonActionPerformed
+
+    private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
+
+    }//GEN-LAST:event_jComboBox3ActionPerformed
+
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        if ("Black".equals(jComboBox2.getModel().getSelectedItem())
+                || "White".equals(jComboBox2.getModel().getSelectedItem())
+                || "Original".equals(jComboBox2.getModel().getSelectedItem())
+                || "Degree of matching".equals(jComboBox2.getModel().getSelectedItem())) {
+            setSkipTakeVisible(false);
+        } else {
+            setSkipTakeVisible(true);
+        }
+    }//GEN-LAST:event_jComboBox2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup TODOGroup;
+    private javax.swing.JButton deleteButton;
     private javax.swing.JButton helpPointsNoiseSelection;
     private javax.swing.JButton helpProfile;
     private javax.swing.JButton helpSkipPixels;
@@ -835,7 +905,6 @@ public class Window extends javax.swing.JFrame {
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JLabel jLabel2;
@@ -869,8 +938,8 @@ public class Window extends javax.swing.JFrame {
     private javax.swing.JTextField paramW3;
     private javax.swing.JTextField paramW4;
     private javax.swing.JToggleButton pointsSelection;
+    private javax.swing.JComboBox<String> presetsComboBox;
     private javax.swing.JButton saveButton;
-    private javax.swing.JButton saveButton1;
     private javax.swing.JButton saveButton2;
     private javax.swing.JButton saveButton3;
     private javax.swing.JButton saveButton4;
@@ -901,22 +970,7 @@ public class Window extends javax.swing.JFrame {
         interactiveButton.setVisible(!visible);
         this.pack();
     }
-
-    private InputVerifier windowRadiusVerify = new InputVerifier() {
-        @Override
-        public boolean verify(javax.swing.JComponent input) {
-            try {
-                int value = Integer.parseInt(((javax.swing.JTextField)input).getText());
-                return value > 5 && value < 100;
-            } catch (Exception ex) {
-                return false;
-            }
-        }
-        @Override
-        public boolean shouldYieldFocus(javax.swing.JComponent input) {
-            boolean ok = verify(input);
-            input.setBackground(ok ? Color.WHITE : new Color(0xFF9988));
-            return ok;
-        }
-    };
+    
+    private DefaultComboBoxModel<String> presetsModel = new DefaultComboBoxModel<>();
+    
 }
