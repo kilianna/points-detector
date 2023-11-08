@@ -10,7 +10,7 @@
 				"command": "./buduj.bat",
 			},
 			"linux": {
-				"command": "./buduj.sh /home/doki/my/Fiji.app/",
+				"command": "./buduj.sh /home/doki/my/Fiji.app/ /home/doki/my/Fiji.app/jdk/bin/",
 			},
 			"problemMatcher": {
 				"source": "JAVA-BUILD",
@@ -35,7 +35,7 @@
 				"command": "./buduj.bat run",
 			},
 			"linux": {
-				"command": "./buduj.sh /home/doki/my/Fiji.app/ \"\" run",
+				"command": "./buduj.sh /home/doki/my/Fiji.app/ /home/doki/my/Fiji.app/jdk/bin/ run",
 			},
 			"problemMatcher": {
 				"source": "JAVA-BUILD",

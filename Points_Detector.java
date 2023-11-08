@@ -12,6 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.SwingUtilities;
 
+import gui.NewJFrame;
+
 public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	static final int MAX_PROFILE_PLOTS = 25;
@@ -669,6 +671,8 @@ public class Points_Detector implements PlugIn, RoiListener, DialogListener {
 
 	private void showDialog(boolean manual) {
 		logMethod();
+        gui.NewJFrame fr = new gui.NewJFrame();
+        fr.setVisible(true);
 		boolean[] initCheckBox = new boolean[] { false, false, false, false, false };
 		int[] initChoice = new int[] { PIXEL_OUTPUT_WHITE, PIXEL_OUTPUT_BLACK };
 		if (dialog != null) {

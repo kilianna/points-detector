@@ -13,9 +13,11 @@ fi
 
 mkdir -p build
 mkdir -p dist
-${JDK_PATH}javac -encoding utf8 -cp ${FIJI_PATH}jars/ij-1.*.jar -d build Points_Detector.java Slices_Correction.java Slices_Mul.java Colors_Move.java Stack_CSV.java Utils.java NativeTools.java
+echo Executing: ${JDK_PATH}javac -encoding utf8 -cp ${FIJI_PATH}jars/ij-1.*.jar -d build Points_Detector.java Slices_Correction.java Slices_Mul.java Colors_Move.java Stack_CSV.java Utils.java NativeTools.java gui/NewJFrame.java
+${JDK_PATH}javac -encoding utf8 -cp ${FIJI_PATH}jars/ij-1.*.jar -d build Points_Detector.java Slices_Correction.java Slices_Mul.java Colors_Move.java Stack_CSV.java Utils.java NativeTools.java gui/NewJFrame.java
 cd build
-${JDK_PATH}jar cvf ../dist/Points_Detector.jar ../plugins.config *.*
+echo Executing: ${JDK_PATH}jar cvf ../dist/Points_Detector.jar ../plugins.config *.*
+${JDK_PATH}jar cvf ../dist/Points_Detector.jar ../plugins.config *.* gui/*.*
 cd ..
 
 if [ "$3" = "run" ]; then
