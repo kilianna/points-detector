@@ -313,7 +313,7 @@
         <Component class="javax.swing.JButton" name="jButton5">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <AccessibilityProperties>
@@ -326,7 +326,7 @@
         <Component class="javax.swing.JButton" name="jButton6">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -336,7 +336,7 @@
         <Component class="javax.swing.JButton" name="jButton11">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -346,7 +346,7 @@
         <Component class="javax.swing.JButton" name="jButton2">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -464,7 +464,7 @@
         <Component class="javax.swing.JButton" name="jButton7">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -474,7 +474,7 @@
         <Component class="javax.swing.JButton" name="jButton8">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -650,7 +650,7 @@
         <Component class="javax.swing.JButton" name="jButton9">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -660,7 +660,7 @@
         <Component class="javax.swing.JButton" name="jButton10">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -688,7 +688,7 @@
         <Component class="javax.swing.JButton" name="helpSkipPixels">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -721,7 +721,7 @@
         <Component class="javax.swing.JButton" name="helpTakePixels">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -804,7 +804,7 @@
         <Component class="javax.swing.JButton" name="helpTakePixels1">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -814,7 +814,7 @@
         <Component class="javax.swing.JButton" name="helpTakePixels2">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <Events>
@@ -923,7 +923,7 @@
         <Component class="javax.swing.JButton" name="jButton3">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+              <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
             </Property>
           </Properties>
           <AccessibilityProperties>
@@ -941,7 +941,7 @@
           <ComponentRef name="selectionTypeGroup"/>
         </Property>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Point.png"/>
+          <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Point.png"/>
         </Property>
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="Points selection"/>
@@ -962,7 +962,7 @@
           <ComponentRef name="selectionTypeGroup"/>
         </Property>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Noise.png"/>
+          <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Noise.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Noise selection"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -979,7 +979,7 @@
     <Component class="javax.swing.JButton" name="helpPointsNoiseSelection">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+          <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
         </Property>
       </Properties>
       <AccessibilityProperties>
@@ -992,7 +992,7 @@
     <Component class="javax.swing.JButton" name="helpProfile">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Help.png"/>
+          <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Help.png"/>
         </Property>
       </Properties>
       <Events>
@@ -1002,7 +1002,7 @@
     <Component class="javax.swing.JToggleButton" name="interactiveButton">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Tune.png"/>
+          <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Tune.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Interactive parameters tuning"/>
       </Properties>
@@ -1016,7 +1016,7 @@
     <Component class="javax.swing.JToggleButton" name="profileWindowButton">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/io/github/kildot/backgroundSubtractor/res/Profile.png"/>
+          <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Profile.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Profile plot window"/>
       </Properties>

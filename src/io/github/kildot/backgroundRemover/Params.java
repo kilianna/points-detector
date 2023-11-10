@@ -1,4 +1,4 @@
-package io.github.kildot.backgroundSubtractor;
+package io.github.kildot.backgroundRemover;
 
 import java.util.HashSet;
 import java.util.Properties;

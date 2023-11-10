@@ -1,4 +1,4 @@
-package io.github.kildot.backgroundSubtractor;
+package io.github.kildot.backgroundRemover;
 
 import java.awt.Color;
 import java.awt.Desktop;
@@ -246,28 +246,28 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
             }
         });
 
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
             }
         });
 
-        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -389,14 +389,14 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         labelParamW4.setText("Y-intercept");
 
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
             }
         });
 
-        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -466,14 +466,14 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
             }
         });
 
-        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -500,7 +500,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
-        helpSkipPixels.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpSkipPixels.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         helpSkipPixels.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -529,7 +529,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
-        helpTakePixels.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpTakePixels.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         helpTakePixels.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -576,14 +576,14 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         labelTakePixels.setText("Take pixels");
 
-        helpTakePixels1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpTakePixels1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         helpTakePixels1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
             }
         });
 
-        helpTakePixels2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpTakePixels2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         helpTakePixels2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -725,7 +725,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -766,7 +766,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         jButton3.getAccessibleContext().setAccessibleDescription("presets");
 
         selectionTypeGroup.add(pointsSelection);
-        pointsSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Point.png"))); // NOI18N
+        pointsSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Point.png"))); // NOI18N
         pointsSelection.setSelected(true);
         pointsSelection.setText("Points selection");
         pointsSelection.setPreferredSize(new java.awt.Dimension(130, 29));
@@ -777,7 +777,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         });
 
         selectionTypeGroup.add(noiseSelection);
-        noiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Noise.png"))); // NOI18N
+        noiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Noise.png"))); // NOI18N
         noiseSelection.setText("Noise selection");
         noiseSelection.setPreferredSize(new java.awt.Dimension(130, 29));
         noiseSelection.addActionListener(new java.awt.event.ActionListener() {
@@ -786,21 +786,21 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
-        helpPointsNoiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpPointsNoiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         helpPointsNoiseSelection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
             }
         });
 
-        helpProfile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Help.png"))); // NOI18N
+        helpProfile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         helpProfile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
             }
         });
 
-        interactiveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Tune.png"))); // NOI18N
+        interactiveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Tune.png"))); // NOI18N
         interactiveButton.setText("Interactive parameters tuning");
         interactiveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -808,7 +808,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
-        profileWindowButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundSubtractor/res/Profile.png"))); // NOI18N
+        profileWindowButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Profile.png"))); // NOI18N
         profileWindowButton.setText("Profile plot window");
         profileWindowButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
