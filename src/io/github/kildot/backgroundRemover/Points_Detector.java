@@ -553,6 +553,10 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
 	private void closed() {
 		logMethod();
 		Roi.removeRoiListener(this);
+        if (updateNoiseTask != null)
+            updateNoiseTask.cancel();
+        if (updatePointsTask != null)
+            updatePointsTask.cancel();
 		if (previewImage != null && previewImage.getWindow() != null)
 			previewImage.getWindow().dispose();
 		if (plot != null && plot.getImagePlus() != null && plot.getImagePlus().getWindow() != null)
@@ -561,6 +565,8 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
 			profilePlot.getImagePlus().getWindow().dispose();
 		if (guiWindow != null)
 			guiWindow.dispose();
+        updateNoiseTask = null;
+        updatePointsTask = null;
 		previewImage = null;
 		plot = null;
 		profilePlot = null;
@@ -810,24 +816,26 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
 		logMethod();
 		if (imp == previewImage && globalParams.interactive && id != RoiListener.DELETED) {
 			//IJ.log("ROI MODIFIED - " + id);
-			if (!globalParams.selectNoise) {
-				if (updatePointsTask != null)
-					updatePointsTask.cancel();
-				updatePointsTask = Common.invokeLater(new Runnable() {
-					public void run() {
-						updatePoints(false);
-					}
-				}, 500, 500);
-				updatePoints(true);
-			} else {
-				if (updateNoiseTask != null)
-					updateNoiseTask.cancel();
-				updateNoiseTask = Common.invokeLater(new Runnable() {
-					public void run() {
-						updateNoise();
-					}
-				}, 100, -1);
-			}
+            if (globalParams.selectNoise) {
+                if (updateNoiseTask != null) {
+                    updateNoiseTask.cancel();
+                }
+                updateNoiseTask = Common.invokeLater(new Runnable() {
+                    public void run() {
+                        updateNoise();
+                    }
+                }, 100, -1);
+            } else {
+                if (updatePointsTask != null) {
+                    updatePointsTask.cancel();
+                }
+                updatePointsTask = Common.invokeLater(new Runnable() {
+                    public void run() {
+                        updatePoints(false);
+                    }
+                }, 500, 500);
+                updatePoints(true);
+            }
 		} else {
 			ImagePlus plotImage = plot.getImagePlus();
 			if (imp == plotImage && id != RoiListener.DELETED) {
@@ -981,6 +989,9 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
 			if (x < 0 || y < 0 || x >= width || y >= height) continue;
 			int histOffset = histSize * (x + y * width);
 			float firstValue = 0;
+            if (hist == null) {
+                hist = null;
+            }
 			for (int k = 0; k <= pointRadius; k++) {
 				firstValue += hist[histOffset + k];
 			}
