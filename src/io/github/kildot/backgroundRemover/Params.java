@@ -40,12 +40,12 @@ public class Params {
         "Net signal (median)",
         "Net signal scaled (median)"
     };
-        
+
     static final int BG_OUTPUT_WHITE = 0;
     static final int BG_OUTPUT_BLACK = 1;
     static final int BG_OUTPUT_ORIGINAL = 2;
     static final int BG_OUTPUT_RESULT = 3;
-    
+
     static final String[] BG_OUTPUTS = new String[] {
         "White",
         "Black",
@@ -58,11 +58,11 @@ public class Params {
     public int pointRadius;
     public int backgroundStartRadius;
     public boolean resetDisplayRange;
-    
+
     // Discrimination line parameters
     public double slope;
     public double yIntercept;
-    
+
     // Output parameters
     public int pointOutput;
     public int bgOutput;
@@ -70,7 +70,7 @@ public class Params {
     public int takePixels;
     public boolean allSlices;
     public boolean addInputSlices;
-    
+
     // Additional
     public boolean selectNoise;
     public boolean interactive;
@@ -80,10 +80,10 @@ public class Params {
     public static final long POINT_RADIUS = 0x0002;
     public static final long BACKGROUND_START_RADIUS = 0x0004;
     public static final long RESET_DISPLAY_RANGE = 0x0008;
-    
+
     public static final long SLOPE = 0x0010;
     public static final long Y_INTERCEPT = 0x0020;
-    
+
     public static final long POINT_OUTPUT = 0x0040;
     public static final long BG_OUTPUT = 0x0080;
     public static final long SKIP_PIXELS = 0x0100;
@@ -97,13 +97,13 @@ public class Params {
     public static final long INTERACTIVE = 0x2000;
     public static final long PROFILE_WINDOW = 0x4000;
 
-    
+
     public final void loadDefaults() {
         windowRadius = 20;
         pointRadius = 5;
         backgroundStartRadius = 6;
         resetDisplayRange = false;
-        
+
         slope = 1.0;
         yIntercept = 0.0;
 
@@ -113,7 +113,7 @@ public class Params {
         takePixels = 3;
         allSlices = true;
         addInputSlices = false;
-        
+
         selectNoise = false;
         interactive = false;
         profileWindow = false;
@@ -127,21 +127,21 @@ public class Params {
 
         slope = src.slope;
         yIntercept = src.yIntercept;
-        
+
         pointOutput = src.pointOutput;
         bgOutput = src.bgOutput;
         skipPixels = src.skipPixels;
         takePixels = src.takePixels;
         allSlices = src.allSlices;
         addInputSlices = src.addInputSlices;
-        
+
         if (persistentOnly) return;
 
         selectNoise = src.selectNoise;
         interactive = src.interactive;
         profileWindow = src.profileWindow;
     }
-    
+
     private long getFlags(Params src) {
         long flags = 0;
 
@@ -166,7 +166,7 @@ public class Params {
 
         return flags;
     }
-    
+
     private void toProperties(Properties props, String prefix, String name) {
         props.setProperty(prefix + "windowRadius", Integer.toString(windowRadius));
         props.setProperty(prefix + "pointRadius", Integer.toString(pointRadius));
@@ -182,7 +182,7 @@ public class Params {
         props.setProperty(prefix + "takePixels", Integer.toString(takePixels));
         props.setProperty(prefix + "allSlices", Boolean.toString(allSlices));
         props.setProperty(prefix + "addInputSlices", Boolean.toString(addInputSlices));
-        
+
         // skip selectNoise
         // skip interactive
         // skip profileWindow
@@ -349,7 +349,7 @@ public class Params {
                 && verifyTakePixels(takePixels)
                 ;
     }
-    
+
     public void fixAll() {
         windowRadius = range(windowRadius, 3, 100);
         pointRadius = range(pointRadius, 2, windowRadius - 1);
@@ -359,7 +359,7 @@ public class Params {
         skipPixels = range(skipPixels, 0, 16);
         takePixels = range(takePixels, 0, 32);
     }
-    
+
     public static boolean isSkipTakePixelsNeeded(int pixelOutput) {
         return true
                 && pixelOutput != Params.POINT_OUTPUT_BLACK
@@ -380,7 +380,7 @@ public class Params {
     public Params() {
         loadDefaults();
     }
-    
+
     public void set(Params src, boolean persistentOnly, Listener sender) {
         long flags = getFlags(src);
         if (persistentOnly) {
@@ -389,18 +389,18 @@ public class Params {
         setDirect(src, persistentOnly);
         notifyListeners(flags, sender);
     }
-    
+
     public Params copy() {
         Params p = new Params();
         p.set(this, false, null);
         return p;
     }
-    
+
     public boolean equal(Params other, boolean persistentOnly) {
         long mask = persistentOnly ? PERSISTENT_PARAMETERS_MASK : -1L;
         return (getFlags(other) & mask) == 0;
     }
-    
+
     @Override
     public String toString() {
         Properties props = new Properties();
@@ -416,12 +416,12 @@ public class Params {
         }
         return res;
     }
-    
+
     public void addListener(Listener listener) {
         if (listeners == null) listeners = new HashSet<>();
         listeners.add(listener);
     }
-    
+
     public void removeListener(Listener listener) {
         if (listeners == null) return;
         listeners.remove(listener);
@@ -435,7 +435,7 @@ public class Params {
             listener.parametersChanged(flags, listener == sender);
         }
     }
-    
+
     private static Properties properties = new Properties();;
     private static final String PRESETS_PATH = IJ.getDirectory("preferences") + "/" + Params.class.getName() + ".txt";
     private static boolean propertiesBroken = false;
@@ -477,7 +477,7 @@ public class Params {
         }
         return null;
     }
-    
+
     public static String[] listPresets() {
         readProperties();
         ArrayList<String> list = new ArrayList<>();
@@ -491,7 +491,7 @@ public class Params {
         Arrays.sort(arr);
         return arr;
     }
-    
+
     private boolean loadUnchecked(String name) {
         String prefix = getPrefix(name);
         if (prefix == null) {
@@ -509,7 +509,7 @@ public class Params {
         fixAll();
         return true;
     }
-    
+
     public static Params loadPreset(String name) {
         Params p = new Params();
         if (p.loadUnchecked(name) && p.verifyAll()) {
@@ -543,7 +543,7 @@ public class Params {
         toProperties(properties, prefix, name);
         writeProperties();
     }
-    
+
     private static String[] propertiesKeys() {
         Set<String> set = properties.stringPropertyNames();
         String[] arr = new String[set.size()];
@@ -579,13 +579,13 @@ public class Params {
         } catch (NumberFormatException ex) {}
         return def;
     }
-    
+
     private static int range(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
     }
-    
+
     private static double range(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }
-    
+
 }

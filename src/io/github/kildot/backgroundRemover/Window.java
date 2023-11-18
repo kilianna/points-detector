@@ -27,10 +27,10 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private String presetName = Common.NEW_PARAMS;
     private SecondaryLoop secondaryLoop;
     private boolean canceled = false;
-    
+
     private static Color defaultTextBackgroundColor = null;
 
-    
+
     public Window(Params globalParams) {
         this.globalParams = globalParams;
         globalParams.addListener(this);
@@ -58,7 +58,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         presetsModel.setSelectedItem(presetName);
         updatePresetButtons();
     }
-    
+
     private void updatePresetButtons() {
         saveButton.setEnabled(
             !presetName.equals(Common.MRU_PARAMS)
@@ -1041,7 +1041,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         interactiveButton.setVisible(!visible);
         this.pack();
     }
-    
+
     @Override
     public final void parametersChanged(long fields, boolean self) {
         if ((fields & Params.POINT_OUTPUT) != 0) {
@@ -1069,25 +1069,25 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         parameterChangedToggle(fields, Params.PROFILE_WINDOW, localParams.profileWindow, profileWindowButton);
         updatePresetButtons();
     }
-    
+
     private void parameterChangedText(long fields, long flag, int value, JTextField field) {
         if ((fields & flag) == 0) return;
         field.setText(Integer.toString(value));
         field.setBackground(defaultTextBackgroundColor);
     }
-    
+
     private void parameterChangedText(long fields, long flag, double value, JTextField field) {
         if ((fields & flag) == 0) return;
         field.setText(Double.toString(value));
         field.setBackground(defaultTextBackgroundColor);
     }
-    
+
     private void parameterChangedBoolRadio(long fields, long flag, boolean value, JToggleButton falseRadio, JToggleButton trueRadio) {
         if ((fields & flag) == 0) return;
         falseRadio.setSelected(!value);
         trueRadio.setSelected(value);
     }
-    
+
     private void parameterChangedToggle(long fields, long flag, boolean value, JToggleButton button) {
         if ((fields & flag) == 0) return;
         button.setSelected(value);
@@ -1097,7 +1097,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         if ((fields & flag) == 0) return;
         box.setSelectedIndex(value);
     }
-    
+
     private void textParamUpdated(Object obj) {
         JTextField field = (JTextField)obj;
         String paramName = field.getAccessibleContext().getAccessibleDescription();
@@ -1110,7 +1110,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         }
         updatePresetButtons();
     }
-    
+
     private void toggleParamUpdated(Object obj) {
         JToggleButton button = (JToggleButton)obj;
         String desc = button.getAccessibleContext().getAccessibleDescription();
@@ -1131,7 +1131,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         globalParamsUpdate(false);
         updatePresetButtons();
     }
-    
+
     private void comboBoxParamUpdated(Object obj) {
         JComboBox<String> box = (JComboBox<String>)obj;
         String paramName = box.getAccessibleContext().getAccessibleDescription();
@@ -1140,7 +1140,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         globalParamsUpdate(false);
         updatePresetButtons();
     }
-    
+
     private TimerTask globalParamsUpdateTask = null;
     private boolean globalParamsUpdatePostponed = true;
 
@@ -1173,7 +1173,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             setVisible(false);
         }
     }
-    
+
     public boolean wasCanceled() {
         return canceled;
     }

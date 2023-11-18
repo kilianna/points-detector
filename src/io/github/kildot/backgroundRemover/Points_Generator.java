@@ -9,45 +9,45 @@ import java.util.*;
 
 
 public class Points_Generator implements PlugIn {
-    
+
         private double[] numbers;
         private double radius;
 
-	@Override
-	public void run(String arg) {
-		ImagePlus sourceImage = IJ.getImage();
-		ImageStack stack = sourceImage.getStack();
-		int count = stack != null ? stack.size() : 1;
-		boolean diaglogOk = showDialog();
-		if (!diaglogOk) {
-			return;
-		}
-		for (int i = 0; i < count; i++) {
-			ImageProcessor ip = stack != null ? stack.getProcessor(i + 1) : sourceImage.getProcessor();
-			processImage(ip);
-		}
-		sourceImage.updateAndDraw();
-	}
+    @Override
+    public void run(String arg) {
+        ImagePlus sourceImage = IJ.getImage();
+        ImageStack stack = sourceImage.getStack();
+        int count = stack != null ? stack.size() : 1;
+        boolean diaglogOk = showDialog();
+        if (!diaglogOk) {
+            return;
+        }
+        for (int i = 0; i < count; i++) {
+            ImageProcessor ip = stack != null ? stack.getProcessor(i + 1) : sourceImage.getProcessor();
+            processImage(ip);
+        }
+        sourceImage.updateAndDraw();
+    }
 
-	private boolean showDialog() {
-		GenericDialog dialog = new GenericDialog("Parameters");
-		dialog.addStringField("List of point values:", "", 60);
-		dialog.addStringField("Radius:", "", 30);
-		dialog.showDialog();
-		if (dialog.wasCanceled()) {
-			return false;
-		}
-		Vector<TextField> vect = dialog.getStringFields();
-		String[] strings = splitParams(vect.get(0).getText());
-		numbers = new double[strings.length];
-		for (int i = 0; i < strings.length; i++) {
-			try {
-				numbers[i] = Double.parseDouble(strings[i]);
-			} catch (Exception ex) {
-				IJ.log("Invalid value at position " + (i + 1));
-				return false;
-			}
-		}
+    private boolean showDialog() {
+        GenericDialog dialog = new GenericDialog("Parameters");
+        dialog.addStringField("List of point values:", "", 60);
+        dialog.addStringField("Radius:", "", 30);
+        dialog.showDialog();
+        if (dialog.wasCanceled()) {
+            return false;
+        }
+        Vector<TextField> vect = dialog.getStringFields();
+        String[] strings = splitParams(vect.get(0).getText());
+        numbers = new double[strings.length];
+        for (int i = 0; i < strings.length; i++) {
+            try {
+                numbers[i] = Double.parseDouble(strings[i]);
+            } catch (Exception ex) {
+                IJ.log("Invalid value at position " + (i + 1));
+                return false;
+            }
+        }
                 try {
                         radius = Double.parseDouble(vect.get(1).getText());
                         if (radius < 2 || radius > 100) throw new Exception();
@@ -56,9 +56,9 @@ public class Points_Generator implements PlugIn {
                         return false;
                 }
                 return true;
-	}
+    }
 
-	private void processImage(ImageProcessor ip) {
+    private void processImage(ImageProcessor ip) {
             Random rnd = new Random();
             int width = ip.getWidth();
             int height = ip.getHeight();
@@ -131,17 +131,17 @@ public class Points_Generator implements PlugIn {
                     }
                 }
             }
-	}
+    }
 
-	private String[] splitParams(String p) {
-		String[] arr = p.split(";");
-		if ((arr.length == 1) && (p.split(",").length > 0)) {
-			arr = p.split(",");
-		}
-		for (int i = 0; i < arr.length; i++) {
-			arr[i] = arr[i].replace(",", ".").trim();
-		}
-		return arr;
-	}
+    private String[] splitParams(String p) {
+        String[] arr = p.split(";");
+        if ((arr.length == 1) && (p.split(",").length > 0)) {
+            arr = p.split(",");
+        }
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = arr[i].replace(",", ".").trim();
+        }
+        return arr;
+    }
 
 }

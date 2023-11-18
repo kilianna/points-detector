@@ -5,21 +5,21 @@ import java.util.TimerTask;
 import javax.swing.SwingUtilities;
 
 public final class Common {
-    
+
     public static final String HELP_URL = "https://kildot.github.io/points-detector/help/";
     public static final String NEW_PARAMS = "[ New preset ]";
     public static final String MRU_PARAMS = "[ Recently used ]";
     public static final int PLOT_UPDATE_DELAY = 1000;
     public static final int MAX_PROFILE_PLOTS = 25;
-    
+
     //-------------------------------------------------------------------------
-    
+
     private static final Timer timer = new Timer();
 
     public static TimerTask invokeLater(Runnable doRun, int ms) {
         return invokeLater(doRun, ms, -1);
     }
- 
+
     public static TimerTask invokeLater(Runnable doRun, int ms, int period) {
             TimerTask tt = new TimerTask() {
                 @Override
@@ -34,5 +34,5 @@ public final class Common {
             }
             return tt;
     }
-    
+
 }
