@@ -69,6 +69,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         guiWindow = new Window(globalParams);
         guiWindow.showBlocking();
         if (!guiWindow.wasCanceled()) {
+            closeInteractiveTools();
             imageProcess();
         }
         closed();
@@ -550,7 +551,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         }
     }
 
-    private void closed() {
+    private void closeInteractiveTools() {
         logMethod();
         Roi.removeRoiListener(this);
         if (updateNoiseTask != null)
@@ -571,6 +572,11 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         plot = null;
         profilePlot = null;
         guiWindow = null;
+    }
+
+    private void closed() {
+        logMethod();
+        closeInteractiveTools();
         pixels = null;
         indexUp = null;
         indexDown = null;
