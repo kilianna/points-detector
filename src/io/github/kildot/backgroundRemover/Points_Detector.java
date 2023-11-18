@@ -678,7 +678,15 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
             try {
                 makeHistNative(beginY, endY);
             } catch (Throwable ex) {
-                useNativeHist = false;
+                synchronized (this) {
+                    if (useNativeHist == true) {
+                        NativeTools.logException(ex);
+                        IJ.log("Cannot use a native library to accelerate computations.");
+                        IJ.log("You may experience longer calculation times.");
+                        IJ.log("Error details in: " + NativeTools.getLogPath());
+                        useNativeHist = false;
+                    }
+                }
             }
         }
 
@@ -824,7 +832,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
                     public void run() {
                         updateNoise();
                     }
-                }, 100, -1);
+                }, 100);
             } else {
                 if (updatePointsTask != null) {
                     updatePointsTask.cancel();

@@ -5,7 +5,7 @@
 #include "NativeTools.h"
 
 
-JNIEXPORT void JNICALL Java_NativeTools_calHist(
+JNIEXPORT void JNICALL Java_io_github_kildot_backgroundRemover_NativeTools_calHist(
   JNIEnv *env,
   jclass cls,
   jint histSize,
