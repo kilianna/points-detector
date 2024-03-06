@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.swing.JOptionPane;
 
 
 public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
@@ -35,6 +36,8 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
     private Roi ignoreRoi;
     private double[] oldPointsX;
     private double[] oldPointsY;
+    private double[] oldNoiseX;
+    private double[] oldNoiseY;
 
     // Profile plot
     private Plot profilePlot;
@@ -975,6 +978,8 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
             xx = Arrays.copyOfRange(xx, 0, plotIndex);
             yy = Arrays.copyOfRange(yy, 0, plotIndex);
         }
+        oldNoiseX = xx;
+        oldNoiseY = yy;
         plot.setColor(Color.BLUE);
         plot.replace(0, "circle", xx, yy);
         plot.setLimitsToFit(true);
@@ -1151,6 +1156,52 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         // Points/noise selection
         if (updated(fields,Params.SELECT_NOISE)) {
             updateSelectionTool();
+        }
+    }
+
+    @Override
+    public final void eventTriggered(Params.EventData event) {
+        if (event instanceof Params.EventAutoFit) {
+            Params.EventAutoFit data = (Params.EventAutoFit)event;
+            try {
+                if (oldNoiseX == null || oldPointsX == null) throw new Input­Mismatch­Exception();
+                if (oldNoiseX.length < 3 || oldPointsX.length < 3) throw new Input­Mismatch­Exception();
+                LineFinding lf = new LineFinding();
+                LineFinding.Point[] points = new LineFinding.Point[oldPointsX.length];
+                for (int i = 0; i < points.length; i++) {
+                    points[i] = new LineFinding.Point(oldPointsX[i], oldPointsY[i]);
+                }
+                LineFinding.Point[] noise = new LineFinding.Point[oldNoiseX.length];
+                for (int i = 0; i < noise.length; i++) {
+                    noise[i] = new LineFinding.Point(oldNoiseX[i], oldNoiseY[i]);
+                }
+                double weight = 0.0;
+                switch (data.position) {
+                    case Params.EventAutoFit.BELOW_POINTS:
+                        weight = 0.0;
+                        break;
+                    case Params.EventAutoFit.MIDDLE:
+                        weight = 0.5;
+                        break;
+                    case Params.EventAutoFit.ABOVE_NOISE:
+                        weight = 1.0;
+                        break;
+                }
+                double[] r = lf.calc(points, noise, weight);
+                if (r == null) throw new InputMismatchException();
+                Params copy = globalParams.copy();
+                copy.slope = r[0];
+                copy.yIntercept = r[1];
+                globalParams.set(copy, false, this);
+                updateLimitLine();
+                updatePreview();
+            } catch (InputMismatchException ex) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Missing data for automatic fitting.\nSelect at least three pixels for noise and points.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

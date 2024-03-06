@@ -97,6 +97,7 @@ public class Params {
     public static final long INTERACTIVE = 0x2000;
     public static final long PROFILE_WINDOW = 0x4000;
 
+    public static final long EVENT_AUTO_FIT = 0x0001;
 
     public final void loadDefaults() {
         windowRadius = 20;
@@ -370,9 +371,25 @@ public class Params {
     }
 
     //--------------------------------------------------------------------------
+    
+    public static class EventData {
+        public long event;
+    }
+
+    public static class EventAutoFit extends EventData {
+        public static final int ABOVE_NOISE = 0;
+        public static final int BELOW_POINTS = 1;
+        public static final int MIDDLE = 2;
+        public int position;
+        public EventAutoFit(int position) {
+            event = EVENT_AUTO_FIT;
+            this.position = position;
+        }
+    }
 
     public static interface Listener {
         void parametersChanged(long fields, boolean self);
+        void eventTriggered(EventData event);
     }
 
     private Set<Listener> listeners = new HashSet<>();
@@ -433,6 +450,15 @@ public class Params {
         listeners.toArray(arr);
         for (Listener listener : arr) {
             listener.parametersChanged(flags, listener == sender);
+        }
+    }
+
+    public void triggerEvent(EventData event) {
+        if (listeners == null) return;
+        Listener[] arr = new Listener[listeners.size()];
+        listeners.toArray(arr);
+        for (Listener listener : arr) {
+            listener.eventTriggered(event);
         }
     }
 

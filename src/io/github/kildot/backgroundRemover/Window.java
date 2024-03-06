@@ -108,6 +108,11 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         labelParamW4 = new javax.swing.JLabel();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
+        autoLabel = new javax.swing.JLabel();
+        autoHelp = new javax.swing.JButton();
+        autoAboveNoise = new javax.swing.JButton();
+        autoMiddle = new javax.swing.JButton();
+        autoBelowPoints = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         labelParamW5 = new javax.swing.JLabel();
         labelParamW6 = new javax.swing.JLabel();
@@ -403,28 +408,66 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
+        autoLabel.setText("Auto fitting");
+
+        autoHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
+        autoHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
+
+        autoAboveNoise.setText("Above noise");
+        autoAboveNoise.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoAboveNoiseActionPerformed(evt);
+            }
+        });
+
+        autoMiddle.setText("Middle");
+        autoMiddle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoMiddleActionPerformed(evt);
+            }
+        });
+
+        autoBelowPoints.setText("Below points");
+        autoBelowPoints.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoBelowPointsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labelParamW3)
-                    .addComponent(labelParamW4))
+                    .addComponent(labelParamW4)
+                    .addComponent(autoLabel))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(slopeText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(yInterceptText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(yInterceptText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(autoBelowPoints, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(autoMiddle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(autoAboveNoise, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton7, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton8, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jButton8, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(autoHelp, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -437,6 +480,14 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                         .addComponent(yInterceptText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(labelParamW4))
                     .addComponent(jButton8))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(autoHelp)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(autoMiddle)
+                        .addComponent(autoBelowPoints)
+                        .addComponent(autoLabel))
+                    .addComponent(autoAboveNoise))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -859,7 +910,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -955,6 +1006,18 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         closeWindow(true);
     }//GEN-LAST:event_formWindowClosing
 
+    private void autoBelowPointsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoBelowPointsActionPerformed
+        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.BELOW_POINTS));
+    }//GEN-LAST:event_autoBelowPointsActionPerformed
+
+    private void autoMiddleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoMiddleActionPerformed
+        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.MIDDLE));
+    }//GEN-LAST:event_autoMiddleActionPerformed
+
+    private void autoAboveNoiseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoAboveNoiseActionPerformed
+        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.ABOVE_NOISE));
+    }//GEN-LAST:event_autoAboveNoiseActionPerformed
+
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">                      
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup DisplayRangeGroup;
@@ -962,6 +1025,11 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JRadioButton addInputSlicesTrueRadio;
     private javax.swing.JRadioButton allSlicesFalseRadio;
     private javax.swing.JRadioButton allSlicesTrueRadio;
+    private javax.swing.JButton autoAboveNoise;
+    private javax.swing.JButton autoBelowPoints;
+    private javax.swing.JButton autoHelp;
+    private javax.swing.JLabel autoLabel;
+    private javax.swing.JButton autoMiddle;
     private javax.swing.JTextField backgroundStartRadiusText;
     private javax.swing.JComboBox<String> bgOutputBox;
     private javax.swing.JButton cancelButton;
@@ -1039,6 +1107,11 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         profileWindowButton.setVisible(visible);
         helpProfile.setVisible(visible);
         interactiveButton.setVisible(!visible);
+        autoBelowPoints.setVisible(visible);
+        autoMiddle.setVisible(visible);
+        autoAboveNoise.setVisible(visible);
+        autoLabel.setVisible(visible);
+        autoHelp.setVisible(visible);
         this.pack();
     }
 
@@ -1068,6 +1141,10 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         parameterChangedToggle(fields, Params.INTERACTIVE, localParams.interactive, interactiveButton);
         parameterChangedToggle(fields, Params.PROFILE_WINDOW, localParams.profileWindow, profileWindowButton);
         updatePresetButtons();
+    }
+
+    @Override
+    public final void eventTriggered(Params.EventData event) {
     }
 
     private void parameterChangedText(long fields, long flag, int value, JTextField field) {
