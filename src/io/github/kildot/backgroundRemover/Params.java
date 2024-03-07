@@ -115,7 +115,7 @@ public class Params {
         allSlices = true;
         addInputSlices = false;
 
-        selectNoise = false;
+        selectNoise = true;
         interactive = false;
         profileWindow = false;
     }

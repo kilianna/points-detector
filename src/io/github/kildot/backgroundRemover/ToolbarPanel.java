@@ -34,7 +34,6 @@ public class ToolbarPanel extends java.awt.Panel implements Params.Listener {
 
         selectionTypeGroup.add(pointsSelection);
         pointsSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Point.png"))); // NOI18N
-        pointsSelection.setSelected(true);
         pointsSelection.setText("Points selection");
         pointsSelection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -45,6 +44,7 @@ public class ToolbarPanel extends java.awt.Panel implements Params.Listener {
 
         selectionTypeGroup.add(noiseSelection);
         noiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Noise.png"))); // NOI18N
+        noiseSelection.setSelected(true);
         noiseSelection.setText("Noise selection");
         noiseSelection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

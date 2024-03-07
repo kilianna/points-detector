@@ -28,7 +28,6 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Point.png"/>
         </Property>
-        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="Points selection"/>
       </Properties>
       <Events>
@@ -43,6 +42,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/io/github/kildot/backgroundRemover/res/Noise.png"/>
         </Property>
+        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="Noise selection"/>
       </Properties>
       <Events>
