@@ -85,7 +85,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         originalSlicesGroup = new javax.swing.ButtonGroup();
         saveButton2 = new javax.swing.JButton();
         DisplayRangeGroup = new javax.swing.ButtonGroup();
-        selectionTypeGroup = new javax.swing.ButtonGroup();
         saveButton3 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         labelParamW = new javax.swing.JLabel();
@@ -142,9 +141,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         saveButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        pointsSelection = new javax.swing.JToggleButton();
-        noiseSelection = new javax.swing.JToggleButton();
-        helpPointsNoiseSelection = new javax.swing.JButton();
         helpProfile = new javax.swing.JButton();
         interactiveButton = new javax.swing.JToggleButton();
         profileWindowButton = new javax.swing.JToggleButton();
@@ -816,34 +812,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         jButton3.getAccessibleContext().setAccessibleDescription("presets");
 
-        selectionTypeGroup.add(pointsSelection);
-        pointsSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Point.png"))); // NOI18N
-        pointsSelection.setSelected(true);
-        pointsSelection.setText("Points selection");
-        pointsSelection.setPreferredSize(new java.awt.Dimension(130, 29));
-        pointsSelection.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramActionPerformed(evt);
-            }
-        });
-
-        selectionTypeGroup.add(noiseSelection);
-        noiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Noise.png"))); // NOI18N
-        noiseSelection.setText("Noise selection");
-        noiseSelection.setPreferredSize(new java.awt.Dimension(130, 29));
-        noiseSelection.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramActionPerformed(evt);
-            }
-        });
-
-        helpPointsNoiseSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        helpPointsNoiseSelection.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
         helpProfile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
         helpProfile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -887,26 +855,14 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(pointsSelection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(noiseSelection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(helpPointsNoiseSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(helpPointsNoiseSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(pointsSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(noiseSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -924,9 +880,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                 .addGap(12, 12, 12))
         );
 
-        pointsSelection.getAccessibleContext().setAccessibleDescription("false:selectNoise");
-        noiseSelection.getAccessibleContext().setAccessibleDescription("true:selectNoise");
-        helpPointsNoiseSelection.getAccessibleContext().setAccessibleDescription("points-and-noise-selection");
         interactiveButton.getAccessibleContext().setAccessibleDescription("interactive");
         profileWindowButton.getAccessibleContext().setAccessibleDescription("profileWindow");
 
@@ -1036,7 +989,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JButton deleteButton;
     private javax.swing.JRadioButton displayRangeResetFalseRadio;
     private javax.swing.JRadioButton displayRangeResetTrueRadio;
-    private javax.swing.JButton helpPointsNoiseSelection;
     private javax.swing.JButton helpProfile;
     private javax.swing.JButton helpSkipPixels;
     private javax.swing.JButton helpTakePixels;
@@ -1069,19 +1021,16 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JLabel labelTakePixels1;
     private javax.swing.JLabel labelTakePixels2;
     private javax.swing.JLabel labelTakePixels3;
-    private javax.swing.JToggleButton noiseSelection;
     private javax.swing.JButton okButton;
     private javax.swing.ButtonGroup originalSlicesGroup;
     private javax.swing.JComboBox<String> pointOutputBox;
     private javax.swing.JTextField pointRadiusText;
-    private javax.swing.JToggleButton pointsSelection;
     private javax.swing.JComboBox<String> presetsComboBox;
     private javax.swing.JToggleButton profileWindowButton;
     private javax.swing.JButton saveButton;
     private javax.swing.JButton saveButton2;
     private javax.swing.JButton saveButton3;
     private javax.swing.ButtonGroup scopeGroup;
-    private javax.swing.ButtonGroup selectionTypeGroup;
     private javax.swing.JTextField skipPixelsText;
     private javax.swing.JTextField slopeText;
     private javax.swing.JTextField takePixelsText;
@@ -1101,9 +1050,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     }
 
     private void setInteractiveVisible(boolean visible) {
-        pointsSelection.setVisible(visible);
-        noiseSelection.setVisible(visible);
-        helpPointsNoiseSelection.setVisible(visible);
         profileWindowButton.setVisible(visible);
         helpProfile.setVisible(visible);
         interactiveButton.setVisible(!visible);
@@ -1137,7 +1083,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         parameterChangedText(fields, Params.TAKE_PIXELS, localParams.takePixels, takePixelsText);
         parameterChangedBoolRadio(fields, Params.ALL_SLICES, localParams.allSlices, allSlicesFalseRadio, allSlicesTrueRadio);
         parameterChangedBoolRadio(fields, Params.ADD_INPUT_SLICES, localParams.addInputSlices, addInputSlicesFalseRadio, addInputSlicesTrueRadio);
-        parameterChangedBoolRadio(fields, Params.SELECT_NOISE, localParams.selectNoise, pointsSelection, noiseSelection);
         parameterChangedToggle(fields, Params.INTERACTIVE, localParams.interactive, interactiveButton);
         parameterChangedToggle(fields, Params.PROFILE_WINDOW, localParams.profileWindow, profileWindowButton);
         updatePresetButtons();
