@@ -1258,6 +1258,11 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         is.addSlice(previewProcessor.duplicate());
         previewImage = new ImagePlus("Preview", is);
         previewImage.show();
+        ImageWindow win = previewImage.getWindow();
+        ToolbarPanel toolbar = new ToolbarPanel(globalParams);
+        win.add(toolbar);
+        win.getCanvas().fitToWindow();
+        win.pack();
 
         // Create plot
         plot = new Plot("Plot", "Neighbourhood", "Point");
