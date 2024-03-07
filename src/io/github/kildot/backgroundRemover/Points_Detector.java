@@ -1044,8 +1044,23 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         oldPointsX = xx;
         oldPointsY = yy;
         if (update) {
+            plot.restorePlotObjects();
+            if (oldNoiseX != null) {
+                plot.setColor(Color.BLUE);
+                plot.replace(0, "circle", oldNoiseX, oldNoiseY);
+            }
             plot.setColor(Color.RED);
-            plot.replace(1, "circle", xx, yy);
+            plot.add("circle", xx, yy);
+            plot.setColor(Color.GRAY);
+            plot.setFontSize(12);
+            plotIndex = 0;
+            for (int pointIndex = 0; pointIndex < points.length; pointIndex++) {
+                int x = points[pointIndex].x;
+                int y = points[pointIndex].y;
+                if (x < 0 || y < 0 || x >= width || y >= height) continue;
+                plot.addText("" + (pointIndex + 1), xx[plotIndex], yy[plotIndex]);
+                plotIndex++;
+            }
             plot.setLimitsToFit(true);
             updateLimitLine();
             updateProfilePlot(profileY, profileIndex, true);
@@ -1248,8 +1263,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         plot = new Plot("Plot", "Neighbourhood", "Point");
         plot.setColor(Color.BLUE);
         plot.add("circle", new double[0], new double[0]);
-        plot.setColor(Color.RED);
-        plot.add("circle", new double[0], new double[0]);
+        plot.savePlotObjects();
         plot.show();
 
         // Create Profile plot
