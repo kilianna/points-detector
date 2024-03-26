@@ -21,7 +21,7 @@ Plugin umieszcza adnotacje odnośnie wykonanych na pliku operacji. Można je prz
 
 ## Reset color balance
 
-Dla wybranego obrazka (lub stosu) zakres wyświetlania (Display range) zostaje przesunięty tak, aby 0 odpowiadało kolorowi czarnemu. Po wykonaniu wyświetlone zostaje okno z informacją z o przesunięciu.
+Dla wybranego obrazka (lub stosu) zakres wyświetlania (Display range) zostaje przesunięty tak, aby wartość piksela równa 0 odpowiadała kolorowi czarnemu. Po wykonaniu wyświetlone zostaje okno z informacją z o przesunięciu.
 
 ![Reset](img/log_reset.jpg)
 
@@ -73,11 +73,11 @@ Jako wartości wejściowe należy podać:<br>
 
 Program wprowadzi obie poprawki jednocześnie na oryginalnym obrazie.
 
-## Slice dev
+## Slice Multiply
 
 ![Slice dev](img/slices_div.JPG)
 
-Część pluginu umożliwiajaca podzielenie wartości pikseli na poszczególnych obrazach przez podane przez użytkownika wartości. W polu tekstowym należy podać kolejno odpowiednie dzielniki dla poszczególnych obrazów oddzialając je przecinkiem. W przypadku, gdy dany obraz w stosie ma pozostać bez zmian należy jako odpowiadający mu dzielnik podać wartość 1. Liczba podanych wartości musi się zgadzać z liczbą obrazów w stosie, w przeciwnym razie program wyrzuci informację o niezgodności (poda liczbę współczynników wprowadzonych przez użytkownika oraz liczbę oczekiwanych współczynników.
+Część pluginu umożliwiajaca przemnożenie wartości pikseli na poszczególnych obrazach przez podane przez użytkownika wartości. W polu tekstowym należy podać kolejno odpowiednie mnożniki dla poszczególnych obrazów (oddzialając je przecinkiem). W przypadku, gdy dany obraz w stosie ma pozostać bez zmian należy jako odpowiadający mu mnożnik podać wartość 1. Liczba podanych wartości musi się zgadzać z liczbą obrazów w stosie, w przeciwnym razie program wyrzuci informację o niezgodności (poda liczbę współczynników wprowadzonych przez użytkownika oraz liczbę oczekiwanych współczynników).
 
 ![Slice dev](img/log_corr.JPG)
 
