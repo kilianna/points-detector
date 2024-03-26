@@ -25,6 +25,8 @@ Dla wybranego obrazka (lub stosu) zakres wyświetlania (Display range) zostaje p
 
 ![Reset](img/log_reset.jpg)
 
+W podanym powyżej przykładzie Display range został przesunięty z zakresu
+
 ## Slices Correction
 
 Część pluginu umożliwiająca wprowadzenie poprawek na wypalanie oraz głębokość. 
