@@ -81,9 +81,9 @@ Część pluginu umożliwiajaca podzielenie wartości pikseli na poszczególnych
 
 ![Slice dev](img/log_corr.JPG)
 
-## Points detector
+## Background Remover
 
-![MENU](img/Menu.JPG)
+![MENU](img/MainWindow.JPG)
 
 Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym podajemy w polu Parameters ustalone wcześniej parametry. Dodatkowo można spersonalizować sposób wyświetlania wyniku: wyznaczonych punktów i sygnału uznanego za tło. Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. 
 
