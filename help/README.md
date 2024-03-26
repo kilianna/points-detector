@@ -25,7 +25,7 @@ Dla wybranego obrazka (lub stosu) zakres wyświetlania (Display range) zostaje p
 
 ![Reset](img/log_reset.jpg)
 
-W podanym powyżej przykładzie Display range został przesunięty z zakresu
+W podanym powyżej przykładzie Display range został przesunięty z zakresu 1746.0 - 15951.0, gdzie 1746.0 odpowiadało najciemniejszemu pikslelowi na obrazie (kolorowi czarnemu), a 15951.0 odpowiadało pikselowi najjasniejszemu (kolorowi białemu) do zakresu 0 - 14205.0. Wartość każdego piksela w każdym z obrazów w stosie została obniżona o 1746.0 i aktualnie piksele w kolorze czarnym mają wartość 0, natomiast piksele w kolorze białym mają wartość 14205.0.
 
 ## Slices Correction
 
