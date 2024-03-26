@@ -75,6 +75,8 @@ Jako wartości wejściowe należy podać:<br>
 
 Program wprowadzi obie poprawki jednocześnie na oryginalnym obrazie.
 
+![out of range error](img/Values_out_of_range.PNG)
+
 ## Slice Multiply
 
 ![Slice dev](img/slices_div.JPG)
@@ -82,6 +84,7 @@ Program wprowadzi obie poprawki jednocześnie na oryginalnym obrazie.
 Część pluginu umożliwiajaca przemnożenie wartości pikseli na poszczególnych obrazach przez podane przez użytkownika wartości. W polu tekstowym należy podać kolejno odpowiednie mnożniki dla poszczególnych obrazów (oddzialając je przecinkiem). W przypadku, gdy dany obraz w stosie ma pozostać bez zmian należy jako odpowiadający mu mnożnik podać wartość 1. Liczba podanych wartości musi się zgadzać z liczbą obrazów w stosie, w przeciwnym razie program wyrzuci informację o niezgodności (poda liczbę współczynników wprowadzonych przez użytkownika oraz liczbę oczekiwanych współczynników).
 
 ![Slice dev](img/log_corr.JPG)
+![Display range too high error](img/Display_range_too_high.PNG)
 
 ## Background Remover
 
