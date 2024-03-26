@@ -13,7 +13,7 @@ W skład pakietu **FNTD IFJ** wchodzą następujące narzędzia:
 6. _Points generator_ - wtyczka generująca losowe punkty na obrazie - według parametrów zadanych przez użytkownika.
 
 
-W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Plugin uruchamia się domyślnie dla aktywnego okna. 
+W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Obraz (lub stos) powinien być 16-bitowy w odcieniach szarości. Plugin uruchamia się domyślnie dla aktywnego okna. 
 
 Plugin umieszcza adnotacje odnośnie wykonanych na pliku operacji. Można je prześledzić wchodząc w **Image -> Show Info...**.
 
@@ -77,6 +77,8 @@ Program wprowadzi obie poprawki jednocześnie na oryginalnym obrazie.
 
 ![out of range error](img/Values_out_of_range.PNG)
 
+Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekroczą zakres przewidziany dla obrazu 16-bitowego (tj. 65535) wyświetlony zostanie odpowiedni komunikat. Piksele, których wartość po przeliczeniu przekroczyła wartość maksymalna zostają domyślnie ustawione na 65535 (bez względu na ich wyliczoną wartość). W tym przypadku zależności wartości pomiędzy poszczególnymi pikselami nie zostaja zachowane. 
+
 ## Slice Multiply
 
 ![Slice dev](img/slices_div.JPG)
@@ -84,6 +86,9 @@ Program wprowadzi obie poprawki jednocześnie na oryginalnym obrazie.
 Część pluginu umożliwiajaca przemnożenie wartości pikseli na poszczególnych obrazach przez podane przez użytkownika wartości. W polu tekstowym należy podać kolejno odpowiednie mnożniki dla poszczególnych obrazów (oddzialając je przecinkiem). W przypadku, gdy dany obraz w stosie ma pozostać bez zmian należy jako odpowiadający mu mnożnik podać wartość 1. Liczba podanych wartości musi się zgadzać z liczbą obrazów w stosie, w przeciwnym razie program wyrzuci informację o niezgodności (poda liczbę współczynników wprowadzonych przez użytkownika oraz liczbę oczekiwanych współczynników).
 
 ![Slice dev](img/log_corr.JPG)
+
+Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekroczą zakres przewidziany dla obrazu 16-bitowego (tj. 65535) wyświetlony zostanie odpowiedni komunikat. Piksele, których wartość po przeliczeniu przekroczyła wartość maksymalna zostają domyślnie ustawione na 65535 (bez względu na ich wyliczoną wartość). W tym przypadku zależności wartości pomiędzy poszczególnymi pikselami nie zostaja zachowane. 
+
 ![Display range too high error](img/Display_range_too_high.PNG)
 
 ## Background Remover
