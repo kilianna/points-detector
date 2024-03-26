@@ -83,7 +83,7 @@ Część pluginu umożliwiajaca podzielenie wartości pikseli na poszczególnych
 
 ## Background Remover
 
-![MENU](img/MainWindow.JPG)
+![MENU](img/MainWindow.PNG)
 
 Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym podajemy w polu Parameters ustalone wcześniej parametry. Dodatkowo można spersonalizować sposób wyświetlania wyniku: wyznaczonych punktów i sygnału uznanego za tło. Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. 
 
