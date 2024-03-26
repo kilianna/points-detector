@@ -77,7 +77,7 @@ Program wprowadzi obie poprawki jednocześnie na oryginalnym obrazie.
 
 ![out of range error](img/Values_out_of_range.PNG)
 
-Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekroczą zakres przewidziany dla obrazu 16-bitowego (tj. 65535) wyświetlony zostanie odpowiedni komunikat. Piksele, których wartość po przeliczeniu przekroczyła wartość maksymalna zostają domyślnie ustawione na 65535 (bez względu na ich wyliczoną wartość). W tym przypadku zależności wartości pomiędzy poszczególnymi pikselami nie zostaja zachowane. 
+Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekroczą zakres przewidziany dla obrazu 16-bitowego (tj. 65535) wyświetlony zostanie odpowiedni komunikat. Piksele, których wartość po przeliczeniu przekroczyła wartość maksymalną zostają domyślnie ustawione na 65535 (bez względu na ich rzeczywistą wyliczoną wartość). W tym przypadku zależności wartości pomiędzy poszczególnymi pikselami nie zostaja zachowane. 
 
 ## Slice Multiply
 
@@ -87,7 +87,7 @@ Część pluginu umożliwiajaca przemnożenie wartości pikseli na poszczególny
 
 ![Slice dev](img/log_corr.JPG)
 
-Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekroczą zakres przewidziany dla obrazu 16-bitowego (tj. 65535) wyświetlony zostanie odpowiedni komunikat. Piksele, których wartość po przeliczeniu przekroczyła wartość maksymalna zostają domyślnie ustawione na 65535 (bez względu na ich wyliczoną wartość). W tym przypadku zależności wartości pomiędzy poszczególnymi pikselami nie zostaja zachowane. 
+Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekroczą zakres przewidziany dla obrazu 16-bitowego (tj. 65535) wyświetlony zostanie odpowiedni komunikat. Piksele, których wartość po przeliczeniu przekroczyła wartość maksymalną zostają domyślnie ustawione na 65535 (bez względu na ich rzeczywistą wyliczoną wartość). W tym przypadku zależności wartości pomiędzy poszczególnymi pikselami nie zostaja zachowane. 
 
 ![Display range too high error](img/Display_range_too_high.PNG)
 
