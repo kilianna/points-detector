@@ -1,0 +1,7 @@
+__pycache__
+/.venv/
+/web/dist/
+/web/node_modules/
+/ext/
+/web/private/
+/data/
