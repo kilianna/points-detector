@@ -126,7 +126,7 @@ $$
 
 ### Output parameters
 
--**Points** - dostępne na liście rozwijanej opcje wyświetlenia punktów:
+* **Points** - dostępne na liście rozwijanej opcje wyświetlenia punktów:
 - **White** - punkty wyświetlane na biało;
 - **Black**- punkty wyświetlane na czarno;
 - **Orginal** - punkty wyświetlane takie same jak na obrazie oryginalnym;
