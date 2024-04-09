@@ -95,9 +95,6 @@ Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekrocz�
 Moduł umożliwiający przekonwertowanie, a następnie wyeksportowanie do pliku stosu obrazów. Uruchomienie tego modułu spowoduje otwarcie okna, w którym należy wybrać nazwę oraz docelową lokalizację eksportowanych plików. Po zaakceptowaniu plugin utowrzy pliki w formacie CSV w lokalizacji podanej przez użytkownika. Nazwy poszczególnych pliów składają się z nazwy podanej przez użytkownika oraz numeru obrazu w stosie (np. nazwa_3.CSV odpowiada trzeciemu z kolei obrazowi w stosie). 
 
 ## Background Remover
-
-### dupa
-
 Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
 
 ![MENU](img/MainWindow.PNG)
@@ -122,7 +119,7 @@ Dostępne opcje wyświetlenia tła:
 
 Dodatkowe opcje
 
-###Scope
+### dupaScope
 
 - plugin wykonuje operacje nie tylko na wybranym obrazie, ale na wszystkich obrazach w stosie w aktywnym oknie;
 - **Keep orginal slices** - jako wynik plugin tworzy stos obrazów, gdzie wynikowe obrazy przeplatane są odpowiadającymi im oryginalnymi obrazami (funkcja przydatna przy porównywaniu obrazów wynikowych i oryginalnych);
