@@ -96,6 +96,8 @@ Moduł umożliwiający przekonwertowanie, a następnie wyeksportowanie do pliku 
 
 ## Background Remover
 
+Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
+
 ![MENU](img/MainWindow.PNG)
 
 Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym podajemy w polu Parameters ustalone wcześniej parametry. Dodatkowo można spersonalizować sposób wyświetlania wyniku: wyznaczonych punktów i sygnału uznanego za tło. Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. 
@@ -116,8 +118,8 @@ Dostępne opcje wyświetlenia tła:
 - **Orginal** - tło wyświetlane takie same jak na obrazie oryginalnym;
 - **Degree of matching** - jasność pikseli odpowiada różnicy między wyliczoną przez program "jasnością punktu", a "jasnością tła";
 
-Dodatkowo można zaznaczyć opcje:
-- **All slices** - plugin wykonuje operacje nie tylko na wybranym obrazie, ale na wszystkich obrazach w stosie w aktywnym oknie;
+Dodatkowe opcje
+###Scope - plugin wykonuje operacje nie tylko na wybranym obrazie, ale na wszystkich obrazach w stosie w aktywnym oknie;
 - **Keep orginal slices** - jako wynik plugin tworzy stos obrazów, gdzie wynikowe obrazy przeplatane są odpowiadającymi im oryginalnymi obrazami (funkcja przydatna przy porównywaniu obrazów wynikowych i oryginalnych);
 - **Manual mode** - przejście do trybu manualnego.
 
