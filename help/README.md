@@ -127,13 +127,13 @@ $$
 ### Output parameters
 
 -**Points** - dostępne na liście rozwijanej opcje wyświetlenia punktów:
--- **White** - punkty wyświetlane na biało;
--- **Black**- punkty wyświetlane na czarno;
--- **Orginal** - punkty wyświetlane takie same jak na obrazie oryginalnym;
--- **Degree of matching** - jasność pikseli odpowiada różnicy między wyliczoną przez program "jasnością punktu", a "jasnością tła" (im jaśniejszy punkt, tym bardziej "wystaje on ponad tło");
--- **Net signal (average)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako średnia arytmetyczna pikseli wokół danego punktu;
--- **Net signal (mode)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako wartość modalna pikseli wokół danego punktu;
--- **Net signal (median)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako mediana pikseli wokół danego punktu;
+- **White** - punkty wyświetlane na biało;
+- **Black**- punkty wyświetlane na czarno;
+- **Orginal** - punkty wyświetlane takie same jak na obrazie oryginalnym;
+- **Degree of matching** - jasność pikseli odpowiada różnicy między wyliczoną przez program "jasnością punktu", a "jasnością tła" (im jaśniejszy punkt, tym bardziej "wystaje on ponad tło");
+- **Net signal (average)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako średnia arytmetyczna pikseli wokół danego punktu;
+- **Net signal (mode)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako wartość modalna pikseli wokół danego punktu;
+- **Net signal (median)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako mediana pikseli wokół danego punktu;
 
 
 **Background** - dostępne opcje wyświetlenia tła:
