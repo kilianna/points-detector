@@ -99,7 +99,14 @@ Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygna
 
 ![MENU](img/MainWindow.PNG)
 
-Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym podajemy w polu Parameters ustalone wcześniej parametry. Dodatkowo można spersonalizować sposób wyświetlania wyniku: wyznaczonych punktów i sygnału uznanego za tło. Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. 
+Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym możemy albo wpisać w poszczególnych polach ustalone wcześniej parametry, bądź też wczytać zapisany wcześniej zestaw parametrów (Preset).  Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. Do trybu manualnego przechodzimy za pomocą przycisku **Interactive parameters tuning**.
+
+###Presets
+
+Aby utworzyć nowy preset wystarczy wybrać z listy rozwijanej **Presets** opcję **[ New ]** i po uzupełnieniu wszystkich pól ustalonymi parametrami kliknąć przycisk **Save**. Otworzy się nowe okno, z prośbą o podanie nazwy zapisywanego presetu. Po wybraniu nazwy i zatwierdzeniu utworzony preset pojawi się na rozwijanej liście presetów na górze okna. 
+
+Aby przejść do utworzonego wcześniej presetu wystarczy wybrać go z listy rozwijanej **Presets**. Istniejący preset można aktualizować zachowując wprowadzone zmiany przy pomocy przycisku **Save**. Można go również usunąć używająć przycisku **Delete**. Wybranie na liście rozwijanej opcji **[ Recently used ]** spowoduje wczytanie ostatnio stosowanego presetu.
+
 
 Dostępne opcje wyświetlenia punktów:
 - **White** - punkty wyświetlane na biało;
