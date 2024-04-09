@@ -119,8 +119,7 @@ Dostępne opcje wyświetlenia tła:
 
 Dodatkowe opcje:
 - **Scope** - wybieramy czy plugin ma wykonać operacje tylko na wybranym obrazie (**Current slice**), czy na wszystkich obrazach w stosie w aktywnym oknie (**All slices**);
-- **Keep orginal slices** - jako wynik plugin tworzy stos obrazów, gdzie wynikowe obrazy przeplatane są odpowiadającymi im oryginalnymi obrazami (funkcja przydatna przy porównywaniu obrazów wynikowych i oryginalnych);
-- **Manual mode** - przejście do trybu manualnego.
+- **Input slices** - opcja umożliwiająca wybór czy jako wynik otrzymamy stos przetworzonych obrazów (**Omit**), czy stos, gdzie wynikowe obrazy przeplatane są odpowiadającymi im oryginalnymi obrazami (**Include**) (funkcja przydatna np. przy porównywaniu obrazów wynikowych i oryginalnych lub tworzeniu masek).
 
 ## Tryb manualny
 
