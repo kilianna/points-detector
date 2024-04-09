@@ -91,6 +91,9 @@ Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekrocz�
 
 ![Display range too high error](img/Display_range_too_high.PNG)
 
+## Stack to CSV
+Moduł umożliwiający przekonwertowanie, a następnie wyeksportowanie do pliku stosu obrazów. Uruchomienie tego modułu spowoduje otwarcie okna, w którym należy wybrać nazwę oraz docelową lokalizację eksportowanych plików. Po zaakceptowaniu plugin utowrzy pliki w formacie CSV w lokalizacji podanej przez użytkownika. Nazwy poszczególnych pliów składają się z nazwy podanej przez użytkownika oraz numeru obrazu w stosie (np. nazwa_3.CSV odpowiada trzeciemu obrazowi). 
+
 ## Background Remover
 
 ![MENU](img/MainWindow.PNG)
@@ -103,11 +106,9 @@ Dostępne opcje wyświetlenia punktów:
 - **Orginal** - punkty wyświetlane takie same jak na obrazie oryginalnym;
 - **Degree of matching** - jasność pikseli odpowiada różnicy między wyliczoną przez program "jasnością punktu", a "jasnością tła" (im jaśniejszy punkt, tym bardziej "wystaje on ponad tło");
 - **Net signal (average)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako średnia arytmetyczna pikseli wokół danego punktu;
-- **Net signal scaled (average)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako średnia arytmetyczna pikseli wokół danego punktu, wynik przeskalowany dla lepszej widoczności do całej szerokości zakresu wyświetlania;
 - **Net signal (mode)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako wartość modalna pikseli wokół danego punktu;
-- **Net signal scaled (mode)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako wartość modalna pikseli wokół danego punktu, wynik przeskalowany dla lepszej widoczności do całej szerokości zakresu wyświetlania;
 - **Net signal (median)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako mediana pikseli wokół danego punktu;
-- **Net signal scaled (median)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako mediana pikseli wokół danego punktu, wynik przeskalowany dla lepszej widoczności do całej szerokości zakresu wyświetlania;
+
 
 Dostępne opcje wyświetlenia tła:
 - **White** - tło wyświetlane na biało;
