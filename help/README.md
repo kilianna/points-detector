@@ -107,6 +107,21 @@ Aby utworzyć nowy preset wystarczy wybrać z listy rozwijanej **Presets** opcj�
 
 Aby przejść do utworzonego wcześniej presetu wystarczy wybrać go z listy rozwijanej **Presets**. Istniejący preset można aktualizować zachowując wprowadzone zmiany przy pomocy przycisku **Save**. Można go również usunąć używająć przycisku **Delete**. Wybranie na liście rozwijanej opcji **[ Recently used ]** spowoduje wczytanie ostatnio stosowanego presetu. Preset może zostać usunięty za pomocą przycisku **Delete**.
 
+### Preliminary parameters
+
+- **Scanning window radius** - wielkość okna skanującego podana w pikselach;
+- **Point radius** - wielkość punktu podana w pikselach;
+- **Background start radius** - odległość od analizowanego punktu, powyżej której położone piksele traktowane są jako tło.
+
+### Discrimination line parameters
+
+Do oddzielenia sygnału od szumu program posługuje się odpowiednio dopasowaną prostą dyskryminacyjną o równaniu:
+$$
+  y = a*x+b
+$$
+
+- **Slope** - współczynnik kierunkowy prostej dyskryminacyjnej;
+- **Y-Intercept** - punkt przecięcia prostej dyskryminacyjnej z osią OY.
 
 Dostępne opcje wyświetlenia punktów:
 - **White** - punkty wyświetlane na biało;
