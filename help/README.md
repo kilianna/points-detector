@@ -120,6 +120,7 @@ Dostępne opcje wyświetlenia tła:
 Dodatkowe opcje:
 - **Scope** - wybieramy czy plugin ma wykonać operacje tylko na wybranym obrazie (**Current slice**), czy na wszystkich obrazach w stosie w aktywnym oknie (**All slices**);
 - **Input slices** - opcja umożliwiająca wybór czy jako wynik otrzymamy stos przetworzonych obrazów (**Omit**), czy stos, gdzie wynikowe obrazy przeplatane są odpowiadającymi im oryginalnymi obrazami (**Include**) (funkcja przydatna np. przy porównywaniu obrazów wynikowych i oryginalnych lub tworzeniu masek).
+- **Display range** - dla wybranego obrazu (lub stosu) zakres wyświetlania pozostaje niezmieniony (**Keep**) lub zostaje przesunięty tak, aby wartość piksela równa 0 odpowiadała kolorowi czarnemu (**Reset**). Ta transformacja zmienia bezwzględne wartości pikseli, ale zamchowuje ich wartości względne. Przykładowo jeżeli bazowo zakres wyświetlania jest równy 1746.0 - 15951.0, gdzie 1746.0 odpowiadało najciemniejszemu pikslelowi na obrazie (kolorowi czarnemu), a 15951.0 odpowiadało pikselowi najjaśniejszemu (kolorowi białemu) to po wykonaniu transformacji piksele przyjmą wartości z zakresu 0 - 14205.0. Wartość każdego piksela w każdym z obrazów w stosie została obniżona o 1746.0 i aktualnie piksele w kolorze czarnym mają wartość 0, natomiast piksele w kolorze białym mają wartość 14205.0.
 
 ## Tryb manualny
 
