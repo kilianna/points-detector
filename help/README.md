@@ -96,7 +96,7 @@ Moduł umożliwiający przekonwertowanie, a następnie wyeksportowanie do pliku 
 
 ## Background Remover
 
-###fdkihfhkjbfdhhiovfjhiofbjhiobfnhiosfbdnhifdb
+### dupa
 
 Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
 
