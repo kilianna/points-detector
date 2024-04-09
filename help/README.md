@@ -38,7 +38,7 @@ $$
 $$
 
 $$
-  t = t_{0}+ (n-1)*step
+ t = t_{0}+ (n-1)*step
 $$
 
 gdzie:<br>
@@ -116,6 +116,7 @@ Aby przejść do utworzonego wcześniej presetu wystarczy wybrać go z listy roz
 ### Discrimination line parameters
 
 Do oddzielenia sygnału od szumu program posługuje się odpowiednio dopasowaną prostą dyskryminacyjną o równaniu:
+
 $$
   y = a*x+b
 $$
