@@ -115,16 +115,18 @@ Aby przejść do utworzonego wcześniej presetu wystarczy wybrać go z listy roz
 
 ### Discrimination line parameters
 
-Do oddzielenia sygnału od szumu program posługuje się odpowiednio dopasowaną prostą dyskryminacyjną o równaniu:
+Do oddzielenia sygnału od szumu program posługuje się odpowiednio dopasowaną prostą dyskryminacji o równaniu:
 
 $$
   y = a*x+b
 $$
 
-- **Slope** - współczynnik kierunkowy prostej dyskryminacyjnej;
-- **Y-Intercept** - punkt przecięcia prostej dyskryminacyjnej z osią OY.
+- **Slope** - współczynnik kierunkowy prostej dyskryminacji;
+- **Y-Intercept** - punkt przecięcia prostej dyskryminacyji z osią OY.
 
-Dostępne opcje wyświetlenia punktów:
+### Output parameters
+
+**Points** - dostępne na liście rozwijanej opcje wyświetlenia punktów:
 - **White** - punkty wyświetlane na biało;
 - **Black**- punkty wyświetlane na czarno;
 - **Orginal** - punkty wyświetlane takie same jak na obrazie oryginalnym;
@@ -134,7 +136,7 @@ Dostępne opcje wyświetlenia punktów:
 - **Net signal (median)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako mediana pikseli wokół danego punktu;
 
 
-Dostępne opcje wyświetlenia tła:
+**Background** - Dostępne opcje wyświetlenia tła:
 - **White** - tło wyświetlane na biało;
 - **Black** - tło wyświetlane na czarno;
 - **Orginal** - tło wyświetlane takie same jak na obrazie oryginalnym;
