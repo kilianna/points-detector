@@ -117,11 +117,8 @@ Dostępne opcje wyświetlenia tła:
 - **Orginal** - tło wyświetlane takie same jak na obrazie oryginalnym;
 - **Degree of matching** - jasność pikseli odpowiada różnicy między wyliczoną przez program "jasnością punktu", a "jasnością tła";
 
-Dodatkowe opcje
-
-### dupaScopejhrtshrsatjsrtjkstyjkstydkjstykjstyiw6trujsrtjsghdjnmsrtjuhus6w5kitsdyjmnsftha5e4uy nrt6unwr6tuy w5b4y w45 ywrt5yu a
-
-- plugin wykonuje operacje nie tylko na wybranym obrazie, ale na wszystkich obrazach w stosie w aktywnym oknie;
+Dodatkowe opcje:
+- **Scope** - wybieramy czy plugin ma wykonać operacje tylko na wybranym obrazie (**Current slice**), czy na wszystkich obrazach w stosie w aktywnym oknie (**All slices**);
 - **Keep orginal slices** - jako wynik plugin tworzy stos obrazów, gdzie wynikowe obrazy przeplatane są odpowiadającymi im oryginalnymi obrazami (funkcja przydatna przy porównywaniu obrazów wynikowych i oryginalnych);
 - **Manual mode** - przejście do trybu manualnego.
 
