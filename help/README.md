@@ -141,8 +141,8 @@ $$
   - **Net signal (median)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako mediana pikseli wokół danego punktu;
 
 Jeżeli wybrana zostanie jedna z opcji **Net signal**, to pojawią się dwa dodatkowe pola z parametrami do ustalenia:
-- **Background points**
-- **Skip points**
+- **Skip pixels**
+- **Take pixels**
 
 Dodatkowo przy wyborze jednej z trzech wersji **Net signal** można dodatkowo zaznaczyć opcję **Scaled** - wartości pikseli zostają rozciągnięte na cały zakres wyświetlania (zwiększony zostaje kontrast na obrazie). Należy zwrócić uwagę, że użycie tej opcji zmienia zarówno bezwzględne jak i względne zależności między wartościami poszczególnych pikseli. Zaleca się stosować go głównie w celach wizualnych.
 
