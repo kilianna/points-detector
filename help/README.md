@@ -141,11 +141,11 @@ $$
   - **Net signal (median)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako mediana pikseli wokół danego punktu;
 
 
-**Background** - dostępne opcje wyświetlenia tła:
-- **White** - tło wyświetlane na biało;
-- **Black** - tło wyświetlane na czarno;
-- **Orginal** - tło wyświetlane takie same jak na obrazie oryginalnym;
-- **Degree of matching** - jasność pikseli odpowiada różnicy między wyliczoną przez program "jasnością punktu", a "jasnością tła";
+- **Background** - dostępne opcje wyświetlenia tła:
+  - **White** - tło wyświetlane na biało;
+  - **Black** - tło wyświetlane na czarno;
+  - **Orginal** - tło wyświetlane takie same jak na obrazie oryginalnym;
+  - **Degree of matching** - jasność pikseli odpowiada różnicy między wyliczoną przez program "jasnością punktu", a "jasnością tła";
 
 Dodatkowe opcje:
 - **Scope** - wybieramy czy plugin ma wykonać operacje tylko na wybranym obrazie (**Current slice**), czy na wszystkich obrazach w stosie w aktywnym oknie (**All slices**);
