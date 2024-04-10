@@ -148,7 +148,7 @@ Jeżeli wybrana zostanie jedna z opcji **Net signal**, to pojawią się dwa doda
 
 Dodatkowo przy wyborze jednej z trzech wersji **Net signal** można dodatkowo zaznaczyć opcję **Scaled** - wartości pikseli zostają rozciągnięte na cały zakres wyświetlania (zwiększony zostaje kontrast na obrazie). Należy zwrócić uwagę, że użycie tej opcji zmienia zarówno bezwzględne jak i względne zależności między wartościami poszczególnych pikseli. Zaleca się stosować go głównie w celach wizualnych.
 
-![Net signal vs scaled](img/Net signal vs scaled.png)
+![Net signal vs scaled](img/Net_vs_scaled.png)
 
 - **Background** - dostępne opcje wyświetlenia tła:
   - **White** - tło wyświetlane na biało;
