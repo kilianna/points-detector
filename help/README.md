@@ -94,6 +94,11 @@ Jeżeli w skutek zastosowanych przeliczeń wartości wynikowe pikseli przekrocz�
 ## Stack to CSV
 Moduł umożliwiający przekonwertowanie, a następnie wyeksportowanie do pliku stosu obrazów. Uruchomienie tego modułu spowoduje otwarcie okna, w którym należy wybrać nazwę oraz docelową lokalizację eksportowanych plików. Po zaakceptowaniu plugin utowrzy pliki w formacie CSV w lokalizacji podanej przez użytkownika. Nazwy poszczególnych pliów składają się z nazwy podanej przez użytkownika oraz numeru obrazu w stosie (np. nazwa_3.CSV odpowiada trzeciemu z kolei obrazowi w stosie). 
 
+## Points Generator
+Moduł służący do generowania punktów o określonych parametrach w losowych miejscach na obrazie. W oknie dialogowym należy podać listę wartości (oddzielonych przecinkami) oraz wielkość punktu (promień) w pikselach. Plugin wygeneruje na obrazie w aktywnym oknie koła o zadanym promieniu. Wartości pikseli w tych kołach zostaną zwiększone o wartości podane na liście (**List of points values**).
+
+![Display range too high error](img/Points_Generator.PNG)
+
 ## Background Remover
 Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
 
