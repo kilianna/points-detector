@@ -97,7 +97,7 @@ Moduł umożliwiający przekonwertowanie, a następnie wyeksportowanie do pliku 
 ## Points Generator
 Moduł służący do generowania punktów o określonych parametrach w losowych miejscach na obrazie. W oknie dialogowym należy podać listę wartości (oddzielonych przecinkami) oraz wielkość punktu (promień) w pikselach. Plugin wygeneruje na obrazie w aktywnym oknie koła o zadanym promieniu. Wartości pikseli w tych kołach zostaną zwiększone o wartości podane na liście (**List of points values**).
 
-![Display range too high error](img/Points_Generator.PNG)
+![Points generator](img/Points_generator.PNG)
 
 ## Background Remover
 Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
