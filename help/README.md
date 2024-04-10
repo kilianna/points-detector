@@ -140,6 +140,8 @@ $$
   - **Net signal (mode)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako wartość modalna pikseli wokół danego punktu;
   - **Net signal (median)** - wartość pikseli odpowiada podstawowej wartości pikseli pomniejszonej o tło wyliczone jako mediana pikseli wokół danego punktu;
 
+![BG ring](img/Background_ring.PNG)
+
 Jeżeli wybrana zostanie jedna z opcji **Net signal**, to pojawią się dwa dodatkowe pola z parametrami do ustalenia:
 - **Skip pixels** - różnica między promieniem punktu, dla którego liczone jest tło, a promieniem wewnętrzym pierścienia, na podstawie którego obliczana jest wartość tła.
 - **Take pixels** - różnica między promieniem zewnętrzym a wewnętrznym pierścienia służącego do obliczenia tła.
