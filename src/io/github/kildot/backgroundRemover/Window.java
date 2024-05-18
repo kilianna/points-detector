@@ -928,6 +928,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         autoMiddle.setVisible(visible);
         autoAboveNoise.setVisible(visible);
         autoLabel.setVisible(visible);
+        fixSlopeCheckBox.setVisible(visible);
         this.pack();
     }
 

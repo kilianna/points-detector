@@ -1148,8 +1148,8 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         if (event instanceof Params.EventAutoFit) {
             Params.EventAutoFit data = (Params.EventAutoFit)event;
             try {
-                if (oldNoiseX == null || oldPointsX == null) throw new Input­Mismatch­Exception();
-                if (oldNoiseX.length < 3 || oldPointsX.length < 3) throw new Input­Mismatch­Exception();
+                if (oldNoiseX == null || oldPointsX == null) throw new InputMismatchException();
+                if (oldNoiseX.length < 3 || oldPointsX.length < 3) throw new InputMismatchException();
                 LineFinding lf = new LineFinding();
                 LineFinding.Point[] points = new LineFinding.Point[oldPointsX.length];
                 for (int i = 0; i < points.length; i++) {
@@ -1177,7 +1177,15 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
                 } else {
                     r = lf.calc(points, noise, weight);
                 }
-                if (r == null) throw new InputMismatchException();
+                if (r == null) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Selected points and noise does not allow to do an automatic fitting.\n" +
+                            "Select more points or noise from a wider range or retry with the fixed slope option enabled.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 Params copy = globalParams.copy();
                 copy.slope = r[0];
                 copy.yIntercept = r[1];
