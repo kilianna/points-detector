@@ -103,6 +103,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         autoAboveNoise = new javax.swing.JButton();
         autoMiddle = new javax.swing.JButton();
         autoBelowPoints = new javax.swing.JButton();
+        fixSlopeCheckBox = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         labelParamW5 = new javax.swing.JLabel();
         labelParamW6 = new javax.swing.JLabel();
@@ -327,6 +328,8 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
+        fixSlopeCheckBox.setText("Fix slope");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -339,14 +342,16 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                     .addComponent(autoLabel))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(slopeText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(yInterceptText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(autoBelowPoints, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(autoMiddle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(autoAboveNoise, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(autoAboveNoise, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fixSlopeCheckBox))
+                    .addComponent(slopeText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(yInterceptText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -366,7 +371,9 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                         .addComponent(autoMiddle)
                         .addComponent(autoBelowPoints)
                         .addComponent(autoLabel))
-                    .addComponent(autoAboveNoise))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(autoAboveNoise)
+                        .addComponent(fixSlopeCheckBox)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -825,15 +832,15 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     }//GEN-LAST:event_formWindowClosing
 
     private void autoBelowPointsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoBelowPointsActionPerformed
-        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.BELOW_POINTS));
+        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.BELOW_POINTS, fixSlopeCheckBox.isSelected()));
     }//GEN-LAST:event_autoBelowPointsActionPerformed
 
     private void autoMiddleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoMiddleActionPerformed
-        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.MIDDLE));
+        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.MIDDLE, fixSlopeCheckBox.isSelected()));
     }//GEN-LAST:event_autoMiddleActionPerformed
 
     private void autoAboveNoiseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoAboveNoiseActionPerformed
-        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.ABOVE_NOISE));
+        globalParams.triggerEvent(new Params.EventAutoFit(Params.EventAutoFit.ABOVE_NOISE, fixSlopeCheckBox.isSelected()));
     }//GEN-LAST:event_autoAboveNoiseActionPerformed
 
     private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
@@ -860,6 +867,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JButton deleteButton;
     private javax.swing.JRadioButton displayRangeResetFalseRadio;
     private javax.swing.JRadioButton displayRangeResetTrueRadio;
+    private javax.swing.JCheckBox fixSlopeCheckBox;
     private javax.swing.JButton helpButton;
     private javax.swing.JToggleButton interactiveButton;
     private javax.swing.JLabel jLabel2;

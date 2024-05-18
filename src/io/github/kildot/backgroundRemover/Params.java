@@ -181,8 +181,6 @@ public class Params {
     public static final long INTERACTIVE = 0x4000;
     public static final long PROFILE_WINDOW = 0x8000;
 
-    public static final long EVENT_AUTO_FIT = 0x0001;
-
     public final void loadDefaults() {
         windowRadius = 20;
         pointRadius = 5;
@@ -467,7 +465,6 @@ public class Params {
     //--------------------------------------------------------------------------
     
     public static class EventData {
-        public long event;
     }
 
     public static class EventAutoFit extends EventData {
@@ -475,9 +472,10 @@ public class Params {
         public static final int BELOW_POINTS = 1;
         public static final int MIDDLE = 2;
         public int position;
-        public EventAutoFit(int position) {
-            event = EVENT_AUTO_FIT;
+        public boolean fixSlope;
+        public EventAutoFit(int position, boolean fixSlope) {
             this.position = position;
+            this.fixSlope = fixSlope;
         }
     }
 

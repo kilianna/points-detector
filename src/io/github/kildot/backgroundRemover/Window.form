@@ -241,15 +241,17 @@
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="slopeText" max="32767" attributes="0"/>
-                      <Component id="yInterceptText" max="32767" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <Component id="autoBelowPoints" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="autoMiddle" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="autoAboveNoise" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="fixSlopeCheckBox" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="slopeText" max="32767" attributes="0"/>
+                      <Component id="yInterceptText" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -275,7 +277,10 @@
                           <Component id="autoBelowPoints" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="autoLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="autoAboveNoise" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                          <Component id="autoAboveNoise" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="fixSlopeCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -357,6 +362,11 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="autoBelowPointsActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="fixSlopeCheckBox">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Fix slope"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

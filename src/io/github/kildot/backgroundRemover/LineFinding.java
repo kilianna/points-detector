@@ -281,4 +281,23 @@ public class LineFinding {
         return wyznaczOdcinekMiedzy(obwiedniaPunktow, obwiedniaSzumu, weight);
     }
 
+    public double[] calcFixedSlope(Point[] points, Point[] noise, double weight, double slope) {
+        double belowPoints = points[0].y - slope * points[0].x;
+        for (Point p : points) {
+            double b = p.y - slope * p.x;
+            if (b < belowPoints) {
+                belowPoints = b;
+            }
+        }
+        double aboveNoise = noise[0].y - slope * noise[0].x;
+        for (Point p : noise) {
+            double b = p.y - slope * p.x;
+            if (b > aboveNoise) {
+                aboveNoise = b;
+            }
+        }
+        double bb = aboveNoise * weight + belowPoints * (1.0 - weight);
+        return new double[] { slope, bb };
+    }
+
 }

@@ -1171,7 +1171,12 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
                         weight = 1.0;
                         break;
                 }
-                double[] r = lf.calc(points, noise, weight);
+                double[] r;
+                if (data.fixSlope) {
+                    r = lf.calcFixedSlope(points, noise, weight, globalParams.slope);                    
+                } else {
+                    r = lf.calc(points, noise, weight);
+                }
                 if (r == null) throw new InputMismatchException();
                 Params copy = globalParams.copy();
                 copy.slope = r[0];
