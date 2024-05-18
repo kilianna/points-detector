@@ -972,7 +972,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
     private void parameterChangedText(long fields, long flag, double value, JTextField field) {
         if ((fields & flag) == 0) return;
-        field.setText(Double.toString(value));
+        field.setText(Common.numberToString(value));
         field.setBackground(defaultTextBackgroundColor);
     }
 

@@ -261,8 +261,8 @@ public class Params {
         props.setProperty(prefix + "backgroundStartRadius", Integer.toString(backgroundStartRadius));
         props.setProperty(prefix + "resetDisplayRange", Boolean.toString(resetDisplayRange));
 
-        props.setProperty(prefix + "slope", Double.toString(slope));
-        props.setProperty(prefix + "yIntercept", Double.toString(yIntercept));
+        props.setProperty(prefix + "slope", Common.numberToString(slope));
+        props.setProperty(prefix + "yIntercept", Common.numberToString(yIntercept));
 
         props.setProperty(prefix + "pointOutput", Integer.toString(pointOutput));
         props.setProperty(prefix + "pointScaled", Boolean.toString(pointScaled));
