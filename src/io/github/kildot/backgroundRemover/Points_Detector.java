@@ -84,6 +84,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         makeWindow();
         boolean allSlices = globalParams.allSlices;
         int pointPixelOutput = globalParams.pointOutput;
+        boolean pointScaled = globalParams.pointScaled;
         int backgroundPixelOutput = globalParams.bgOutput;
         boolean keepOriginalSlices = globalParams.addInputSlices;
         ImageStack stack = sourceImage.getStack();
@@ -91,7 +92,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
             ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
             for (int i = 1; i <= stack.size(); i++) {
                 ImageProcessor ip = stack.getProcessor(i);
-                ProcessingResults r = processSingleImage(ip, pointPixelOutput, backgroundPixelOutput,
+                ProcessingResults r = processSingleImage(ip, pointPixelOutput, pointScaled, backgroundPixelOutput,
                         keepOriginalSlices, i - 1, stack.size());
                 is.addSlice(r.result);
                 if (keepOriginalSlices)
@@ -100,13 +101,13 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
             outputImage = new ImagePlus("Output", is);
         } else if (keepOriginalSlices) {
             ImageStack is = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight());
-            ProcessingResults r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput,
+            ProcessingResults r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, pointScaled, backgroundPixelOutput,
                     keepOriginalSlices, 0, 1);
             is.addSlice(r.result);
             is.addSlice(r.original);
             outputImage = new ImagePlus("Output", is);
         } else {
-            ImageProcessor r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput,
+            ImageProcessor r = processSingleImage(sourceImage.getProcessor(), pointPixelOutput, pointScaled, backgroundPixelOutput,
                     keepOriginalSlices, 0, 1).result;
             outputImage = new ImagePlus("Output", r);
         }
@@ -123,7 +124,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         }
     }
 
-    private ProcessingResults processSingleImage(ImageProcessor ip, int pointPixelOutput, int backgroundPixelOutput,
+    private ProcessingResults processSingleImage(ImageProcessor ip, int pointPixelOutput, boolean pointScaled, int backgroundPixelOutput,
             boolean keepOriginalSlices, int index, int total) {
         ImageProcessor src = ip.convertToFloat();
         ImageProcessor dst = ip.duplicate();
@@ -135,11 +136,11 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         height = src.getHeight();
         makeHist();
         IJ.showProgress(index, total);
-        outputToProcessor(dst, ip, pointPixelOutput, backgroundPixelOutput);
+        outputToProcessor(dst, ip, pointPixelOutput, pointScaled, backgroundPixelOutput);
         return new ProcessingResults(dst, original);
     }
 
-    private void outputToProcessor(ImageProcessor dst, ImageProcessor src, int pointPixelOutput, int backgroundPixelOutput) {
+    private void outputToProcessor(ImageProcessor dst, ImageProcessor src, int pointPixelOutput, boolean pointScaled, int backgroundPixelOutput) {
         int pointRadius = globalParams.pointRadius;
         int backgroundRadius = globalParams.backgroundStartRadius;
         float limitLineA = (float)globalParams.slope;
@@ -171,11 +172,11 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
             }
         }
         if (dst instanceof ShortProcessor) {
-            outputToShortProcessor((ShortProcessor)dst, (ShortProcessor)src, results, pointPixelOutput, backgroundPixelOutput, minResult, maxResult);
-        } else if (dst instanceof ByteProcessor) {
-            outputToByteProcessor((ByteProcessor)dst, (ByteProcessor)src, results, pointPixelOutput, backgroundPixelOutput, minResult, maxResult);
+            outputToShortProcessor((ShortProcessor)dst, (ShortProcessor)src, results, pointPixelOutput, pointScaled, backgroundPixelOutput, minResult, maxResult);
+        //} else if (dst instanceof ByteProcessor) {
+        //    outputToByteProcessor((ByteProcessor)dst, (ByteProcessor)src, results, pointPixelOutput, pointScaled, backgroundPixelOutput, minResult, maxResult);
         } else {
-            IJ.error("Only 16-bit and 8-bit image format is supported.");
+            IJ.error("Only 16-bit image format is supported.");
         }
     }
 
@@ -458,7 +459,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         return d.diff;
     }
 
-    private void outputToShortProcessor(ShortProcessor dst, ShortProcessor src, float[] results, int pointPixelOutput, int backgroundPixelOutput,
+    private void outputToShortProcessor(ShortProcessor dst, ShortProcessor src, float[] results, int pointPixelOutput, boolean pointScaled, int backgroundPixelOutput,
             float minResult, float maxResult) {
         short[] outputPixels = (short[])dst.getPixels();
         short[] inputPixels = (short[])src.getPixels();
@@ -469,13 +470,13 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         float rangeF = whiteF - blackF;
         float[] diff = null;
         float diffMax = 1.0f;
-        if ((pointPixelOutput == Params.POINT_OUTPUT_NET) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED)) {
+        if (pointPixelOutput == Params.POINT_OUTPUT_NET) {
             diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_AVERAGE);
             diffMax = Math.max(1.0f, diff[width * height]);
-        } else if ((pointPixelOutput == Params.POINT_OUTPUT_NET_MODE) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED_MODE)) {
+        } else if (pointPixelOutput == Params.POINT_OUTPUT_NET_MODE) {
             diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_MODE);
             diffMax = Math.max(1.0f, diff[width * height]);
-        } else if ((pointPixelOutput == Params.POINT_OUTPUT_NET_MEDIAN) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED_MEDIAN)) {
+        } else if (pointPixelOutput == Params.POINT_OUTPUT_NET_MEDIAN) {
             diff = calculateNet(results, inputPixels, outputPixels, NET_TYPE_MEDIAN);
             diffMax = Math.max(1.0f, diff[width * height]);
         }
@@ -501,9 +502,11 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
                     } else if (pointPixelOutput == Params.POINT_OUTPUT_ORIGINAL) {
                         outputPixels[x + y * width] = inputPixels[x + y * width];
                     } else if ((pointPixelOutput == Params.POINT_OUTPUT_NET) || (pointPixelOutput == Params.POINT_OUTPUT_NET_MODE) || (pointPixelOutput == Params.POINT_OUTPUT_NET_MEDIAN)) {
-                        outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width]);
-                    } else if ((pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED_MODE) || (pointPixelOutput == Params.POINT_OUTPUT_NET_SCALED_MEDIAN)) {
-                        outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width] / diffMax * rangeF + 0.5);
+                        if (pointScaled) {
+                            outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width] / diffMax * rangeF + 0.5);
+                        } else {
+                            outputPixels[x + y * width] = (short)(int)(black + diff[x + y * width]);                            
+                        }
                     } else if (backgroundPixelOutput == Params.BG_OUTPUT_RESULT) {
                         outputPixels[x + y * width] = (short) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
                     } else {
@@ -514,44 +517,9 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         }
     }
 
-    private void outputToByteProcessor(ByteProcessor dst, ByteProcessor src, float[] results, int pointPixelOutput, int backgroundPixelOutput,
-            float minResult, float maxResult) {
-        byte[] outputPixels = (byte[])dst.getPixels();
-        byte[] inputPixels = (byte[])src.getPixels();
-        byte black = (byte)(int)(dst.getMin() + 0.5);
-        byte white = (byte)(int)(dst.getMax() + 0.5);
-        float blackF = (float)dst.getMin();
-        float whiteF = (float)dst.getMax();
-        float rangeF = whiteF - blackF;
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (results[x + y * width] < 0) { // background
-                    if (backgroundPixelOutput == Params.BG_OUTPUT_WHITE) {
-                        outputPixels[x + y * width] = white;
-                    } else if (backgroundPixelOutput == Params.BG_OUTPUT_BLACK) {
-                        outputPixels[x + y * width] = black;
-                    } else if (backgroundPixelOutput == Params.BG_OUTPUT_ORIGINAL) {
-                        outputPixels[x + y * width] = inputPixels[x + y * width];
-                    } else if (pointPixelOutput == Params.POINT_OUTPUT_RESULT) {
-                        outputPixels[x + y * width] = (byte) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
-                    } else {
-                        outputPixels[x + y * width] = (byte) (blackF + rangeF * (1.0f - results[x + y * width] / minResult));
-                    }
-                } else { // point
-                    if (pointPixelOutput == Params.POINT_OUTPUT_WHITE) {
-                        outputPixels[x + y * width] = white;
-                    } else if (pointPixelOutput == Params.POINT_OUTPUT_BLACK) {
-                        outputPixels[x + y * width] = black;
-                    } else if (pointPixelOutput == Params.POINT_OUTPUT_ORIGINAL) {
-                        outputPixels[x + y * width] = inputPixels[x + y * width];
-                    } else if (backgroundPixelOutput == Params.BG_OUTPUT_RESULT) {
-                        outputPixels[x + y * width] = (byte) (blackF + rangeF * (results[x + y * width] - minResult) / (maxResult - minResult));
-                    } else {
-                        outputPixels[x + y * width] = (byte) (blackF + rangeF * results[x + y * width] / maxResult);
-                    }
-                }
-            }
-        }
+    private void outputToByteProcessor(ByteProcessor dst, ByteProcessor src, float[] results, int pointPixelOutput, boolean pointScaled, int backgroundPixelOutput,
+            float minResult, float maxResult) throws Exception {
+        throw new Exception("8-bit images are not implemented");
     }
 
     private void closeInteractiveTools() {
@@ -929,8 +897,9 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
     private void updatePreview() {
         logMethod();
         int pointPixelOutput = globalParams.pointOutput;
+        boolean pointScaled = globalParams.pointScaled;
         int backgroundPixelOutput = globalParams.bgOutput;
-        this.outputToProcessor(previewProcessor, sourceImage.getProcessor(), pointPixelOutput, backgroundPixelOutput);
+        this.outputToProcessor(previewProcessor, sourceImage.getProcessor(), pointPixelOutput, pointScaled, backgroundPixelOutput);
         previewImage.updateAndDraw();
     }
 
@@ -1163,7 +1132,7 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         }
 
         if (updated(fields, Params.WINDOW_RADIUS | Params.POINT_RADIUS | Params.BACKGROUND_START_RADIUS
-                | Params.SLOPE | Params.Y_INTERCEPT | Params.POINT_OUTPUT | Params.BG_OUTPUT
+                | Params.SLOPE | Params.Y_INTERCEPT | Params.POINT_OUTPUT | Params.POINT_SCALED | Params.BG_OUTPUT
                 | Params.SKIP_PIXELS | Params.TAKE_PIXELS)) {
             updatePreview();
         }

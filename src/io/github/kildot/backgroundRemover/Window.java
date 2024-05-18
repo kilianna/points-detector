@@ -86,6 +86,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         saveButton2 = new javax.swing.JButton();
         DisplayRangeGroup = new javax.swing.ButtonGroup();
         saveButton3 = new javax.swing.JButton();
+        pointScaledGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         labelParamW = new javax.swing.JLabel();
         windowRadiusText = new javax.swing.JTextField();
@@ -93,22 +94,12 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         labelParamW1 = new javax.swing.JLabel();
         backgroundStartRadiusText = new javax.swing.JTextField();
         labelParamW2 = new javax.swing.JLabel();
-        displayRangeResetTrueRadio = new javax.swing.JRadioButton();
-        labelTakePixels3 = new javax.swing.JLabel();
-        displayRangeResetFalseRadio = new javax.swing.JRadioButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jButton11 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         labelParamW3 = new javax.swing.JLabel();
         slopeText = new javax.swing.JTextField();
         yInterceptText = new javax.swing.JTextField();
         labelParamW4 = new javax.swing.JLabel();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
         autoLabel = new javax.swing.JLabel();
-        autoHelp = new javax.swing.JButton();
         autoAboveNoise = new javax.swing.JButton();
         autoMiddle = new javax.swing.JButton();
         autoBelowPoints = new javax.swing.JButton();
@@ -117,13 +108,9 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         labelParamW6 = new javax.swing.JLabel();
         pointOutputBox = new javax.swing.JComboBox<>();
         bgOutputBox = new javax.swing.JComboBox<>();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
         skipPixelsText = new javax.swing.JTextField();
-        helpSkipPixels = new javax.swing.JButton();
         labelSkipPixels = new javax.swing.JLabel();
         takePixelsText = new javax.swing.JTextField();
-        helpTakePixels = new javax.swing.JButton();
         allSlicesFalseRadio = new javax.swing.JRadioButton();
         labelTakePixels1 = new javax.swing.JLabel();
         allSlicesTrueRadio = new javax.swing.JRadioButton();
@@ -131,8 +118,12 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         labelTakePixels2 = new javax.swing.JLabel();
         addInputSlicesFalseRadio = new javax.swing.JRadioButton();
         labelTakePixels = new javax.swing.JLabel();
-        helpTakePixels1 = new javax.swing.JButton();
-        helpTakePixels2 = new javax.swing.JButton();
+        labelTakePixels3 = new javax.swing.JLabel();
+        displayRangeResetFalseRadio = new javax.swing.JRadioButton();
+        displayRangeResetTrueRadio = new javax.swing.JRadioButton();
+        labelPointScaled = new javax.swing.JLabel();
+        pointScaledFalseRadio = new javax.swing.JRadioButton();
+        pointScaledTrueRadio = new javax.swing.JRadioButton();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
@@ -141,7 +132,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         saveButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        helpProfile = new javax.swing.JButton();
         interactiveButton = new javax.swing.JToggleButton();
         profileWindowButton = new javax.swing.JToggleButton();
 
@@ -228,53 +218,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         labelParamW2.setText("Background start radius [pixels]");
 
-        DisplayRangeGroup.add(displayRangeResetTrueRadio);
-        displayRangeResetTrueRadio.setText("Reset");
-        displayRangeResetTrueRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramActionPerformed(evt);
-            }
-        });
-
-        labelTakePixels3.setText("Display range");
-
-        DisplayRangeGroup.add(displayRangeResetFalseRadio);
-        displayRangeResetFalseRadio.setSelected(true);
-        displayRangeResetFalseRadio.setText("Keep");
-        displayRangeResetFalseRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paramActionPerformed(evt);
-            }
-        });
-
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
-        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        jButton11.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -284,64 +227,35 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(labelParamW2)
                     .addComponent(labelParamW1)
-                    .addComponent(labelParamW)
-                    .addComponent(labelTakePixels3))
+                    .addComponent(labelParamW))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(pointRadiusText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(windowRadiusText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(displayRangeResetFalseRadio)
-                        .addGap(18, 18, 18)
-                        .addComponent(displayRangeResetTrueRadio)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(backgroundStartRadiusText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jButton6)
-                        .addComponent(jButton11, javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jButton5))
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(7, 7, 7)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(windowRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelParamW))
-                    .addComponent(jButton5))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(windowRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelParamW))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(pointRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelParamW1))
-                    .addComponent(jButton2))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pointRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelParamW1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(backgroundStartRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelParamW2))
-                    .addComponent(jButton6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(displayRangeResetFalseRadio)
-                        .addComponent(displayRangeResetTrueRadio)
-                        .addComponent(labelTakePixels3))
-                    .addComponent(jButton11))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(backgroundStartRadiusText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelParamW2))
+                .addContainerGap())
         );
 
         windowRadiusText.getAccessibleContext().setAccessibleDescription("windowRadius");
         pointRadiusText.getAccessibleContext().setAccessibleDescription("pointRadius");
         backgroundStartRadiusText.getAccessibleContext().setAccessibleDescription("backgroundStartRadius");
-        displayRangeResetTrueRadio.getAccessibleContext().setAccessibleDescription("true:resetDisplayRange");
-        displayRangeResetFalseRadio.getAccessibleContext().setAccessibleDescription("false:resetDisplayRange");
-        jButton5.getAccessibleContext().setAccessibleDescription("scanning-window-radius");
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Discrimination line parameters"));
         jPanel2.setName("nnn"); // NOI18N
@@ -390,28 +304,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         labelParamW4.setText("Y-intercept");
 
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
-        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
         autoLabel.setText("Auto fitting");
-
-        autoHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        autoHelp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
 
         autoAboveNoise.setText("Above noise");
         autoAboveNoise.addActionListener(new java.awt.event.ActionListener() {
@@ -454,31 +347,21 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                         .addComponent(autoMiddle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(autoAboveNoise, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton7, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton8, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(autoHelp, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(slopeText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelParamW3))
-                    .addComponent(jButton7))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(slopeText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelParamW3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(yInterceptText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelParamW4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(yInterceptText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelParamW4))
-                    .addComponent(jButton8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(autoHelp)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(autoMiddle)
                         .addComponent(autoBelowPoints)
@@ -513,20 +396,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
         });
 
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
-        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
-
         skipPixelsText.setText("1");
         skipPixelsText.setMinimumSize(new java.awt.Dimension(200, 24));
         skipPixelsText.setName(""); // NOI18N
@@ -544,13 +413,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 keyVerifyEvent(evt);
-            }
-        });
-
-        helpSkipPixels.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        helpSkipPixels.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
             }
         });
 
@@ -573,13 +435,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
             }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 keyVerifyEvent(evt);
-            }
-        });
-
-        helpTakePixels.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        helpTakePixels.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
             }
         });
 
@@ -623,17 +478,41 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
         labelTakePixels.setText("Take pixels");
 
-        helpTakePixels1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        helpTakePixels1.addActionListener(new java.awt.event.ActionListener() {
+        labelTakePixels3.setText("Display range");
+
+        DisplayRangeGroup.add(displayRangeResetFalseRadio);
+        displayRangeResetFalseRadio.setSelected(true);
+        displayRangeResetFalseRadio.setText("Keep");
+        displayRangeResetFalseRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
+                paramActionPerformed(evt);
             }
         });
 
-        helpTakePixels2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        helpTakePixels2.addActionListener(new java.awt.event.ActionListener() {
+        DisplayRangeGroup.add(displayRangeResetTrueRadio);
+        displayRangeResetTrueRadio.setText("Reset");
+        displayRangeResetTrueRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
+                paramActionPerformed(evt);
+            }
+        });
+
+        labelPointScaled.setText("Output scale");
+
+        pointScaledGroup.add(pointScaledFalseRadio);
+        pointScaledFalseRadio.setSelected(true);
+        pointScaledFalseRadio.setText("Original");
+        pointScaledFalseRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
+            }
+        });
+
+        pointScaledGroup.add(pointScaledTrueRadio);
+        pointScaledTrueRadio.setText("Scaled");
+        pointScaledTrueRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paramActionPerformed(evt);
             }
         });
 
@@ -649,75 +528,80 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                     .addComponent(labelTakePixels1)
                     .addComponent(labelTakePixels2)
                     .addComponent(labelParamW5)
-                    .addComponent(labelTakePixels))
+                    .addComponent(labelTakePixels)
+                    .addComponent(labelTakePixels3)
+                    .addComponent(labelPointScaled))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bgOutputBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pointOutputBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(pointScaledFalseRadio)
+                        .addGap(18, 18, 18)
+                        .addComponent(pointScaledTrueRadio)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(bgOutputBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pointOutputBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(allSlicesFalseRadio)
-                                .addGap(18, 18, 18)
-                                .addComponent(allSlicesTrueRadio))
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(allSlicesFalseRadio)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(allSlicesTrueRadio))
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(addInputSlicesFalseRadio)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(addInputSlicesTrueRadio)))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(skipPixelsText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(takePixelsText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(addInputSlicesFalseRadio)
+                                .addComponent(displayRangeResetFalseRadio)
                                 .addGap(18, 18, 18)
-                                .addComponent(addInputSlicesTrueRadio)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(skipPixelsText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(takePixelsText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(helpTakePixels2)
-                    .addComponent(helpTakePixels1)
-                    .addComponent(jButton10)
-                    .addComponent(jButton9)
-                    .addComponent(helpSkipPixels)
-                    .addComponent(helpTakePixels))
-                .addGap(6, 6, 6))
+                                .addComponent(displayRangeResetTrueRadio)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(labelParamW5)
-                        .addComponent(pointOutputBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton9))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelParamW5)
+                    .addComponent(pointOutputBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(labelParamW6)
-                        .addComponent(bgOutputBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton10))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelPointScaled)
+                    .addComponent(pointScaledFalseRadio)
+                    .addComponent(pointScaledTrueRadio))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(skipPixelsText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelSkipPixels))
-                    .addComponent(helpSkipPixels))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelParamW6)
+                    .addComponent(bgOutputBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(takePixelsText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelTakePixels))
-                    .addComponent(helpTakePixels))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(skipPixelsText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelSkipPixels))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(takePixelsText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelTakePixels))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelTakePixels3)
+                    .addComponent(displayRangeResetFalseRadio)
+                    .addComponent(displayRangeResetTrueRadio))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(allSlicesFalseRadio)
                         .addComponent(labelTakePixels1))
-                    .addComponent(allSlicesTrueRadio)
-                    .addComponent(helpTakePixels1))
+                    .addComponent(allSlicesTrueRadio))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(addInputSlicesTrueRadio)
-                        .addComponent(labelTakePixels2)
-                        .addComponent(addInputSlicesFalseRadio))
-                    .addComponent(helpTakePixels2))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addInputSlicesTrueRadio)
+                    .addComponent(labelTakePixels2)
+                    .addComponent(addInputSlicesFalseRadio))
                 .addContainerGap())
         );
 
@@ -729,6 +613,10 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         allSlicesTrueRadio.getAccessibleContext().setAccessibleDescription("true:allSlices");
         addInputSlicesTrueRadio.getAccessibleContext().setAccessibleDescription("true:addInputSlices");
         addInputSlicesFalseRadio.getAccessibleContext().setAccessibleDescription("false:addInputSlices");
+        displayRangeResetFalseRadio.getAccessibleContext().setAccessibleDescription("false:resetDisplayRange");
+        displayRangeResetTrueRadio.getAccessibleContext().setAccessibleDescription("true:resetDisplayRange");
+        pointScaledFalseRadio.getAccessibleContext().setAccessibleDescription("false:pointScaled");
+        pointScaledTrueRadio.getAccessibleContext().setAccessibleDescription("true:pointScaled");
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -773,6 +661,9 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         });
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
+        jButton3.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton3.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton3.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -793,7 +684,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(deleteButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -806,18 +697,11 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                         .addComponent(jLabel2)
                         .addComponent(saveButton)
                         .addComponent(deleteButton))
-                    .addComponent(jButton3))
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
         jButton3.getAccessibleContext().setAccessibleDescription("presets");
-
-        helpProfile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Help.png"))); // NOI18N
-        helpProfile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButtonActionPerformed(evt);
-            }
-        });
 
         interactiveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/io/github/kildot/backgroundRemover/res/Tune.png"))); // NOI18N
         interactiveButton.setText("Interactive parameters tuning");
@@ -850,9 +734,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                         .addComponent(interactiveButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(profileWindowButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(helpProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
                         .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -864,7 +746,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -875,8 +757,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
                         .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(interactiveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(profileWindowButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(helpProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(profileWindowButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(12, 12, 12))
         );
 
@@ -929,16 +810,9 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
 
     private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
         try {
-            if (!Desktop.isDesktopSupported()) return;
-            if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) return;
-            Object source = evt.getSource();
-            if (!(source instanceof Accessible)) return;
-            AccessibleContext ctx = ((javax.accessibility.Accessible)source).getAccessibleContext();
-            if (ctx == null) return;
-            String desc = ctx.getAccessibleDescription();
-            if (desc == null) return;
-            Desktop.getDesktop().browse(new URI(Common.HELP_URL + "#" + desc));
-        } catch (Exception ex) {}
+            Desktop.getDesktop().browse(new URI(Common.HELP_URL));
+        } catch (Exception ex) {
+        }
     }//GEN-LAST:event_helpButtonActionPerformed
 
     private void keyVerifyEvent(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_keyVerifyEvent
@@ -980,7 +854,6 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JRadioButton allSlicesTrueRadio;
     private javax.swing.JButton autoAboveNoise;
     private javax.swing.JButton autoBelowPoints;
-    private javax.swing.JButton autoHelp;
     private javax.swing.JLabel autoLabel;
     private javax.swing.JButton autoMiddle;
     private javax.swing.JTextField backgroundStartRadiusText;
@@ -989,21 +862,8 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JButton deleteButton;
     private javax.swing.JRadioButton displayRangeResetFalseRadio;
     private javax.swing.JRadioButton displayRangeResetTrueRadio;
-    private javax.swing.JButton helpProfile;
-    private javax.swing.JButton helpSkipPixels;
-    private javax.swing.JButton helpTakePixels;
-    private javax.swing.JButton helpTakePixels1;
-    private javax.swing.JButton helpTakePixels2;
     private javax.swing.JToggleButton interactiveButton;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -1016,6 +876,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.JLabel labelParamW4;
     private javax.swing.JLabel labelParamW5;
     private javax.swing.JLabel labelParamW6;
+    private javax.swing.JLabel labelPointScaled;
     private javax.swing.JLabel labelSkipPixels;
     private javax.swing.JLabel labelTakePixels;
     private javax.swing.JLabel labelTakePixels1;
@@ -1025,6 +886,9 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     private javax.swing.ButtonGroup originalSlicesGroup;
     private javax.swing.JComboBox<String> pointOutputBox;
     private javax.swing.JTextField pointRadiusText;
+    private javax.swing.JRadioButton pointScaledFalseRadio;
+    private javax.swing.ButtonGroup pointScaledGroup;
+    private javax.swing.JRadioButton pointScaledTrueRadio;
     private javax.swing.JComboBox<String> presetsComboBox;
     private javax.swing.JToggleButton profileWindowButton;
     private javax.swing.JButton saveButton;
@@ -1039,32 +903,32 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     // End of variables declaration//GEN-END:variables
     // </editor-fold>
 
-    private void setSkipTakeVisible(boolean visible) {
+    private void setNetSignalVisible(int pixelOutput) {
+        boolean visible = Params.isNetSignalActive(pixelOutput);
         labelSkipPixels.setVisible(visible);
         labelTakePixels.setVisible(visible);
-        helpSkipPixels.setVisible(visible);
-        helpTakePixels.setVisible(visible);
         skipPixelsText.setVisible(visible);
         takePixelsText.setVisible(visible);
+        labelPointScaled.setVisible(visible);
+        pointScaledTrueRadio.setVisible(visible);
+        pointScaledFalseRadio.setVisible(visible);
         this.pack();
     }
 
     private void setInteractiveVisible(boolean visible) {
         profileWindowButton.setVisible(visible);
-        helpProfile.setVisible(visible);
         interactiveButton.setVisible(!visible);
         autoBelowPoints.setVisible(visible);
         autoMiddle.setVisible(visible);
         autoAboveNoise.setVisible(visible);
         autoLabel.setVisible(visible);
-        autoHelp.setVisible(visible);
         this.pack();
     }
 
     @Override
     public final void parametersChanged(long fields, boolean self) {
         if ((fields & Params.POINT_OUTPUT) != 0) {
-            setSkipTakeVisible(Params.isSkipTakePixelsNeeded(globalParams.pointOutput));
+            setNetSignalVisible(globalParams.pointOutput);
         }
         if ((fields & Params.INTERACTIVE) != 0) {
             setInteractiveVisible(globalParams.interactive);
@@ -1078,6 +942,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
         parameterChangedText(fields, Params.SLOPE, localParams.slope, slopeText);
         parameterChangedText(fields, Params.Y_INTERCEPT, localParams.yIntercept, yInterceptText);
         parameterChangedComboBox(fields, Params.POINT_OUTPUT, localParams.pointOutput, pointOutputBox);
+        parameterChangedBoolRadio(fields, Params.POINT_SCALED, localParams.pointScaled, pointScaledFalseRadio, pointScaledTrueRadio);
         parameterChangedComboBox(fields, Params.BG_OUTPUT, localParams.bgOutput, bgOutputBox);
         parameterChangedText(fields, Params.SKIP_PIXELS, localParams.skipPixels, skipPixelsText);
         parameterChangedText(fields, Params.TAKE_PIXELS, localParams.takePixels, takePixelsText);
@@ -1201,7 +1066,16 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     }
 
     private void closeWindow(boolean canceled) {
+        if (!canceled && localParams.pointScaled) {
+            int response = JOptionPane.showConfirmDialog(this, "Do you really want to get a scaled point values?", "Confirm scaled points", JOptionPane.YES_NO_OPTION);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
         globalParams.set(localParams, false, this);
+        if (!canceled) {
+            localParams.storePreset(Common.MRU_PARAMS);
+        }
         this.canceled = canceled;
         setVisible(false);
         if (secondaryLoop != null) {

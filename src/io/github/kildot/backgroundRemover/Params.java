@@ -17,16 +17,101 @@ import javax.swing.JOptionPane;
 
 public class Params {
 
+    private static class V0 {
+
+        static final int POINT_OUTPUT_WHITE = 0;
+        static final int POINT_OUTPUT_BLACK = 1;
+        static final int POINT_OUTPUT_ORIGINAL = 2;
+        static final int POINT_OUTPUT_RESULT = 3;
+        static final int POINT_OUTPUT_NET = 4;
+        static final int POINT_OUTPUT_NET_SCALED = 5;
+        static final int POINT_OUTPUT_NET_MODE = 6;
+        static final int POINT_OUTPUT_NET_SCALED_MODE = 7;
+        static final int POINT_OUTPUT_NET_MEDIAN = 8;
+        static final int POINT_OUTPUT_NET_SCALED_MEDIAN = 9;
+
+        static final String[] POINT_OUTPUTS = new String[] {
+            "White",
+            "Black",
+            "Original",
+            "Degree of matching",
+            "Net signal (average)",
+            "Net signal scaled (average)",
+            "Net signal (mode)",
+            "Net signal scaled (mode)",
+            "Net signal (median)",
+            "Net signal scaled (median)"
+        };
+        
+        static boolean convert(Properties properties, String prefix) {
+            try {
+                String pointOutputStr = (String) properties.get(prefix + "pointOutput");
+                int pointOutput = Params.parseEnum(pointOutputStr, POINT_OUTPUTS, -1);
+                boolean pointScaled;
+                switch (pointOutput) {
+                    case POINT_OUTPUT_WHITE:
+                        pointOutput = Params.POINT_OUTPUT_WHITE;
+                        pointScaled = false;
+                        break;
+                    case POINT_OUTPUT_BLACK:
+                        pointOutput = Params.POINT_OUTPUT_BLACK;
+                        pointScaled = false;
+                        break;
+                    case POINT_OUTPUT_ORIGINAL:
+                        pointOutput = Params.POINT_OUTPUT_ORIGINAL;
+                        pointScaled = false;
+                        break;
+                    case POINT_OUTPUT_RESULT:
+                        pointOutput = Params.POINT_OUTPUT_RESULT;
+                        pointScaled = false;
+                        break;
+                    case POINT_OUTPUT_NET:
+                        pointOutput = Params.POINT_OUTPUT_NET;
+                        pointScaled = false;
+                        break;
+                    case POINT_OUTPUT_NET_SCALED:
+                        pointOutput = Params.POINT_OUTPUT_NET;
+                        pointScaled = true;
+                        break;
+                    case POINT_OUTPUT_NET_MODE:
+                        pointOutput = Params.POINT_OUTPUT_NET_MODE;
+                        pointScaled = false;
+                        break;
+                    case POINT_OUTPUT_NET_SCALED_MODE:
+                        pointOutput = Params.POINT_OUTPUT_NET_MODE;
+                        pointScaled = true;
+                        break;
+                    case POINT_OUTPUT_NET_MEDIAN:
+                        pointOutput = Params.POINT_OUTPUT_NET_MEDIAN;
+                        pointScaled = false;
+                        break;
+                    case POINT_OUTPUT_NET_SCALED_MEDIAN:
+                        pointOutput = Params.POINT_OUTPUT_NET_MEDIAN;
+                        pointScaled = true;
+                        break;
+                    default:
+                        return false;
+                }
+                properties.setProperty(prefix + "pointOutput", Integer.toString(pointOutput));
+                properties.setProperty(prefix + "pointScaled", Boolean.toString(pointScaled));
+                properties.setProperty(prefix + "version", Integer.toString(Params.VERSION));
+                return true;
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+
+    }
+
+    static final int VERSION = 1;
+
     static final int POINT_OUTPUT_WHITE = 0;
     static final int POINT_OUTPUT_BLACK = 1;
     static final int POINT_OUTPUT_ORIGINAL = 2;
     static final int POINT_OUTPUT_RESULT = 3;
     static final int POINT_OUTPUT_NET = 4;
-    static final int POINT_OUTPUT_NET_SCALED = 5;
-    static final int POINT_OUTPUT_NET_MODE = 6;
-    static final int POINT_OUTPUT_NET_SCALED_MODE = 7;
-    static final int POINT_OUTPUT_NET_MEDIAN = 8;
-    static final int POINT_OUTPUT_NET_SCALED_MEDIAN = 9;
+    static final int POINT_OUTPUT_NET_MODE = 5;
+    static final int POINT_OUTPUT_NET_MEDIAN = 6;
 
     static final String[] POINT_OUTPUTS = new String[] {
         "White",
@@ -34,11 +119,8 @@ public class Params {
         "Original",
         "Degree of matching",
         "Net signal (average)",
-        "Net signal scaled (average)",
         "Net signal (mode)",
-        "Net signal scaled (mode)",
         "Net signal (median)",
-        "Net signal scaled (median)"
     };
 
     static final int BG_OUTPUT_WHITE = 0;
@@ -65,6 +147,7 @@ public class Params {
 
     // Output parameters
     public int pointOutput;
+    public boolean pointScaled;
     public int bgOutput;
     public int skipPixels;
     public int takePixels;
@@ -85,17 +168,18 @@ public class Params {
     public static final long Y_INTERCEPT = 0x0020;
 
     public static final long POINT_OUTPUT = 0x0040;
-    public static final long BG_OUTPUT = 0x0080;
-    public static final long SKIP_PIXELS = 0x0100;
-    public static final long TAKE_PIXELS = 0x0200;
-    public static final long ALL_SLICES = 0x0400;
-    public static final long ADD_INPUT_SLICES = 0x0800;
+    public static final long POINT_SCALED = 0x0080;
+    public static final long BG_OUTPUT = 0x0100;
+    public static final long SKIP_PIXELS = 0x0200;
+    public static final long TAKE_PIXELS = 0x0400;
+    public static final long ALL_SLICES = 0x0800;
+    public static final long ADD_INPUT_SLICES = 0x1000;
 
-    public static final long PERSISTENT_PARAMETERS_MASK = 0x0FFF;
+    public static final long PERSISTENT_PARAMETERS_MASK = 0x1FFF;
 
-    public static final long SELECT_NOISE = 0x1000;
-    public static final long INTERACTIVE = 0x2000;
-    public static final long PROFILE_WINDOW = 0x4000;
+    public static final long SELECT_NOISE = 0x2000;
+    public static final long INTERACTIVE = 0x4000;
+    public static final long PROFILE_WINDOW = 0x8000;
 
     public static final long EVENT_AUTO_FIT = 0x0001;
 
@@ -109,6 +193,7 @@ public class Params {
         yIntercept = 0.0;
 
         pointOutput = POINT_OUTPUT_WHITE;
+        pointScaled = false;
         bgOutput = POINT_OUTPUT_BLACK;
         skipPixels = 2;
         takePixels = 3;
@@ -130,6 +215,7 @@ public class Params {
         yIntercept = src.yIntercept;
 
         pointOutput = src.pointOutput;
+        pointScaled = src.pointScaled;
         bgOutput = src.bgOutput;
         skipPixels = src.skipPixels;
         takePixels = src.takePixels;
@@ -155,6 +241,7 @@ public class Params {
         if (yIntercept != src.yIntercept) flags |= Y_INTERCEPT;
 
         if (pointOutput != src.pointOutput) flags |= POINT_OUTPUT;
+        if (pointScaled != src.pointScaled) flags |= POINT_SCALED;
         if (bgOutput != src.bgOutput) flags |= BG_OUTPUT;
         if (skipPixels != src.skipPixels) flags |= SKIP_PIXELS;
         if (takePixels != src.takePixels) flags |= TAKE_PIXELS;
@@ -169,6 +256,8 @@ public class Params {
     }
 
     private void toProperties(Properties props, String prefix, String name) {
+        props.setProperty(prefix + "version", Integer.toString(VERSION));
+
         props.setProperty(prefix + "windowRadius", Integer.toString(windowRadius));
         props.setProperty(prefix + "pointRadius", Integer.toString(pointRadius));
         props.setProperty(prefix + "backgroundStartRadius", Integer.toString(backgroundStartRadius));
@@ -178,6 +267,7 @@ public class Params {
         props.setProperty(prefix + "yIntercept", Double.toString(yIntercept));
 
         props.setProperty(prefix + "pointOutput", Integer.toString(pointOutput));
+        props.setProperty(prefix + "pointScaled", Boolean.toString(pointScaled));
         props.setProperty(prefix + "bgOutput", Integer.toString(bgOutput));
         props.setProperty(prefix + "skipPixels", Integer.toString(skipPixels));
         props.setProperty(prefix + "takePixels", Integer.toString(takePixels));
@@ -211,10 +301,12 @@ public class Params {
             case "yIntercept":
                 yIntercept = Double.parseDouble(value);
                 break;
-            case "pointOutput": {
+            case "pointOutput":
                 pointOutput = parseEnum(value, POINT_OUTPUTS, POINT_OUTPUT_WHITE);
                 break;
-            }
+            case "pointScaled":
+                pointScaled = Boolean.parseBoolean(value);
+                break;
             case "bgOutput":
                 bgOutput = parseEnum(value, BG_OUTPUTS, POINT_OUTPUT_BLACK);
                 break;
@@ -291,6 +383,9 @@ public class Params {
             case "resetDisplayRange":
                 resetDisplayRange = value;
                 return true;
+            case "pointScaled":
+                pointScaled = value;
+                return true;
             case "allSlices":
                 allSlices = value;
                 return true;
@@ -361,12 +456,11 @@ public class Params {
         takePixels = range(takePixels, 0, 32);
     }
 
-    public static boolean isSkipTakePixelsNeeded(int pixelOutput) {
-        return true
-                && pixelOutput != Params.POINT_OUTPUT_BLACK
-                && pixelOutput != Params.POINT_OUTPUT_WHITE
-                && pixelOutput != Params.POINT_OUTPUT_ORIGINAL
-                && pixelOutput != Params.POINT_OUTPUT_RESULT
+    public static boolean isNetSignalActive(int pixelOutput) {
+        return false
+                || pixelOutput == Params.POINT_OUTPUT_NET
+                || pixelOutput == Params.POINT_OUTPUT_NET_MODE
+                || pixelOutput == Params.POINT_OUTPUT_NET_MEDIAN
                 ;
     }
 
@@ -462,7 +556,7 @@ public class Params {
         }
     }
 
-    private static Properties properties = new Properties();;
+    private static Properties properties = new Properties();
     private static final String PRESETS_PATH = IJ.getDirectory("preferences") + "/" + Params.class.getName() + ".txt";
     private static boolean propertiesBroken = false;
 
@@ -517,16 +611,41 @@ public class Params {
         Arrays.sort(arr);
         return arr;
     }
+    
+    private int getVersion(String prefix) {
+        String versionStr = (String) properties.get(prefix + "version");
+        int version = 0;
+        if (versionStr != null) {
+            try {
+                version = Integer.parseInt(versionStr);
+            } catch (NumberFormatException ex) {
+            }
+        }
+        return version;
+    }
 
     private boolean loadUnchecked(String name) {
         String prefix = getPrefix(name);
         if (prefix == null) {
             return false;
         }
+        boolean versionOk;
+        switch (getVersion(prefix)) {
+            case 0:
+                versionOk = V0.convert(properties, prefix);
+                break;
+            case 1:
+                versionOk = true;
+                break;
+            default:
+                versionOk = false;
+                break;
+        }
+        if (!versionOk) return false;
         for (String key : propertiesKeys()) {
             if (key.startsWith(prefix)) {
                 try {
-                    setParamUnchecked(key.substring(prefix.length()), (String)properties.get(key));
+                    setParamUnchecked(key.substring(prefix.length()), (String) properties.get(key));
                 } catch (Exception ex) {
                     return false;
                 }
@@ -593,7 +712,7 @@ public class Params {
         JOptionPane.showMessageDialog(null, text, "Preset error", JOptionPane.ERROR_MESSAGE);    
     }
 
-    private int parseEnum(String value, String[] arr, int def) {
+    private static int parseEnum(String value, String[] arr, int def) {
         for (int i = 0; i < arr.length; i++) {
             if (arr[i].equals(value)) {
                 return i;
