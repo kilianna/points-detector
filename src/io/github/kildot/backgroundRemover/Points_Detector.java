@@ -78,6 +78,38 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
         closed();
     }
 
+    private void resetDisplayRange(ImagePlus sourceImage) {
+        double min = sourceImage.getDisplayRangeMin();
+        double max = sourceImage.getDisplayRangeMax();
+        String info = min + " ÷ " + max + "  ->  0 ÷ " + (max - min);
+        IJ.setMinAndMax(sourceImage, 0, max - min);
+        ImageStack stack = sourceImage.getStack();
+        int count = stack != null ? stack.size() : 1;
+        for (int i = 0; i < count; i++) {
+            ImageProcessor ip = stack != null ? stack.getProcessor(i + 1) : sourceImage.getProcessor();
+            resetDisplayRangePixels(ip, (int)(min + 0.5));
+        }
+        Utils.addProcessingInfo(sourceImage, sourceImage, "Reset Display Range: " + info);
+        sourceImage.updateAndDraw();
+    }
+
+    private void resetDisplayRangePixels(ImageProcessor ip, int colorOffset) {
+        int ip_width = ip.getWidth();
+        int ip_height = ip.getHeight();
+        if (ip instanceof ShortProcessor) {
+            ShortProcessor processor = (ShortProcessor)ip;
+            short[] px = (short[])processor.getPixels();
+            for (int y = 0; y < ip_height; y++) {
+                for (int x = 0; x < ip_width; x++) {
+                    int v = (int)px[x + ip_width * y] & 0xFFFF;
+                    px[x + ip_width * y] = (short)Math.max(0, v - colorOffset);
+                }
+            }
+        } else {
+            IJ.log("Image format not supported! Only 16-bit.");
+        }
+    }
+    
     private void imageProcess() {
         logMethod();
         ImagePlus outputImage;
@@ -112,6 +144,9 @@ public class Points_Detector implements PlugIn, RoiListener, Params.Listener {
             outputImage = new ImagePlus("Output", r);
         }
         Utils.addProcessingInfo(sourceImage, outputImage, "Points Detector: " + globalParams.toString());
+        if (globalParams.resetDisplayRange) {
+            resetDisplayRange(outputImage);
+        }
         outputImage.show();
     }
 

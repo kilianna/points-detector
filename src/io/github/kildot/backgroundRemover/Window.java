@@ -1073,7 +1073,7 @@ public class Window extends javax.swing.JFrame implements Params.Listener {
     }
 
     private void closeWindow(boolean canceled) {
-        if (!canceled && localParams.pointScaled) {
+        if (!canceled && localParams.pointScaled && Params.isNetSignalActive(globalParams.pointOutput)) {
             int response = JOptionPane.showConfirmDialog(this, "Do you really want to get a scaled point values?", "Confirm scaled points", JOptionPane.YES_NO_OPTION);
             if (response == JOptionPane.NO_OPTION) {
                 return;
