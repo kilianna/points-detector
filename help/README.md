@@ -12,6 +12,15 @@ The program has two modes: automatic and manual. In automatic mode, we can enter
 
 ![main_window_interactive](img/main_window_interactive.PNG)
 
+
+![NOISE](img/Preview.jpg)
+
+The plugin places annotations regarding the operations performed on the file. They can be viewed by going to **Image -> Show Info...**.
+
+![Annotations](img/annotations.PNG)
+
+Please note that due to the specific nature of ImageJ, annotations are displayed in random order. They should be read in the order consistent with the numbering given in square brackets.
+
 ## Automatic mode
 
 The automatic mode is easy to use and performs transformations based on user-provided parameters. These parameters can be entered manually or loaded from a file.
@@ -93,41 +102,4 @@ Dodatkowe opcje:
 
 ## Manual mode
 
-W trybie manualnym parametry możemy ustalać na bieżąco. Po wybraniu opcji Manual mode i kliknięciu OK przechodzimy do trybu manualnego ustalania parametrów. Otwiera się seria okien. W pierwszej kolejności w Menu ustalamy wielkość okna skanującego (Scaning window size). 
-
-TIP: Im gęściej rozmieszczone punkty tym rozmiar okna powinien być mniejszy.
-
-Następnie podajemy przewidywany rozmiar punktów.
-
-TIP: Można przybliżyć obraz, aby orientacyjnie ocenić wielkość punktów.
-
-![MANUAL](img/Manual_mode_windows.jpg)
-
-Krok kolejny to zaznaczenie w oknie Noise obszarów, które zawierają wyłącznie szum/tło. W tym celu można użyć dowolnego narządzia wyboru z ImageJ. Aby dodać kolejne obszary należy trzymać wciśnięty przycisk SHIFT. 
-
-TIP: Ważne jest aby zaznaczyć obszary tła o jak najbardziej zróżnicowanej jasności.
-
-Wybrane obszary zostają zaznaczone na wykresie w oknie Plot. Na poniższym wykresie poszczególne grupy punktów odpowiadają obszarom oznaczonym na zdjęciu. Warto zwrócić uwagę na różne poziomy jasności zaznaczonych obszarów
-
-![NOISE](img/Noise_selection.jpg)
-
-W kolejnym etapie w oknie Points za pomoca narzędzia wyboru punktów z ImageJ zaznaczamy punkty. Oznaczone punkty pojawiają się na wykresie w oknie Plot.
-
-![POINTS](img/Points_selection.jpg)
-
-Aby zaznaczać kolejne punkty należy trzymać wciśnięty przycisk SHIFT. 
-
-TIP: Ważne jest oznaczenie szczególnie tych punktów, które w najmniejszym stopniu odróżniają się od otaczającego je tła. W tym celu warto powiększyć sobie wybrane obszary obrazu.
-
-![NOISE](img/Points_selection2.jpg)
-
-Po zaznaczeniu obszarów szumu i punktów możemy dopasować ręcznie prostą odcinającą szum od punktów. (Można albo po prostu przesunąć istniejącą już na wykresie prostą, albo narysować właśną za pomocą narzędzia rysowania prostej z ImageJ.) Parametry prostej pokazują się na bieżąco w oknie Menu, natomiast obraz wynikowy można podejrzeć w oknie Preview. Przesuwając pasek na dole okna można podejrzeć porównanie obrazu wejściowego i wynikowego.
-
-![NOISE](img/Preview.jpg)
-
-Plugin umieszcza adnotacje odnośnie wykonanych na pliku operacji. Można je prześledzić wchodząc w **Image -> Show Info...**.
-
-![Annotations](img/annotations.PNG)
-
-Należy mieć na uwadze, że ze względu na pewną specyfikę działania ImageJ adnotacje wyświetlają się w losowej kolejności. Należy je odczytywać w kolejności zgodnej z podaną po prawej stronie numeracją.
 
