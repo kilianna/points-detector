@@ -15,7 +15,7 @@ Należy mieć na uwadze, że ze względu na pewną specyfikę działania ImageJ 
 ## Background Remover
 Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
 
-![MENU](img/MainWindow.PNG)
+![MENU](img/main_window.PNG)
 
 Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym możemy albo wpisać w poszczególnych polach ustalone wcześniej parametry, bądź też wczytać zapisany wcześniej zestaw parametrów (Preset).  Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. Do trybu manualnego przechodzimy za pomocą przycisku **Interactive parameters tuning**.
 
