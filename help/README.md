@@ -8,7 +8,9 @@ W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka alb
 
 Plugin umieszcza adnotacje odnośnie wykonanych na pliku operacji. Można je prześledzić wchodząc w **Image -> Show Info...**.
 
-![MENU](img/annotations.PNG)
+![Annotations](img/annotations.PNG)
+
+Należy mieć na uwadze, że ze względu na pewną specyfikę działania ImageJ adnotacje wyświetlają się w losowej kolejności. Należy je odczytywać w kolejności zgodnej z podaną po prawej stronie numeracją.
 
 ## Background Remover
 Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
