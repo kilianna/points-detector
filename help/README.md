@@ -26,7 +26,7 @@ Aby przejść do utworzonego wcześniej presetu wystarczy wybrać go z listy roz
 
 ### Preliminary parameters
 
-Parametry wstępne
+Parametry wstępne określające wielkość okna skanującego oraz orientacyjną wielkość obietków na obrazie. 
 
 ![main_window_preliminary](img/main_window_preliminary.PNG)
 
@@ -42,8 +42,8 @@ $$
   y = a*x+b
 $$
 
-- **Slope** - współczynnik kierunkowy prostej dyskryminacji;
-- **Y-Intercept** - punkt przecięcia prostej dyskryminacyji z osią OY.
+- **Slope** - współczynnik kierunkowy prostej dyskryminacji (a);
+- **Y-Intercept** - punkt przecięcia prostej dyskryminacyji z osią OY (b).
 
 ![main_window_line](img/main_window_line.PNG)
 
