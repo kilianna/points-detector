@@ -6,9 +6,11 @@ Aby móc używać zestawu narzędzi do przetwarzania obrazów z mikroskopu w cel
 
 W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Obraz (lub stos) powinien być 16-bitowy w odcieniach szarości. Plugin uruchamia się domyślnie dla aktywnego okna. 
 
+![main_window](img/main_window.PNG)
+
 Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym możemy albo wpisać w poszczególnych polach ustalone wcześniej parametry, bądź też wczytać zapisany wcześniej zestaw parametrów (Preset).  Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. Do trybu manualnego przechodzimy za pomocą przycisku **Interactive parameters tuning** znajdującego się w lewej górnej części okna.
 
-![MENU](img/main_window.PNG)
+![main_window_interactive](img/main_window_interactive.PNG)
 
 ## Tryb automatyczny
 
