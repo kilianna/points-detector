@@ -26,11 +26,16 @@ Aby przejść do utworzonego wcześniej presetu wystarczy wybrać go z listy roz
 
 ### Preliminary parameters
 
+![main_window_preliminary](img/main_window_preliminary.PNG)
+
 - **Scanning window radius** - wielkość okna skanującego podana w pikselach;
 - **Point radius** - wielkość punktu podana w pikselach;
 - **Background start radius** - odległość od analizowanego punktu, powyżej której położone piksele traktowane są jako tło.
 
 ### Discrimination line parameters
+
+
+![main_window_line](img/main_window_line.PNG)
 
 Do oddzielenia sygnału od szumu program posługuje się odpowiednio dopasowaną prostą dyskryminacji o równaniu:
 
@@ -42,6 +47,9 @@ $$
 - **Y-Intercept** - punkt przecięcia prostej dyskryminacyji z osią OY.
 
 ### Output parameters
+
+
+![main_window_output](img/main_window_output.PNG)
 
 - **Points** - dostępne na liście rozwijanej opcje wyświetlenia punktów:
   - **White** - punkty wyświetlane na biało;
