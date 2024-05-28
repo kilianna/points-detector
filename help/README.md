@@ -12,12 +12,13 @@ Plugin umieszcza adnotacje odnośnie wykonanych na pliku operacji. Można je prz
 
 Należy mieć na uwadze, że ze względu na pewną specyfikę działania ImageJ adnotacje wyświetlają się w losowej kolejności. Należy je odczytywać w kolejności zgodnej z podaną po prawej stronie numeracją.
 
-## Background Remover
-Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
+Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym możemy albo wpisać w poszczególnych polach ustalone wcześniej parametry, bądź też wczytać zapisany wcześniej zestaw parametrów (Preset).  Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. Do trybu manualnego przechodzimy za pomocą przycisku **Interactive parameters tuning**.
 
 ![MENU](img/main_window.PNG)
 
-Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym możemy albo wpisać w poszczególnych polach ustalone wcześniej parametry, bądź też wczytać zapisany wcześniej zestaw parametrów (Preset).  Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. Do trybu manualnego przechodzimy za pomocą przycisku **Interactive parameters tuning**.
+## Tryb automatyczny
+
+Prosty w obsłudze tryb automatyczny służący do wykonania przekształceń zgodnie z podanymi przez użytkownika parametrami. Parametry te można zarówno wpisać ręcznie jak i wczytać z pliku.
 
 ### Presets
 
