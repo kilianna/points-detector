@@ -2,11 +2,9 @@
 
 ## Installation and introductory information
 
-To use the microscope image processing toolkit to search for radiation traces, download the BackgroundRemover.jar file and place it in the Plugins directory (a subdirectory of the ImageJ or Figi.app directory). After restarting the program, it should be visible in the drop-down menu in ImageJ: **Plugins -> Background Remover**.
+In order to use the microscope image processing toolkit for separating signal from noise, you will need to download the BackgroundRemover.jar file and place it in the Plugins directory, which is a subdirectory of either the ImageJ or Figi.app directory. After restarting the program, the toolkit will be readily accessible in the drop-down menu under ImageJ: **Plugins -> Background Remover**.
 
-W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Obraz (lub stos) powinien być 16-bitowy w odcieniach szarości. Plugin uruchamia się domyślnie dla aktywnego okna. 
-
-First, you should import the file as a single image or a stack. The image (or stack) must be in 16-bit grayscale. By default, the plugin runs for the active window.
+The file should be imported as a single image or a stack. The image (or stack) must be in a 16-bit grayscale. By default, the plugin is run for the active window.
 
 ![main_window](img/main_window.PNG)
 
