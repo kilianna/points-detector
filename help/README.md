@@ -22,6 +22,8 @@ Aby utworzyć nowy preset wystarczy wybrać z listy rozwijanej **Presets** opcj�
 
 Aby przejść do utworzonego wcześniej presetu wystarczy wybrać go z listy rozwijanej **Presets**. Istniejący preset można aktualizować zachowując wprowadzone zmiany przy pomocy przycisku **Save**. Można go również usunąć używająć przycisku **Delete**. Wybranie na liście rozwijanej opcji **[ Recently used ]** spowoduje wczytanie ostatnio stosowanego presetu. Preset może zostać usunięty za pomocą przycisku **Delete**.
 
+![presets](img/presets.PNG)
+
 ### Preliminary parameters
 
 - **Scanning window radius** - wielkość okna skanującego podana w pikselach;
