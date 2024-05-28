@@ -1,20 +1,24 @@
-# Background Remover Help - PL
+# Background Remover Help
 
-## Instalacja i informacje wstępne
+## Installation and introductory information
 
-Aby móc używać zestawu narzędzi do przetwarzania obrazów z mikroskopu w celu wyszukania śladów po promieniowaniu należy pobrać plik BackgroundRemover.jar i umieścić go w katalogu Plugins (podkatalog katalogu ImageJ lub Figi.app). Po ponownym uruchomieniu programu powinien być on widoczny w menu rozwijanym w ImageJ: **Plugins -> Background Remover**.
+To use the microscope image processing toolkit to search for radiation traces, download the BackgroundRemover.jar file and place it in the Plugins directory (a subdirectory of the ImageJ or Figi.app directory). After restarting the program, it should be visible in the drop-down menu in ImageJ: **Plugins -> Background Remover**.
 
 W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka albo stacku. Obraz (lub stos) powinien być 16-bitowy w odcieniach szarości. Plugin uruchamia się domyślnie dla aktywnego okna. 
 
+First, you should import the file as a single image or a stack. The image (or stack) must be in 16-bit grayscale. By default, the plugin runs for the active window.
+
 ![main_window](img/main_window.PNG)
 
-Program może działać w dwóch trybach: automatycznym i manualnym. W trybie automatycznym możemy albo wpisać w poszczególnych polach ustalone wcześniej parametry, bądź też wczytać zapisany wcześniej zestaw parametrów (Preset).  Po kliknięciu OK program automatycznie wyszukuje punkty i otwiera nowe okno z obrazem wynikowym. Do trybu manualnego przechodzimy za pomocą przycisku **Interactive parameters tuning** znajdującego się w lewej górnej części okna.
+The program has two modes: automatic and manual. In automatic mode, we can enter predetermined parameters in individual fields or load a previously saved set of parameters (Preset). After clicking OK, the program automatically searches for points and opens a new window with the resulting image. We switch to manual mode using the "**Interactive parameters tuning**" button located in the upper left part of the window.
 
 ![main_window_interactive](img/main_window_interactive.PNG)
 
-## Tryb automatyczny
+## Automatic mode
 
 Prosty w obsłudze tryb automatyczny służący do wykonania przekształceń zgodnie z podanymi przez użytkownika parametrami. Parametry te można zarówno wpisać ręcznie jak i wczytać z pliku.
+
+The automatic mode is easy to use and performs transformations based on user-provided parameters. These parameters can be entered manually or loaded from a file.
 
 ### Presets
 
