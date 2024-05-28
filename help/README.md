@@ -51,6 +51,8 @@ Jeżeli parametry te nie są znane, należy je ustalić w trybie manualnym.
 
 ### Output parameters
 
+Parametry określające własności obrazu wyjściowego.
+
 ![main_window_output](img/main_window_output.PNG)
 
 - **Points** - dostępne na liście rozwijanej opcje wyświetlenia punktów:
@@ -67,6 +69,8 @@ Jeżeli parametry te nie są znane, należy je ustalić w trybie manualnym.
 Jeżeli wybrana zostanie jedna z opcji **Net signal**, to pojawią się dwa dodatkowe pola z parametrami do ustalenia:
 - **Skip pixels** - różnica między promieniem punktu, dla którego liczone jest tło, a promieniem wewnętrzym pierścienia, na podstawie którego obliczana jest wartość tła.
 - **Take pixels** - różnica między promieniem zewnętrzym a wewnętrznym pierścienia służącego do obliczenia tła.
+
+![net_signal_menu](img/net_signal_menu.PNG)
 
 ![BG ring](img/Background_ring.png)
 
