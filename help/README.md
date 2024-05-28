@@ -12,9 +12,6 @@ The program has two modes: automatic and manual. In automatic mode, we can enter
 
 ![main_window_interactive](img/main_window_interactive.PNG)
 
-
-![NOISE](img/Preview.jpg)
-
 The plugin places annotations regarding the operations performed on the file. They can be viewed by going to **Image -> Show Info...**.
 
 ![Annotations](img/annotations.PNG)
