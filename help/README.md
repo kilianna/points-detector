@@ -8,6 +8,8 @@ W pierwszej kolejności należy wczytać plik w postaci pojedynczego obrazka alb
 
 Plugin umieszcza adnotacje odnośnie wykonanych na pliku operacji. Można je prześledzić wchodząc w **Image -> Show Info...**.
 
+![MENU](img/annotations.PNG)
+
 ## Background Remover
 Główna część pluginu, której zadaniem jest umożliwienie oddzielenia sygnału od szumu w analizowanych obrazach.
 
