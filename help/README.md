@@ -14,27 +14,25 @@ The program has two modes: automatic and manual. In automatic mode, we can enter
 
 ## Automatic mode
 
-Prosty w obsłudze tryb automatyczny służący do wykonania przekształceń zgodnie z podanymi przez użytkownika parametrami. Parametry te można zarówno wpisać ręcznie jak i wczytać z pliku.
-
 The automatic mode is easy to use and performs transformations based on user-provided parameters. These parameters can be entered manually or loaded from a file.
 
 ### Presets
 
-Aby utworzyć nowy preset wystarczy wybrać z listy rozwijanej **Presets** opcję **[ New ]** i po uzupełnieniu wszystkich pól ustalonymi parametrami kliknąć przycisk **Save**. Otworzy się nowe okno, z prośbą o podanie nazwy zapisywanego presetu. Po wybraniu nazwy i zatwierdzeniu utworzony preset pojawi się na rozwijanej liście presetów na górze okna. 
+The new preset can be created by selecting the **[ New ]** option from the **Presets** drop-down list. After all the fields with the set parameters have been completed, the **Save** button should be clicked. A new window will open, asking for the name of the preset being saved. Once a name is selected and confirmed, the created preset will appear in the preset drop-down list at the top of the window.
 
-Aby przejść do utworzonego wcześniej presetu wystarczy wybrać go z listy rozwijanej **Presets**. Istniejący preset można aktualizować zachowując wprowadzone zmiany przy pomocy przycisku **Save**. Można go również usunąć używająć przycisku **Delete**. Wybranie na liście rozwijanej opcji **[ Recently used ]** spowoduje wczytanie ostatnio stosowanego presetu. Preset może zostać usunięty za pomocą przycisku **Delete**.
+To access a previously created preset, it can be selected from the **Presets** drop-down list. The existing preset can be updated while maintaining the changes made using the **Save** button. By selecting **[Recently used]** from the drop-down list, the most recently used preset will be loaded. The preset can be deleted using the **Delete** button.
 
 ![presets](img/presets.PNG)
 
 ### Preliminary parameters
 
-Parametry wstępne określające wielkość okna skanującego oraz orientacyjną wielkość obietków na obrazie. 
+Preliminary parameters determine the size of the scanning window and the approximate size of objects in the image.
 
 ![main_window_preliminary](img/main_window_preliminary.PNG)
 
-- **Scanning window radius** - wielkość okna skanującego podana w pikselach (połowa długości boku kwadratu);
-- **Point radius** - wielkość punktu podana w pikselach (promień);
-- **Background start radius** - odległość od analizowanego punktu, powyżej której położone piksele traktowane są jako tło (odległość ta powinna być większa niż **Point radius**).
+- **Scanning window radius** - the size of the scanning window in pixels (half the length of the side of the square);
+- **Point radius** - point size in pixels (radius);
+- **Background start radius** - distance from the analyzed point, above which pixels located are treated as background (this distance should be greater than **Point radius**).
 
 ### Discrimination line parameters
 
