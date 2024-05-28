@@ -36,14 +36,14 @@ Preliminary parameters determine the size of the scanning window and the approxi
 
 ### Discrimination line parameters
 
-Do oddzielenia sygnału od szumu program posługuje się odpowiednio dopasowaną prostą dyskryminacji o równaniu:
+To separate the signal from the noise, the program uses an appropriately adjusted discrimination line with the equation:
 
 $$
   y = a*x+b
 $$
 
-- **Slope** - współczynnik kierunkowy prostej dyskryminacji (a);
-- **Y-Intercept** - punkt przecięcia prostej dyskryminacyji z osią OY (b).
+- **Slope** - slope coefficient of simple discrimination (a);
+- **Y-Intercept** - the point of intersection of the discrimination line with the OY axis (b).
 
 ![main_window_line](img/main_window_line.PNG)
 
@@ -51,7 +51,7 @@ Jeżeli parametry te nie są znane, należy je ustalić w trybie manualnym.
 
 ### Output parameters
 
-Parametry określające własności obrazu wyjściowego.
+If these parameters are not known, they should be set in manual mode.
 
 ![main_window_output](img/main_window_output.PNG)
 
