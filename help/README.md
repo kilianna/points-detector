@@ -99,4 +99,13 @@ Additional options:
 
 ## Manual mode
 
+Tryb manualny pozwala na optymalizację parametrów wejściowych oraz przede wszystkim parametrów discrimination line. Praca w trybie manualnym odbywa się na aktualnie aktywnytm obrazie (lub obrazie w stacku). Aby przejść do trybu manualnego należy wcisnąć przycisk "**Interactive parameters tuning**" zlokalizowany w górnym prawym rogu okna.
+
+![main_window_interactive](img/main_window_interactive.PNG)
+
+Po wciśnięciu tego prezycisku program automatycznie przechodzi do menu trybu manualnego oraz otwiera dwa dodatkowe okna: **Preview** oraz **Plot**.
+
+![main_window_interactive](img/menu_manual.PNG)
+![main_window_interactive](img/preview.PNG)
+![main_window_interactive](img/plot.PNG)
 
