@@ -98,14 +98,23 @@ Additional options:
 - **Display range**: for the selected image (or stack), the display range can either remain unchanged (**Keep**) or be reset so that a pixel value of 0 corresponds to black (**Reset** ). This transformation will change the absolute pixel values ​​but retain their relative values. For example, if the basic display range is 1746.0 - 15951.0, where 1746.0 corresponds to the darkest pixel in the image (black), and 15951.0 corresponds to the brightest pixel (white), then after the transformation, the pixels will take values ​​in the range 0 - 14205.0. The value of each pixel in each of the images in the stack has been reduced by 1746.0, and now black pixels have a value of 0, while white pixels have a value of 14205.0.
 
 ## Manual mode
-
-Tryb manualny pozwala na optymalizację parametrów wejściowych oraz przede wszystkim parametrów discrimination line. Praca w trybie manualnym odbywa się na aktualnie aktywnytm obrazie (lub obrazie w stacku). Aby przejść do trybu manualnego należy wcisnąć przycisk "**Interactive parameters tuning**" zlokalizowany w górnym prawym rogu okna.
+In manual mode, you can optimize input parameters and, most importantly, the discrimination line parameters. Working in manual mode is done on the currently active image (or active image in a stack). To switch to manual mode, click the "**Interactive parameters tuning**" button located in the upper right corner of the window.
 
 ![main_window_interactive](img/main_window_interactive.PNG)
 
-Po wciśnięciu tego prezycisku program automatycznie przechodzi do menu trybu manualnego oraz otwiera dwa dodatkowe okna: **Preview** oraz **Plot**.
+After pressing this button, the program automatically goes to the manual mode menu and opens two additional windows: **Preview** and **Plot**.
 
 ![menu_manual](img/menu_manual.PNG)
+
+In the manual mode window, you will notice that the "**Interactive parameters tuning**" button has been replaced by the "**Profile plot window**" button, which opens an additional window displaying profiles for individual points. Furthermore, in the **Discrimination line parameters** section, there are additional options related to curve fitting (**Auto fitting**).
+
 ![preview](img/preview.PNG)
+
+The **Preview** window is a stack of two images. The first image shows a preview of the predicted result, while the second image is the original input image. This allows for a real-time comparison between the input and output images. 
+
+The **Plot** window initially contains only a chart template used to establish the discrimination line parameters.
+
 ![plot_empty](img/plot_empty.PNG)
+
+### Algorithm for setting line and preliminary parameters
 
