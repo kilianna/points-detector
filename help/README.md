@@ -105,7 +105,7 @@ Tryb manualny pozwala na optymalizację parametrów wejściowych oraz przede wsz
 
 Po wciśnięciu tego prezycisku program automatycznie przechodzi do menu trybu manualnego oraz otwiera dwa dodatkowe okna: **Preview** oraz **Plot**.
 
-![main_window_interactive](img/menu_manual.PNG)
-![main_window_interactive](img/preview.PNG)
-![main_window_interactive](img/plot.PNG)
+![menu_manual](img/menu_manual.PNG)
+![preview](img/preview.PNG)
+![plot_empty](img/plot_empty.PNG)
 
