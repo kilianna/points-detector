@@ -148,21 +148,37 @@ Additional options:
 ## Manual mode
 In manual mode, you can optimize input parameters and, most importantly, the discrimination line parameters. Working in manual mode is done on the currently active image (or active image in a stack). To switch to manual mode, click the "**Interactive parameters tuning**" button located in the upper right corner of the window.
 
-![main_window_interactive](img/main_window_interactive.PNG)
 
-After pressing this button, the program automatically goes to the manual mode menu and opens two additional windows: **Preview** and **Plot**.
+<p align="center">
+<img alt="main_window_interactive" src="img/main_window_interactive.PNG"/><br/>
+Interactive parameters mode button
+</p>
 
-![menu_manual](img/menu_manual.PNG)
+
+After pressing this button, plugin automatically goes to the manual mode menu and opens two additional windows: **Preview** and **Plot**.
+
+<p align="center">
+<img alt="menu_manual" src="img/menu_manual.PNG"/><br/>
+Manual mode - main window
+</p>
 
 In the manual mode window, you will notice that the "**Interactive parameters tuning**" button has been replaced by the "**Profile plot window**" button, which opens an additional window displaying profiles for individual points. Furthermore, in the **Discrimination line parameters** section, there are additional options related to curve fitting (**Auto fitting**).
 
-![preview](img/preview.PNG)
+<p align="center">
+<img alt=preview" src="img/preview.PNG"/><br/>
+Preview window
+</p>
+
 
 The **Preview** window is a stack of two images. The first image shows a preview of the predicted result, while the second image is the original input image. This allows for a real-time comparison between the input and output images. 
 
 The **Plot** window initially contains only a chart template used to establish the discrimination line parameters.
 
-![plot_empty](img/plot_empty.PNG)
+<p align="center">
+<img alt=plot_empty" src="img/plot_empty.PNG"/><br/>
+Empty plot window
+</p>
+
 
 ### Algorithm for setting line and preliminary parameters
 
@@ -188,19 +204,24 @@ The default selection tool in ImageJ for choosing background areas is the oval. 
 
 In the Preview window, you can select the background both in the original image and in the preview image.
 
-![background_selection](img/background_selection.PNG)
-
+<p align="center">
+<img alt=background_selection" src="img/background_selection.PNG"/><br/>
 Sample image with the selected background
+</p>
+
 
 The selected background points will appear on the plot as blue circles.
 
-![background_selection_plot](img/background_selection_plot.PNG)
-
+<p align="center">
+<img alt=background_selection_plot" src="img/background_selection_plot.PNG"/><br/>
 Background points plotted on the graph (blue points)
+</p>
 
-![background_plot_correlation](img/background_plot_correlation.PNG)
+<p align="center">
+<img alt=background_plot_correlation" src="img/background_plot_correlation.PNG"/><br/>
+Background points selected in the image transferred to the chart
+</p>
 
-Background points selected in the image transferred to the chart.
 
 #### Marking of signal points
 
