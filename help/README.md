@@ -136,8 +136,11 @@ In the main "**Parameters**" window, input the initial conditions under "**Preli
 
 Select the areas in the image that you consider to be the background. Make sure not to include the part related to the signal. It's best to choose areas with the most varied intensities and those close to the signal we want to isolate.
 
-Domyślnym narzędziem ImageJ służącym do zaznaczania obszarów tła jest owal. Można zmienić to na narzędzie na inne dowolne narzędzia zaznaczania w ImageJ (Rectangle, Polygon selections Freehand selections). Możliwe jest użycie różnych narzędzi na różnych obszarach obrazu. Aby zaznaczyć więcej niż jeden obszar należy użyć klawisza SHIFT. Zaznaczony obszar można przesuwać za pomoca myszki. 
+The default selection tool in ImageJ for choosing background areas is the oval. You have the option to switch this tool to any other selection tools in ImageJ (Rectangle, Polygon selections, Freehand selections). It is possible to use different tools on different areas of the image. When you need to select more than one area, simply use the SHIFT key. You can move the previously selected area using the mouse. To delete selected background areas, use the right ALT key. Additionally, you can access the tools from **Edit -> Selection**.
 
 #### Marking of signal points
+
+
+
 #### Establishing discrimination line parameters
 #### Determining the output parameters
