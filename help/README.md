@@ -118,3 +118,5 @@ The **Plot** window initially contains only a chart template used to establish t
 
 ### Algorithm for setting line and preliminary parameters
 
+
+
