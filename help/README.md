@@ -6,15 +6,28 @@ In order to use the microscope image processing toolkit for separating signal fr
 
 The file should be imported as a single image or a stack. The image (or stack) must be in a 16-bit grayscale. By default, the plugin is run for the active window.
 
-![main_window](img/main_window.PNG)
+<p align="center">
+<img alt="main_window" src="img/main_window.PNG"/><br/>
+Main window
+</p>
+
 
 The program has two modes: automatic and manual. In automatic mode, we can enter predetermined parameters in individual fields or load a previously saved set of parameters (Preset). After clicking OK, the program automatically searches for points and opens a new window with the resulting image. We switch to manual mode using the "**Interactive parameters tuning**" button located in the upper left part of the window.
 
-![main_window_interactive](img/main_window_interactive.PNG)
+<p align="center">
+<img alt="main_window_interactive" src="img/main_window_interactive.PNG"/><br/>
+Interactive parameters tuning button
+</p>
+
 
 The plugin places annotations regarding the operations performed on the file. They can be viewed by going to **Image -> Show Info...**.
 
-![Annotations](img/annotations.PNG)
+
+<p align="center">
+<img alt="Annotations" src="img/annotations.PNG"/><br/>
+Example of annotations
+</p>
+
 
 Please note that due to the specific nature of ImageJ, annotations are displayed in random order. They should be read in the order consistent with the numbering given in square brackets.
 
@@ -28,14 +41,22 @@ The new preset can be created by selecting the **[ New ]** option from the **Pre
 
 To access a previously created preset, it can be selected from the **Presets** drop-down list. The existing preset can be updated while maintaining the changes made using the **Save** button. By selecting **[Recently used]** from the drop-down list, the most recently used preset will be loaded. The preset can be deleted using the **Delete** button.
 
-![presets](img/presets.PNG)
+<p align="center">
+<img alt="Presets" src="img/presets.PNG"/><br/>
+Presets list
+</p>
 
 ### Preliminary parameters
 
 Preliminary parameters determine the size of the scanning window and the approximate size of objects in the image.
 
-![main_window_preliminary](img/main_window_preliminary.PNG)
 
+<p align="center">
+<img alt="main_window_preliminary" src="img/main_window_preliminary.PNG"/><br/>
+Preliminary parameters section
+</p>
+
+These parameters include:
 - **Scanning window radius** - the size of the scanning window in pixels (half the length of the side of the square);
 - **Point radius** - point size in pixels (radius);
 - **Background start radius** - distance from the analyzed point, above which pixels located are treated as background (this distance should be greater than **Point radius**).
@@ -51,15 +72,22 @@ $$
 - **Slope** - slope coefficient of simple discrimination (a);
 - **Y-Intercept** - the point of intersection of the discrimination line with the OY axis (b).
 
-![main_window_line](img/main_window_line.PNG)
 
-Jeżeli parametry te nie są znane, należy je ustalić w trybie manualnym.
+<p align="center">
+<img alt="main_window_line" src="img/main_window_line.PNG"/><br/>
+Discrimination line parameters section
+</p>
+
+
+If these parameters are not known, they should be established in manual mode.
 
 ### Output parameters
 
-If these parameters are not known, they should be set in manual mode.
+<p align="center">
+<img alt="main_window_output" src="img/main_window_output.PNG"/><br/>
+Output parameters section
+</p>
 
-![main_window_output](img/main_window_output.PNG)
 
 **Points** - point display options available in the drop-down list:
   - **White** - points displayed in white;
@@ -70,19 +98,36 @@ If these parameters are not known, they should be set in manual mode.
   - **Net signal (mode)** - the pixel value corresponds to the basic pixel value minus the background calculated as the modal value of pixels around a given point;
   - **Net signal (median)** - the pixel value corresponds to the basic pixel value minus the background calculated as the median of pixels around a given point.
 
-![output_points](img/output_points.PNG)
+
+<p align="center">
+<img alt="output_points" src="img/output_points.PNG"/><br/>
+Signal points types list
+</p>
+
 
 If one of the **Net signal** options is selected, two additional fields will appear with parameters to set:
 - **Skip pixels** - the difference between the radius of the point for which the background is calculated and the inner radius of the ring based on which the background value is calculated.
 - **Take pixels** - the difference between the outer and inner radius of the ring used to calculate the background.
 
-![net_signal_menu](img/net_signal_menu.PNG)
 
-![BG ring](img/Background_ring.png)
+<p align="center">
+<img alt="net_signal_menu" src="img/net_signal_menu.PNG"/><br/>
+Net signal parameters
+</p>
+
+<p align="center">
+<img alt="Background_ring" src="img/Background_ring.PNG"/><br/>
+Net signal parameters explanation
+</p>
+
 
 When one of the three versions of "Net signal" is selected, the "Scaled" option can also be chosen, which extends the pixel values to the entire display range and increases the contrast in the image. However, it's important to note that using this option will alter both the absolute and relative relationships between individual pixel values. It is recommended to use this mainly for visual purposes.
 
-![Net signal vs scaled](img/Net_vs_scaled.png)
+
+<p align="center">
+<img alt="Net_vs_scaled" src="img/Net_vs_scaled.PNG"/><br/>
+Net signal parameters explanation
+</p>
 
 - **Background** - available background display options:
   - **White** - background displayed in white;
@@ -230,9 +275,10 @@ The original intensity of signal points on the black background preview
 
 Intensity of points showing the degree of matching of signal points on black background preview
 
-![net_signal_median_preview](img/net_signal_median_preview.PNG)
-
+<p align="center">
+<img alt="net_signal_median_preview" src="img/net_signal_median_preview.PNG"/><br/>
 Net signal of points (using median) on black background preview
+</p>
 
 ### Profile plot window
 
