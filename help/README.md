@@ -139,9 +139,11 @@ Select the areas in the image that you consider to be the background. Make sure 
 The default selection tool in ImageJ for choosing background areas is the oval. You have the option to switch this tool to any other selection tools in ImageJ (Rectangle, Polygon selections, Freehand selections). It is possible to use different tools on different areas of the image. When you need to select more than one area, simply use the SHIFT key. You can move the previously selected area using the mouse. To delete selected background areas, use the right ALT key. Additionally, you can access the tools from **Edit -> Selection**.
 
 ![background_selection](img/background_selection.PNG)
+
 Sample image with the selected background
 
 ![background_selection_plot](img/background_selection_plot.PNG)
+
 Background points plotted on graph (blue points)
 
 #### Marking of signal points
