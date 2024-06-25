@@ -214,10 +214,20 @@ Discrimination line fitted using **Above noise** button
 
 ![BW_preview](img/BW_preview.PNG)
 
+White points on black background preview
+
 ![WB_preview](img/WB_preview.PNG)
+
+Black points on white background preview
 
 ![original_preview](img/orginal_preview.PNG)
 
+The original intensity of signal points on black background preview
+
 ![degree_of_matching_preview](img/degree_of_marching_preview.PNG)
 
+Intensity of points showing the degree of matching of signal points on black background preview
+
 ![net_signal_median_preview](img/net_signal_median_preview.PNG)
+
+Net signal of points (using median) on black background preview
