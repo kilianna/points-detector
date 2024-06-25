@@ -116,7 +116,7 @@ Net signal parameters
 </p>
 
 <p align="center">
-<img alt="Background_ring" src="img/Background_ring.PNG"/><br/>
+<img alt="Background_ring" src="img/Background_ring.png"/><br/>
 Net signal parameters explanation
 </p>
 
@@ -125,7 +125,7 @@ When one of the three versions of "Net signal" is selected, the "Scaled" option 
 
 
 <p align="center">
-<img alt="Net_vs_scaled" src="img/Net_vs_scaled.PNG"/><br/>
+<img alt="Net_vs_scaled" src="img/Net_vs_scaled.png"/><br/>
 Net signal parameters explanation
 </p>
 
