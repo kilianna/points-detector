@@ -118,5 +118,18 @@ The **Plot** window initially contains only a chart template used to establish t
 
 ### Algorithm for setting line and preliminary parameters
 
+1. Determining the initial parameters
+2. Marking background areas
+3. Marking of signal points
+4. Establishing discrimination line parameters
+5. Determining the output parameters
+
+#### Determining the initial parameters
+
+In the main "**Parameters**" window, input the initial conditions under "**Preliminary parameters**":
+
+- "**Scanning window radius**" refers to the size of the scanning window in pixels (half the length of the side of the square). The window should ideally be sized so that there is at most one signal element in the scanning window each time, with a comparable amount of background surrounding it. It's important to note that the smaller the scanning window, the shorter the plugin's operating time will be.
+- **Point radius** - point size in pixels (radius). For objects with symmetrical dimensions, please enter their radius in pixels. If the objects are of different sizes, enter the value for the smallest one. If the horizontal and vertical dimensions of the objects you are looking for are significantly different, please provide the value of the smaller dimension. The specified radius must be smaller than the **Scanning window radius**.
+- **Background start radius** - distance from the analyzed point, above which pixels located are treated as background. This distance should be greater than **Point radius** and smaller than the **Scanning window radius**.
 
 
