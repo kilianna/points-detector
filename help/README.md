@@ -132,4 +132,10 @@ In the main "**Parameters**" window, input the initial conditions under "**Preli
 - **Point radius** - point size in pixels (radius). For objects with symmetrical dimensions, please enter their radius in pixels. If the objects are of different sizes, enter the value for the smallest one. If the horizontal and vertical dimensions of the objects you are looking for are significantly different, please provide the value of the smaller dimension. The specified radius must be smaller than the **Scanning window radius**.
 - **Background start radius** - distance from the analyzed point, above which pixels located are treated as background. This distance should be greater than **Point radius** and smaller than the **Scanning window radius**.
 
+#### Marking background areas
 
+s
+
+#### Marking of signal points
+#### Establishing discrimination line parameters
+#### Determining the output parameters
