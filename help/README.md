@@ -150,7 +150,7 @@ The selected background points will appear on the plot as blue circles.
 
 Background points plotted on graph (blue points)
 
-
+![background_plot_correlation](img/background_plot_correlation.PNG)
 
 #### Marking of signal points
 
