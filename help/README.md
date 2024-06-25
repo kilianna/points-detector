@@ -166,14 +166,34 @@ Sample image with the selected signal points
 
 The graph will display yellow circles corresponding to the points selected in the image. The numbers on the image will match with the numbers on the chart, allowing you to make adjustments if needed.
 
-![points_selection_zoom](img/points_selection_zoom.PNG)
+![points_selection_plot](img/points_selection_graph.PNG)
 
 Signal points plotted on the graph (yellow points)
 
-![points_selection_plot](img/points_selection_graph.PNG)
+In order to accurately define the boundary of objects, it is recommended to mark points near the edge of the object.
+
+![points_selection_zoom](img/points_selection_zoom.PNG)
+
+Example of marking a point on the boundary of an object.
 
 #### Establishing discrimination line parameters
 
+After selecting both the background and the signal in the **Preview** window, you will be able to view the corresponding points on the graph. These points can be used to draw a discrimination line, which is represented by a yellow line on the chart. You can adjust the position of this line by dragging it with the mouse or by changing its slope with the mouse. Alternatively, you can enter specific numerical values for the line's parameters in the **Parameters** window. The equation of a straight line is:
+
+$$
+  y = a*x+b
+$$
+
+- **Slope** - slope coefficient of simple discrimination (a);
+- **Y-Intercept** - the point of intersection of the discrimination line with the OY axis (b).
+
+The second method is particularly useful when we require a specific slope for the adjusted straight line.
+
+Trzecią opcją jest użycie jednego z trzech przycisków w oknie **Preview** w sekccji **Discrimination line**:
+- **Below points** - prosta dopasowywana jest 
+- **Middle** - 
+-**Above noise** -
+  
 ![discrimination_line_above_noise](img/dicrimination_line_above_noise.PNG)
 
 ![discrimination_line_below_points](img/dicrimination_line_below_points.PNG)
