@@ -212,6 +212,8 @@ Discrimination line fitted using **Above noise** button
 
 #### Determining the output parameters
 
+The last stage is to determine the output parameters. In particular, how signal points and background are displayed in the output image. Below are examples of different options for displaying the same resulting image. Particular attention should be paid to the fact that not all methods allow maintaining the nominal signal intensity.
+
 ![BW_preview](img/BW_preview.PNG)
 
 White points on black background preview
@@ -222,7 +224,7 @@ Black points on white background preview
 
 ![original_preview](img/orginal_preview.PNG)
 
-The original intensity of signal points on black background preview
+The original intensity of signal points on the black background preview
 
 ![degree_of_matching_preview](img/degree_of_marching_preview.PNG)
 
@@ -231,3 +233,13 @@ Intensity of points showing the degree of matching of signal points on black bac
 ![net_signal_median_preview](img/net_signal_median_preview.PNG)
 
 Net signal of points (using median) on black background preview
+
+### Profile plot window
+
+In manual mode, you can view histograms created for individual signals and background points marked on the graph. To do this, click the "Profile plot window" button in the upper left corner of the "Parameters" window. A new "Profiles" window will open. The graph displays the profiles of selected signal points in red (maximum 10) and the background profiles in blue (maximum 10 points). The light blue vertical line indicates the point from which the pixel's surroundings are counted. The maximum value on the X-axis corresponds to the size of the scanning window.
+
+Detailed information on how these profiles are calculated can be found in the publication.
+
+![plot_profile](img/plot_profile.PNG)
+
+Example of profile window
