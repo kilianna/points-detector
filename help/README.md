@@ -163,3 +163,13 @@ Background points plotted on graph (blue points)
 ![discrimination_line_middle](img/dicrimination_line_middle.PNG)
 
 #### Determining the output parameters
+
+![BW_preview](img/BW_preview.PNG)
+
+![WB_preview](img/WB_preview.PNG)
+
+![original_preview](img/orginal_preview.PNG)
+
+![degree_of_matching_preview](img/degree_of_marching_preview.PNG)
+
+![net_signal_median_preview](img/net_signal_median_preview.PNG)
