@@ -148,15 +148,27 @@ The selected background points will appear on the plot as blue circles.
 
 ![background_selection_plot](img/background_selection_plot.PNG)
 
-Background points plotted on graph (blue points)
+Background points plotted on the graph (blue points)
 
 ![background_plot_correlation](img/background_plot_correlation.PNG)
 
+Background points selected in the image transferred to the chart.
+
 #### Marking of signal points
+
+To switch from the background selection mode to the point selection mode, click on the **Points selection** button in the **Preview** window. When you do this, the selected background areas will disappear. If you want to go back to the background selection mode, simply click on the **Background selection** button. 
+
+Points can be selected using the ImageJ **Multi-point** tool. After marking the points, you can move them using the mouse. To delete a selected point, click on it while pressing the left or right ALT key. Just like selecting the background, points can be selected in both the original image and in the preview.
 
 ![points_selection](img/points_selection.PNG)
 
+Sample image with the selected signal points
+
+The graph will display yellow circles corresponding to the points selected in the image. The numbers on the image will match with the numbers on the chart, allowing you to make adjustments if needed.
+
 ![points_selection_zoom](img/points_selection_zoom.PNG)
+
+Signal points plotted on the graph (yellow points)
 
 ![points_selection_plot](img/points_selection_graph.PNG)
 
