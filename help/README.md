@@ -276,18 +276,19 @@ To enable automatic adjustment of discrimination line parameters, a minimum of 5
 <p align="center">
 <img alt=discrimination_line_below_points" src="img/dicrimination_line_below_points.PNG"/><br/>
 Discrimination line fitted using **Below points** button
+<br/><br/><br/>
 </p>
-
 
 <p align="center">
 <img alt=discrimination_line_middle" src="img/dicrimination_line_middle.PNG"/><br/>
 Discrimination line fitted using **Middle** button
+<br/><br/><br/>
 </p>
-
 
 <p align="center">
 <img alt=discrimination_line_above_noise" src="img/dicrimination_line_above_noise.PNG"/><br/>
 Discrimination line fitted using **Above noise** button
+<br/><br/><br/>
 </p>
 
 
@@ -295,25 +296,34 @@ Discrimination line fitted using **Above noise** button
 
 The last stage is to determine the output parameters. In particular, how signal points and background are displayed in the output image. Below are examples of different options for displaying the same resulting image. Particular attention should be paid to the fact that not all methods allow maintaining the nominal signal intensity.
 
-![BW_preview](img/BW_preview.PNG)
-
+<p align="center">
+<img alt=BW_preview" src="img/BW_preview.PNG"/><br/>
 White points on black background preview
+<br/><br/><br/>
+</p>
 
-![WB_preview](img/WB_preview.PNG)
-
+<p align="center">
+<img alt=WB_preview" src="img/WB_preview.PNG"/><br/>
 Black points on white background preview
+<br/><br/><br/>
+</p>
 
-![original_preview](img/orginal_preview.PNG)
-
+<p align="center">
+<img alt=original_preview" src="img/orginal_preview.PNG"/><br/>
 The original intensity of signal points on the black background preview
+<br/><br/><br/>
+</p>
 
-![degree_of_matching_preview](img/degree_of_marching_preview.PNG)
-
+<p align="center">
+<img alt=degree_of_matching_preview" src="img/degree_of_marching_preview.PNG"/><br/>
 Intensity of points showing the degree of matching of signal points on black background preview
+<br/><br/><br/>
+</p>
 
 <p align="center">
 <img alt="net_signal_median_preview" src="img/net_signal_median_preview.PNG"/><br/>
 Net signal of points (using median) on black background preview
+<br/><br/><br/>
 </p>
 
 ### Profile plot window
@@ -322,6 +332,8 @@ In manual mode, you can view histograms created for individual signals and backg
 
 Detailed information on how these profiles are calculated can be found in the publication.
 
-![plot_profile](img/plot_profile.PNG)
-
+<p align="center">
+<img alt="plot_profile" src="img/plot_profile.PNG"/><br/>
 Example of profile window
+<br/><br/><br/>
+</p>
