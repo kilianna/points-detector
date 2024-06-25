@@ -229,21 +229,27 @@ To switch from the background selection mode to the point selection mode, click 
 
 Points can be selected using the ImageJ **Multi-point** tool. After marking the points, you can move them using the mouse. To delete a selected point, click on it while pressing the left or right ALT key. Just like selecting the background, points can be selected in both the original image and in the preview.
 
-![points_selection](img/points_selection.PNG)
-
+<p align="center">
+<img alt=points_selection" src="img/points_selection.PNG"/><br/>
 Sample image with the selected signal points
+</p>
 
-The graph will display yellow circles corresponding to the points selected in the image. The numbers on the image will match with the numbers on the chart, allowing you to make adjustments if needed.
 
-![points_selection_plot](img/points_selection_graph.PNG)
+The graph will display red circles corresponding to the points selected in the image. The numbers on the image will match with the numbers on the chart, allowing you to make adjustments if needed.
 
-Signal points plotted on the graph (yellow points)
+<p align="center">
+<img alt=points_selection_plot" src="img/points_selection_graph.PNG"/><br/>
+Signal points plotted on the graph (red points)
+</p>
+
 
 In order to accurately define the boundary of objects, it is recommended to mark points near the edge of the object.
 
-![points_selection_zoom](img/points_selection_zoom.PNG)
+<p align="center">
+<img alt=points_selection_zoom" src="img/points_selection_zoom.PNG"/><br/>
+Example of marking a point on the boundary of an object
+</p>
 
-Example of marking a point on the boundary of an object.
 
 #### Establishing discrimination line parameters
 
@@ -267,17 +273,23 @@ The slope of the straight line can be fixed by checking the **Fix slope** checkb
 
 To enable automatic adjustment of discrimination line parameters, a minimum of 5 signal points and 10 noise points must be marked on the graph. Additionally, the signal and noise points should be in similar **Neighborhood**. If the discrimination line cannot be automatically adjusted, the plugin will display an appropriate message.
 
-![discrimination_line_below_points](img/dicrimination_line_below_points.PNG)
-
+<p align="center">
+<img alt=discrimination_line_below_points" src="img/dicrimination_line_below_points.PNG"/><br/>
 Discrimination line fitted using **Below points** button
+</p>
 
-![discrimination_line_middle](img/dicrimination_line_middle.PNG)
 
+<p align="center">
+<img alt=discrimination_line_middle" src="img/dicrimination_line_middle.PNG"/><br/>
 Discrimination line fitted using **Middle** button
+</p>
 
-![discrimination_line_above_noise](img/dicrimination_line_above_noise.PNG)
 
+<p align="center">
+<img alt=discrimination_line_above_noise" src="img/dicrimination_line_above_noise.PNG"/><br/>
 Discrimination line fitted using **Above noise** button
+</p>
+
 
 #### Determining the output parameters
 
