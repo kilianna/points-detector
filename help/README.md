@@ -189,16 +189,26 @@ $$
 
 The second method is particularly useful when we require a specific slope for the adjusted straight line.
 
-Trzecią opcją jest użycie jednego z trzech przycisków w oknie **Preview** w sekccji **Discrimination line**:
-- **Below points** - prosta dopasowywana jest 
-- **Middle** - 
--**Above noise** -
-  
-![discrimination_line_above_noise](img/dicrimination_line_above_noise.PNG)
+The third option is to use one of the three buttons in the **Preview** window in the **Discrimination line** section:
+- **Below points** - the line is fitted so that it is just below the lowest signal points marked on the chart;
+- **Middle** - the line is adjusted in the middle of the distance between the highest marked points of the background and the lowest marked points of the signal;
+-**Above noise** -  the line is fitted just above the highest selected noise points.
+
+The slope of the straight line can be fixed by checking the **Fix slope** checkbox.
+
+To enable automatic adjustment of discrimination line parameters, a minimum of 5 signal points and 10 noise points must be marked on the graph. Additionally, the signal and noise points should be in similar **Neighborhood**. If the discrimination line cannot be automatically adjusted, the plugin will display an appropriate message.
 
 ![discrimination_line_below_points](img/dicrimination_line_below_points.PNG)
 
+Discrimination line fitted using **Below points** button
+
 ![discrimination_line_middle](img/dicrimination_line_middle.PNG)
+
+Discrimination line fitted using **Middle** button
+
+![discrimination_line_above_noise](img/dicrimination_line_above_noise.PNG)
+
+Discrimination line fitted using **Above noise** button
 
 #### Determining the output parameters
 
