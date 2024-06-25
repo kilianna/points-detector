@@ -126,7 +126,7 @@ When one of the three versions of "Net signal" is selected, the "Scaled" option 
 
 <p align="center">
 <img alt="Net_vs_scaled" src="img/Net_vs_scaled.png"/><br/>
-Net signal parameters explanation
+Comparison of scaled and nonscaled images. From left: original, nonscaled and scaled image.
 </p>
 
 - **Background** - available background display options:
@@ -135,7 +135,10 @@ Net signal parameters explanation
   - **Orginal** - the background displayed is the same as in the original image;
   - **Degree of matching** - pixel brightness corresponds to the difference between the "point brightness" calculated by the program and the "background brightness".
 
-![output_background](img/output_background.PNG)
+<p align="center">
+<img alt="output_background" src="img/output_background.PNG"/><br/>
+Background types list
+</p>
 
 Additional options:
 - **Scope**: choose whether the plugin should perform operations solely on the selected image (**Current slice**) or on all images in the stack in the active window (**All slices**).
